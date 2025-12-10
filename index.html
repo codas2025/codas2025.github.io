@@ -1,324 +1,519 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biomarker Discovery Output Annotation</title>
+    <title>Biomarker Discovery Agent Evaluation</title>
     
-    <!-- Bootstrap 5 CSS (디자인용) -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            color: #212529;
+            padding-bottom: 50px;
         }
         .container {
             max-width: 900px;
         }
-        .section-card {
+        .step-container {
+            display: none; /* Hide all steps initially */
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            padding: 30px;
-            margin-bottom: 25px;
-            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in-out;
         }
-        .section-title {
-            border-bottom: 2px solid #0d6efd;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        .step-container.active {
+            display: block; /* Show active step */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header-title {
             font-weight: 700;
             color: #0d6efd;
+            margin-bottom: 10px;
         }
         .pdf-viewer {
             width: 100%;
-            height: 700px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
+            height: 750px;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+        }
+        .nav-tabs .nav-link {
+            color: #495057;
+            font-weight: 500;
         }
         .nav-tabs .nav-link.active {
-            font-weight: bold;
+            font-weight: 700;
             color: #0d6efd;
             border-top: 3px solid #0d6efd;
         }
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+        .progress {
+            height: 8px;
+            margin-bottom: 30px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+        }
+        .task-row {
+            border-bottom: 1px solid #f1f3f5;
+            padding: 15px 0;
+        }
+        .task-row:last-child {
+            border-bottom: none;
+        }
+        .required-star {
+            color: red;
         }
     </style>
 </head>
 <body>
 
-    <!-- Loading Spinner -->
-    <div id="loading" class="loading-overlay">
-        <div class="text-center">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 fw-bold">데이터 저장 중입니다...</p>
-        </div>
-    </div>
-
     <div class="container py-5">
-        <header class="text-center mb-5">
-            <h1 class="fw-bold">Biomarker Discovery Output Evaluation</h1>
-            <p class="text-muted">다양한 모델의 Output을 비교하고 평가해주세요.</p>
-        </header>
+        
+        <!-- Progress Bar -->
+        <div class="mb-4">
+            <h5 id="step-indicator" class="text-muted text-center mb-3">Step 1 of 4</h5>
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
 
-        <form id="annotationForm">
+        <form id="mainForm">
             
-            <!-- 1. 참가자 정보 -->
-            <div class="section-card">
-                <h4 class="section-title">1. 참가자 정보 (Background Info)</h4>
+            <!-- STEP 1: Participant Info -->
+            <div class="step-container active" id="step1">
+                <h2 class="header-title">Participant Information</h2>
+                <p class="text-muted mb-4">Please provide your background information to begin the evaluation.</p>
+                
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="annotatorName" class="form-label">이름 (Name)</label>
-                        <input type="text" class="form-control" id="annotatorName" required>
+                        <label class="form-label">Full Name <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="userName" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="annotatorEmail" class="form-label">이메일 (Email)</label>
-                        <input type="email" class="form-control" id="annotatorEmail" required>
+                        <label class="form-label">Email Address <span class="required-star">*</span></label>
+                        <input type="email" class="form-control" id="userEmail" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Affiliation / Institution <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="userAffiliation" placeholder="e.g. University A, Company B" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Years of Experience in Bioinformatics/DS <span class="required-star">*</span></label>
+                        <input type="number" class="form-control" id="userExp" placeholder="e.g. 5" required>
                     </div>
                     <div class="col-12">
-                        <label for="annotatorBackground" class="form-label">전문 분야 (Background)</label>
-                        <select class="form-select" id="annotatorBackground" required>
-                            <option value="" selected disabled>선택해주세요</option>
-                            <option value="Bioinformatics">Bioinformatics</option>
-                            <option value="Biology/Medicine">Biology / Medicine</option>
-                            <option value="Computer Science">Computer Science / AI</option>
+                        <label class="form-label">Primary Expertise <span class="required-star">*</span></label>
+                        <select class="form-select" id="userExpertise" required>
+                            <option value="" selected disabled>Select...</option>
+                            <option value="Bioinformatics">Bioinformatics (Genomics/Transcriptomics)</option>
+                            <option value="Clinical Research">Clinical Research / Medicine</option>
+                            <option value="Computer Science">Computer Science / AI / NLP</option>
+                            <option value="Biology">Molecular Biology</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div class="col-12">
-                        <label for="experienceYears" class="form-label">해당 분야 경력 (Years of Experience)</label>
-                        <input type="number" class="form-control" id="experienceYears" placeholder="예: 3" required>
-                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" class="btn btn-primary px-4" onclick="nextStep(1)">Next &rarr;</button>
                 </div>
             </div>
 
-            <!-- 2. 가이드라인 -->
-            <div class="section-card">
-                <h4 class="section-title">2. 가이드라인 (Guidelines)</h4>
-                <div class="alert alert-info" role="alert">
-                    <strong>평가 시작 전 꼭 읽어주세요!</strong>
-                    <ul class="mb-0 mt-2">
-                        <li>아래 제공되는 세 가지 PDF (CoDaS, Biomni, Colab DSA)를 꼼꼼히 검토해 주세요.</li>
-                        <li>각 Output의 가독성, 정확성, 정보의 유용성을 기준으로 평가해 주세요.</li>
-                        <li>모든 항목에 응답한 후 제출 버튼을 눌러주세요.</li>
+            <!-- STEP 2: Introduction & Guidelines -->
+            <div class="step-container" id="step2">
+                <h2 class="header-title">About CoDaS & Guidelines</h2>
+                
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary fw-bold">What is CoDaS?</h4>
+                        <p class="card-text">
+                            <strong>CoDaS (Context-aware Data Science Assistant)</strong> is an automated AI agent designed to perform end-to-end biomarker discovery. 
+                            Unlike traditional scripts, CoDaS autonomously formulates hypotheses, searches for datasets, writes code for analysis, and interprets biological results.
+                        </p>
+                        <p class="card-text mb-0">
+                            The goal of this research is to evaluate whether CoDaS can generate research outputs comparable to human experts or existing semi-automated tools.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <h5 class="alert-heading fw-bold">Evaluation Guidelines</h5>
+                    <ul class="mb-0">
+                        <li>You will be presented with <strong>3 PDF outputs (Model A, B, C)</strong>.</li>
+                        <li>These outputs are <strong>blinded</strong> (you will not know which one is CoDaS).</li>
+                        <li>Please review the PDFs based on:
+                            <ul>
+                                <li><strong>Logical Flow:</strong> Is the analysis process reasonable?</li>
+                                <li><strong>Code/Method Quality:</strong> Is the methodology sound?</li>
+                                <li><strong>Insight:</strong> Are the biological interpretations valid?</li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">&larr; Back</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="nextStep(2)">Start Evaluation &rarr;</button>
+                </div>
             </div>
 
-            <!-- 3. PDF 뷰어 -->
-            <div class="section-card">
-                <h4 class="section-title">3. Output 검토 (Review PDFs)</h4>
+            <!-- STEP 3: Blinded Evaluation -->
+            <div class="step-container" id="step3">
+                <h2 class="header-title">Blinded Output Comparison</h2>
+                <p class="text-muted">Please review the three outputs below and rank them.</p>
+
+                <!-- PDF Tabs -->
                 <ul class="nav nav-tabs mb-3" id="pdfTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="codas-tab" data-bs-toggle="tab" data-bs-target="#codas" type="button" role="tab">CoDaS Output</button>
+                    <li class="nav-item">
+                        <button class="nav-link active" id="tab-a" data-bs-toggle="tab" data-bs-target="#modelA" type="button">Model A</button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="biomni-tab" data-bs-toggle="tab" data-bs-target="#biomni" type="button" role="tab">Biomni Output</button>
+                    <li class="nav-item">
+                        <button class="nav-link" id="tab-b" data-bs-toggle="tab" data-bs-target="#modelB" type="button">Model B</button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="colab-tab" data-bs-toggle="tab" data-bs-target="#colab" type="button" role="tab">Colab DSA Output</button>
+                    <li class="nav-item">
+                        <button class="nav-link" id="tab-c" data-bs-toggle="tab" data-bs-target="#modelC" type="button">Model C</button>
                     </li>
                 </ul>
-                <div class="tab-content" id="pdfTabsContent">
-                    <!-- PDF 파일 경로는 실제 repo의 경로와 일치해야 합니다 (./pdfs/파일명.pdf) -->
-                    <div class="tab-pane fade show active" id="codas" role="tabpanel">
+
+                <div class="tab-content mb-4">
+                    <!-- 
+                         IMPORTANT:
+                         Map your files here internally. User sees A/B/C.
+                         Example Mapping:
+                         Model A = CoDaS (codas.pdf)
+                         Model B = Biomni (biomni.pdf)
+                         Model C = Colab DSA (colab_dsa.pdf)
+                    -->
+                    <div class="tab-pane fade show active" id="modelA">
                         <iframe src="./pdfs/codas.pdf" class="pdf-viewer"></iframe>
                     </div>
-                    <div class="tab-pane fade" id="biomni" role="tabpanel">
+                    <div class="tab-pane fade" id="modelB">
                         <iframe src="./pdfs/biomni.pdf" class="pdf-viewer"></iframe>
                     </div>
-                    <div class="tab-pane fade" id="colab" role="tabpanel">
+                    <div class="tab-pane fade" id="modelC">
                         <iframe src="./pdfs/colab_dsa.pdf" class="pdf-viewer"></iframe>
                     </div>
                 </div>
-            </div>
 
-            <!-- 4. 평가 및 랭킹 -->
-            <div class="section-card">
-                <h4 class="section-title">4. 선호도 랭킹 (Preference Ranking)</h4>
-                <p class="mb-3">가장 우수하다고 생각하는 Output 순서대로 순위를 매겨주세요. (중복 불가)</p>
-                
+                <hr>
+
+                <h4 class="mb-3">Preference Ranking</h4>
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-primary">1위 (Best)</label>
+                        <label class="form-label fw-bold text-success">1st Place (Best)</label>
                         <select class="form-select ranking-select" id="rank1" required>
-                            <option value="" selected disabled>Select Model</option>
-                            <option value="CoDaS">CoDaS</option>
-                            <option value="Biomni">Biomni</option>
-                            <option value="Colab DSA">Colab DSA</option>
+                            <option value="" selected disabled>Select Model...</option>
+                            <option value="Model A">Model A</option>
+                            <option value="Model B">Model B</option>
+                            <option value="Model C">Model C</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">2위</label>
+                        <label class="form-label fw-bold text-secondary">2nd Place</label>
                         <select class="form-select ranking-select" id="rank2" required>
-                            <option value="" selected disabled>Select Model</option>
-                            <option value="CoDaS">CoDaS</option>
-                            <option value="Biomni">Biomni</option>
-                            <option value="Colab DSA">Colab DSA</option>
+                            <option value="" selected disabled>Select Model...</option>
+                            <option value="Model A">Model A</option>
+                            <option value="Model B">Model B</option>
+                            <option value="Model C">Model C</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-secondary">3위 (Worst)</label>
+                        <label class="form-label fw-bold text-danger">3rd Place (Worst)</label>
                         <select class="form-select ranking-select" id="rank3" required>
-                            <option value="" selected disabled>Select Model</option>
-                            <option value="CoDaS">CoDaS</option>
-                            <option value="Biomni">Biomni</option>
-                            <option value="Colab DSA">Colab DSA</option>
+                            <option value="" selected disabled>Select Model...</option>
+                            <option value="Model A">Model A</option>
+                            <option value="Model B">Model B</option>
+                            <option value="Model C">Model C</option>
                         </select>
                     </div>
+                </div>
+                <div id="rank-error" class="text-danger mt-2" style="display:none; font-size:0.9rem;">
+                    * You cannot select the same model twice. Please assign unique ranks.
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3)">&larr; Back</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="nextStep(3)">Next &rarr;</button>
                 </div>
             </div>
 
-            <!-- 5. 소요 시간 예측 -->
-            <div class="section-card">
-                <h4 class="section-title">5. 수동 수행 시 소요 시간 (Time Estimation)</h4>
-                <p class="mb-3">각 연구 단계를 본인이 직접 수동으로 수행한다고 가정했을 때, 예상 소요 시간을 입력해주세요.</p>
-                
-                <div class="mb-3 row align-items-center">
-                    <label class="col-sm-4 col-form-label">1. Literature Review & Target Selection</label>
-                    <div class="col-sm-4">
-                        <input type="number" class="form-control" id="timeStep1" placeholder="숫자 입력" required>
+            <!-- STEP 4: Time Estimation -->
+            <div class="step-container" id="step4">
+                <h2 class="header-title">Time Estimation</h2>
+                <p class="text-muted">
+                    If you were to perform this biomarker discovery task <strong>manually</strong> (without automated agents), 
+                    how long would each step take?
+                </p>
+
+                <div class="mt-4">
+                    <!-- Subtask 1 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">1. Literature Review & Gene Selection</label>
+                            <div class="form-text">Searching papers, identifying target biomarkers/genes.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time1" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit1">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-sm-4">
-                        <select class="form-select" id="unitStep1">
-                            <option value="Hours">Hours</option>
-                            <option value="Days">Days</option>
-                            <option value="Weeks">Weeks</option>
-                        </select>
+
+                    <!-- Subtask 2 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">2. Data Acquisition & Cleaning</label>
+                            <div class="form-text">Downloading from GEO/TCGA, mapping probes, normalization.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time2" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit2">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 3 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">3. Differential Expression Analysis (DEA)</label>
+                            <div class="form-text">Running DESeq2/Limma, statistical testing.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time3" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit3">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 4 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">4. Feature Selection & ML Modeling</label>
+                            <div class="form-text">Dimensionality reduction, training classifiers, tuning hyperparams.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time4" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit4">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 5 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">5. Biological Interpretation (GO/KEGG)</label>
+                            <div class="form-text">Pathway enrichment analysis, functional annotation.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time5" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit5">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                     <!-- Subtask 6 -->
+                     <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">6. Report Writing & Documentation</label>
+                            <div class="form-text">Summarizing findings, creating figures, writing the manuscript.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time6" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit6">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3 row align-items-center">
-                    <label class="col-sm-4 col-form-label">2. Data Processing & Analysis</label>
-                    <div class="col-sm-4">
-                        <input type="number" class="form-control" id="timeStep2" placeholder="숫자 입력" required>
-                    </div>
-                    <div class="col-sm-4">
-                        <select class="form-select" id="unitStep2">
-                            <option value="Hours">Hours</option>
-                            <option value="Days">Days</option>
-                            <option value="Weeks">Weeks</option>
-                        </select>
-                    </div>
+                <div class="d-flex justify-content-between mt-5">
+                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(4)">&larr; Back</button>
+                    <button type="button" class="btn btn-success btn-lg px-5" id="submitBtn" onclick="submitData()">Submit Annotation</button>
                 </div>
-
-                <div class="mb-3 row align-items-center">
-                    <label class="col-sm-4 col-form-label">3. Interpretation & Reporting</label>
-                    <div class="col-sm-4">
-                        <input type="number" class="form-control" id="timeStep3" placeholder="숫자 입력" required>
-                    </div>
-                    <div class="col-sm-4">
-                        <select class="form-select" id="unitStep3">
-                            <option value="Hours">Hours</option>
-                            <option value="Days">Days</option>
-                            <option value="Weeks">Weeks</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 제출 버튼 -->
-            <div class="d-grid gap-2 mb-5">
-                <button type="submit" class="btn btn-primary btn-lg shadow-sm">제출하기 (Submit Annotation)</button>
             </div>
 
         </form>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Firebase SDK (Version 9 compat) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- FIREBASE CONFIGURATION ---
-        // 본인의 Firebase Console -> Project Settings -> General -> Your apps -> Config 에서 복사하세요.
+        // --- FIREBASE CONFIGURATION (REPLACE WITH YOURS) ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
             projectId: "YOUR_PROJECT_ID",
             storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            messagingSenderId: "YOUR_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Form Submit Handler
-        document.getElementById('annotationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // --- NAVIGATION LOGIC ---
+        let currentStep = 1;
+        const totalSteps = 4;
 
-            // 랭킹 중복 체크 (간단한 유효성 검사)
-            const r1 = document.getElementById('rank1').value;
-            const r2 = document.getElementById('rank2').value;
-            const r3 = document.getElementById('rank3').value;
+        function updateUI() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step${i}`).classList.remove('active');
+            }
+            // Show current step
+            document.getElementById(`step${currentStep}`).classList.add('active');
             
-            if (r1 === r2 || r1 === r3 || r2 === r3) {
-                alert("랭킹 순위에 중복된 모델이 있습니다. 각기 다른 모델을 선택해주세요.");
-                return;
+            // Update Progress Bar
+            const percent = (currentStep / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('step-indicator').innerText = `Step ${currentStep} of ${totalSteps}`;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const name = document.getElementById('userName').value;
+                const email = document.getElementById('userEmail').value;
+                const affil = document.getElementById('userAffiliation').value;
+                const exp = document.getElementById('userExp').value;
+                const expert = document.getElementById('userExpertise').value;
+                if (!name || !email || !affil || !exp || !expert) {
+                    alert("Please fill in all required fields.");
+                    return false;
+                }
+            }
+            if (step === 3) {
+                const r1 = document.getElementById('rank1').value;
+                const r2 = document.getElementById('rank2').value;
+                const r3 = document.getElementById('rank3').value;
+                if (!r1 || !r2 || !r3) {
+                    alert("Please complete the ranking for all positions.");
+                    return false;
+                }
+                if (r1 === r2 || r1 === r3 || r2 === r3) {
+                    document.getElementById('rank-error').style.display = 'block';
+                    alert("Duplicate rankings detected. Please assign a unique model to each rank.");
+                    return false;
+                }
+                document.getElementById('rank-error').style.display = 'none';
+            }
+            return true;
+        }
+
+        function nextStep(step) {
+            if (validateStep(step)) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateUI();
+                }
+            }
+        }
+
+        function prevStep(step) {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        // --- SUBMISSION LOGIC ---
+        async function submitData() {
+            // Validate Time Fields (Optional but recommended)
+            const t1 = document.getElementById('time1').value;
+            if(!t1) {
+                if(!confirm("You haven't filled out all time estimations. Submit anyway?")) return;
             }
 
-            // 로딩 표시
-            document.getElementById('loading').style.display = 'flex';
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Saving...";
 
-            // 데이터 수집
+            // Internal Mapping for Analysis (User doesn't see this)
+            // Model A = CoDaS, Model B = Biomni, Model C = DSA
+            const modelMapping = {
+                "Model A": "CoDaS",
+                "Model B": "Biomni",
+                "Model C": "Colab_DSA"
+            };
+
             const data = {
-                userInfo: {
-                    name: document.getElementById('annotatorName').value,
-                    email: document.getElementById('annotatorEmail').value,
-                    background: document.getElementById('annotatorBackground').value,
-                    experienceYears: document.getElementById('experienceYears').value,
-                    submittedAt: new Date()
+                participant: {
+                    name: document.getElementById('userName').value,
+                    email: document.getElementById('userEmail').value,
+                    affiliation: document.getElementById('userAffiliation').value,
+                    experience: document.getElementById('userExp').value,
+                    expertise: document.getElementById('userExpertise').value,
                 },
-                ranking: {
-                    first: r1,
-                    second: r2,
-                    third: r3
+                rankings: {
+                    rank1_raw: document.getElementById('rank1').value,
+                    rank1_mapped: modelMapping[document.getElementById('rank1').value],
+                    rank2_raw: document.getElementById('rank2').value,
+                    rank2_mapped: modelMapping[document.getElementById('rank2').value],
+                    rank3_raw: document.getElementById('rank3').value,
+                    rank3_mapped: modelMapping[document.getElementById('rank3').value],
                 },
-                timeEstimation: {
-                    step1: {
-                        val: document.getElementById('timeStep1').value,
-                        unit: document.getElementById('unitStep1').value
-                    },
-                    step2: {
-                        val: document.getElementById('timeStep2').value,
-                        unit: document.getElementById('unitStep2').value
-                    },
-                    step3: {
-                        val: document.getElementById('timeStep3').value,
-                        unit: document.getElementById('unitStep3').value
-                    }
-                }
+                time_estimation: {
+                    step1_lit_review: { val: document.getElementById('time1').value, unit: document.getElementById('unit1').value },
+                    step2_data_prep: { val: document.getElementById('time2').value, unit: document.getElementById('unit2').value },
+                    step3_dea: { val: document.getElementById('time3').value, unit: document.getElementById('unit3').value },
+                    step4_ml: { val: document.getElementById('time4').value, unit: document.getElementById('unit4').value },
+                    step5_interpretation: { val: document.getElementById('time5').value, unit: document.getElementById('unit5').value },
+                    step6_reporting: { val: document.getElementById('time6').value, unit: document.getElementById('unit6').value },
+                },
+                timestamp: new Date()
             };
 
             try {
-                // 'annotations' 컬렉션에 데이터 저장
-                await db.collection("annotations").add(data);
-                
-                alert("성공적으로 제출되었습니다! 감사합니다.");
-                window.location.reload(); // 페이지 새로고침
+                await db.collection("evaluations").add(data);
+                alert("Thank you! Your evaluation has been submitted successfully.");
+                window.location.reload();
             } catch (error) {
-                console.error("Error adding document: ", error);
-                alert("제출 중 오류가 발생했습니다. 다시 시도해주세요.");
-                document.getElementById('loading').style.display = 'none';
+                console.error("Error:", error);
+                alert("Submission failed. Check console for details.");
+                btn.disabled = false;
+                btn.innerText = "Submit Annotation";
             }
-        });
+        }
     </script>
 </body>
 </html>
