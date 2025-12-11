@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        <form id="mainForm">
+        <form id="mainForm" onsubmit="return false;">
             
             <!-- STEP 1: Participant Info -->
             <div class="step-container active" id="step1">
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="button" class="btn btn-primary px-4" onclick="nextStep(1)">Next &rarr;</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep1">Next &rarr;</button>
                 </div>
             </div>
 
@@ -160,8 +160,8 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">&larr; Back</button>
-                    <button type="button" class="btn btn-primary px-4" onclick="nextStep(2)">Start Evaluation &rarr;</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev2">&larr; Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep2">Start Evaluation &rarr;</button>
                 </div>
             </div>
 
@@ -184,12 +184,6 @@
                 </ul>
 
                 <div class="tab-content mb-4">
-                    <!-- 
-                         IMPORTANT:
-                         Model A = CoDaS (codas.pdf)
-                         Model B = Biomni (biomni.pdf)
-                         Model C = Colab DSA (colab_dsa.pdf)
-                    -->
                     <div class="tab-pane fade show active" id="modelA">
                         <iframe src="./pdfs/codas.pdf" class="pdf-viewer"></iframe>
                     </div>
@@ -237,4 +231,299 @@
                     * You cannot select the same model twice. Please assign unique ranks.
                 </div>
 
-                <div class="d-flex
+                <div class="d-flex justify-content-between mt-5">
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev3">&larr; Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep3">Next &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Time Estimation -->
+            <div class="step-container" id="step4">
+                <h2 class="header-title">Time Estimation</h2>
+                <p class="text-muted">
+                    If you were to perform this biomarker discovery task <strong>manually</strong> (without automated agents), 
+                    how long would each step take?
+                </p>
+
+                <div class="mt-4">
+                    <!-- Subtask 1 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">1. Literature Review & Gene Selection</label>
+                            <div class="form-text">Searching papers, identifying target biomarkers/genes.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time1" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit1">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 2 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">2. Data Acquisition & Cleaning</label>
+                            <div class="form-text">Downloading from GEO/TCGA, mapping probes, normalization.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time2" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit2">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 3 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">3. Differential Expression Analysis (DEA)</label>
+                            <div class="form-text">Running DESeq2/Limma, statistical testing.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time3" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit3">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 4 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">4. Feature Selection & ML Modeling</label>
+                            <div class="form-text">Dimensionality reduction, training classifiers, tuning hyperparams.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time4" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit4">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subtask 5 -->
+                    <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">5. Biological Interpretation (GO/KEGG)</label>
+                            <div class="form-text">Pathway enrichment analysis, functional annotation.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time5" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit5">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                     <!-- Subtask 6 -->
+                     <div class="task-row row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold">6. Report Writing & Documentation</label>
+                            <div class="form-text">Summarizing findings, creating figures, writing the manuscript.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="time6" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="unit6">
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                                <option value="Weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev4">&larr; Back</button>
+                    <button type="button" class="btn btn-success btn-lg px-5" id="submitBtn">Submit Annotation</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Bootstrap Bundle JS (for Tabs) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Logic -->
+    <script type="module">
+        // 1. Correct Import URLs (Using v10.8.0)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // 2. Your Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmeVKj-2wsBIIMPE9ZuiWgyzHV_s5UCQk",
+            authDomain: "ivory-plane-406700.firebaseapp.com",
+            databaseURL: "https://ivory-plane-406700-default-rtdb.firebaseio.com",
+            projectId: "ivory-plane-406700",
+            storageBucket: "ivory-plane-406700.firebasestorage.app",
+            messagingSenderId: "360125182471",
+            appId: "1:360125182471:web:a50fde959d1b09936530a2",
+            measurementId: "G-7BHD9KPBY4"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // --- NAVIGATION STATE ---
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // --- FUNCTIONS ---
+        function updateUI() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const el = document.getElementById(`step${i}`);
+                if(el) el.classList.remove('active');
+            }
+            const currentEl = document.getElementById(`step${currentStep}`);
+            if(currentEl) currentEl.classList.add('active');
+            
+            const percent = (currentStep / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('step-indicator').innerText = `Step ${currentStep} of ${totalSteps}`;
+            
+            window.scrollTo(0, 0);
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const name = document.getElementById('userName').value;
+                const email = document.getElementById('userEmail').value;
+                const affil = document.getElementById('userAffiliation').value;
+                const exp = document.getElementById('userExp').value;
+                const expert = document.getElementById('userExpertise').value;
+                if (!name || !email || !affil || !exp || !expert) {
+                    alert("Please fill in all required fields.");
+                    return false;
+                }
+            }
+            if (step === 3) {
+                const r1 = document.getElementById('rank1').value;
+                const r2 = document.getElementById('rank2').value;
+                const r3 = document.getElementById('rank3').value;
+                if (!r1 || !r2 || !r3) {
+                    alert("Please complete the ranking for all positions.");
+                    return false;
+                }
+                if (r1 === r2 || r1 === r3 || r2 === r3) {
+                    document.getElementById('rank-error').style.display = 'block';
+                    alert("Duplicate rankings detected. Please assign a unique model to each rank.");
+                    return false;
+                }
+                document.getElementById('rank-error').style.display = 'none';
+            }
+            return true;
+        }
+
+        function nextStep(step) {
+            if (validateStep(step)) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateUI();
+                }
+            }
+        }
+
+        function prevStep(step) {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        async function submitData() {
+            const t1 = document.getElementById('time1').value;
+            if(!t1) {
+                if(!confirm("You haven't filled out all time estimations. Submit anyway?")) return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            const modelMapping = {
+                "Model A": "CoDaS",
+                "Model B": "Biomni",
+                "Model C": "Colab_DSA"
+            };
+
+            const data = {
+                participant: {
+                    name: document.getElementById('userName').value,
+                    email: document.getElementById('userEmail').value,
+                    affiliation: document.getElementById('userAffiliation').value,
+                    experience: document.getElementById('userExp').value,
+                    expertise: document.getElementById('userExpertise').value,
+                },
+                rankings: {
+                    rank1_raw: document.getElementById('rank1').value,
+                    rank1_mapped: modelMapping[document.getElementById('rank1').value],
+                    rank2_raw: document.getElementById('rank2').value,
+                    rank2_mapped: modelMapping[document.getElementById('rank2').value],
+                    rank3_raw: document.getElementById('rank3').value,
+                    rank3_mapped: modelMapping[document.getElementById('rank3').value],
+                },
+                time_estimation: {
+                    step1_lit_review: { val: document.getElementById('time1').value, unit: document.getElementById('unit1').value },
+                    step2_data_prep: { val: document.getElementById('time2').value, unit: document.getElementById('unit2').value },
+                    step3_dea: { val: document.getElementById('time3').value, unit: document.getElementById('unit3').value },
+                    step4_ml: { val: document.getElementById('time4').value, unit: document.getElementById('unit4').value },
+                    step5_interpretation: { val: document.getElementById('time5').value, unit: document.getElementById('unit5').value },
+                    step6_reporting: { val: document.getElementById('time6').value, unit: document.getElementById('unit6').value },
+                },
+                timestamp: new Date()
+            };
+
+            try {
+                await addDoc(collection(db, "evaluations"), data);
+                alert("Thank you! Your evaluation has been submitted successfully.");
+                window.location.reload();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("Submission failed. Check console for details.");
+                btn.disabled = false;
+                btn.innerText = "Submit Annotation";
+            }
+        }
+
+        // --- ATTACH EVENT LISTENERS (Correct way for Modules) ---
+        // Modules cannot simply use onclick="nextStep()" in HTML because functions are not global.
+        // We attach them manually here.
+        document.getElementById('btnStep1').addEventListener('click', () => nextStep(1));
+        document.getElementById('btnStep2').addEventListener('click', () => nextStep(2));
+        document.getElementById('btnPrev2').addEventListener('click', () => prevStep(2));
+        document.getElementById('btnStep3').addEventListener('click', () => nextStep(3));
+        document.getElementById('btnPrev3').addEventListener('click', () => prevStep(3));
+        document.getElementById('btnPrev4').addEventListener('click', () => prevStep(4));
+        document.getElementById('submitBtn').addEventListener('click', submitData);
+
+        console.log("Firebase initialized and Event Listeners attached.");
+    </script>
+</body>
+</html>
