@@ -1,0 +1,20 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject secrets
+        run: sed -i "s/__FIREBASE_API__/${{ secrets.FIREBASE_API }}/" index.html
+
+      - name: Deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
