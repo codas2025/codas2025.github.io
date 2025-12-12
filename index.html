@@ -367,16 +367,14 @@
     <!-- Bootstrap Bundle JS (for Tabs) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Firebase Logic -->
+    <!-- Firebase Logic (Realtime Database) -->
     <script type="module">
-        // 1. Correct Import URLs (Using v10.8.0)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 2. Your Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDmeVKj-2wsBIIMPE9ZuiWgyzHV_s5UCQk",
+            apiKey: ${{secrets.FIREBASE_API}},
             authDomain: "ivory-plane-406700.firebaseapp.com",
             databaseURL: "https://ivory-plane-406700-default-rtdb.firebaseio.com",
             projectId: "ivory-plane-406700",
@@ -386,23 +384,21 @@
             measurementId: "G-7BHD9KPBY4"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
 
         // --- NAVIGATION STATE ---
         let currentStep = 1;
         const totalSteps = 4;
 
-        // --- FUNCTIONS ---
         function updateUI() {
             for (let i = 1; i <= totalSteps; i++) {
                 const el = document.getElementById(`step${i}`);
-                if(el) el.classList.remove('active');
+                if (el) el.classList.remove('active');
             }
             const currentEl = document.getElementById(`step${currentStep}`);
-            if(currentEl) currentEl.classList.add('active');
+            if (currentEl) currentEl.classList.add('active');
             
             const percent = (currentStep / totalSteps) * 100;
             document.getElementById('progress-bar').style.width = `${percent}%`;
@@ -458,9 +454,11 @@
         }
 
         async function submitData() {
+            console.log("submitData called");
+
             const t1 = document.getElementById('time1').value;
-            if(!t1) {
-                if(!confirm("You haven't filled out all time estimations. Submit anyway?")) return;
+            if (!t1) {
+                if (!confirm("You haven't filled out all time estimations. Submit anyway?")) return;
             }
 
             const btn = document.getElementById('submitBtn');
@@ -497,13 +495,18 @@
                     step5_interpretation: { val: document.getElementById('time5').value, unit: document.getElementById('unit5').value },
                     step6_reporting: { val: document.getElementById('time6').value, unit: document.getElementById('unit6').value },
                 },
-                timestamp: new Date()
+                timestamp: new Date().toISOString()
             };
 
             try {
-                await addDoc(collection(db, "evaluations"), data);
+                console.log("Sending to Realtime DB...", data);
+                const newRef = push(ref(db, "evaluations"));
+                await set(newRef, data);
+                console.log("Realtime DB write success");
+
                 alert("Thank you! Your evaluation has been submitted successfully.");
-                window.location.reload();
+                // 원하는 홈 경로로 변경 (예: "./index.html" 또는 "/")
+                window.location.href = "./index.html";
             } catch (error) {
                 console.error("Error adding document: ", error);
                 alert("Submission failed. Check console for details.");
@@ -512,9 +515,7 @@
             }
         }
 
-        // --- ATTACH EVENT LISTENERS (Correct way for Modules) ---
-        // Modules cannot simply use onclick="nextStep()" in HTML because functions are not global.
-        // We attach them manually here.
+        // Attach event listeners
         document.getElementById('btnStep1').addEventListener('click', () => nextStep(1));
         document.getElementById('btnStep2').addEventListener('click', () => nextStep(2));
         document.getElementById('btnPrev2').addEventListener('click', () => prevStep(2));
