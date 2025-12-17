@@ -290,6 +290,73 @@
             .likert-scale { flex-wrap: wrap; }
             .likert-scale label { flex: 0 0 18%; }
             .pairwise-options { flex-direction: column; }
+            .ranking-slots { flex-direction: column; }
+            .ranking-slot { width: 100%; }
+        }
+        /* Drag and Drop Ranking */
+        .drag-ranking-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+        }
+        .ranking-slots {
+            display: flex;
+            gap: 15px;
+        }
+        .ranking-slot {
+            flex: 1;
+            min-height: 80px;
+            border: 3px dashed #dee2e6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        .ranking-slot.drag-over {
+            border-color: var(--primary-blue);
+            background: #e7f1ff;
+            transform: scale(1.02);
+        }
+        .ranking-slot.filled {
+            border-style: solid;
+            border-color: var(--primary-blue);
+        }
+        .slot-placeholder {
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+        .draggable-model {
+            cursor: grab;
+            padding: 12px 24px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .draggable-model:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .draggable-model:active, .draggable-model.dragging {
+            cursor: grabbing;
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+        .draggable-model .model-badge {
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+        .model-pool {
+            text-align: center;
+            padding: 15px;
+            background: #f1f3f5;
+            border-radius: 10px;
+        }
+        .ranking-labels {
+            padding: 0 10px;
         }
     </style>
 </head>
@@ -374,9 +441,14 @@
                     <div class="card-body">
                         <h4 class="card-title text-primary fw-bold"><i class="bi bi-robot me-2"></i>What is CoDaS?</h4>
                         <p class="card-text">
-                            <strong>CoDaS (Context-aware Data Science Assistant)</strong> is an automated AI agent designed to perform end-to-end biomarker discovery from wearable sensor data. 
-                            Unlike traditional scripts, CoDaS autonomously formulates hypotheses, searches for datasets, writes code for analysis, and interprets biological/clinical results.
+                            <strong>CoDaS (AI Co-Data-Scientist)</strong> is a multi-agent system designed to perform end-to-end biomarker discovery from wearable sensor data. 
+                            The system consists of specialized agents working together:
                         </p>
+                        <ul class="card-text">
+                            <li><strong>Orchestrator Agent:</strong> Coordinates the overall research workflow and manages inter-agent communication</li>
+                            <li><strong>Data Science Agent:</strong> Handles data preprocessing, statistical analysis, and ML modeling</li>
+                            <li><strong>Deep Research Agent:</strong> Conducts literature review, hypothesis formulation, and clinical interpretation</li>
+                        </ul>
                         <p class="card-text mb-0">
                             The goal of this research is to evaluate whether CoDaS can generate research outputs comparable to human experts or existing AI tools.
                         </p>
@@ -395,7 +467,7 @@
 
                 <div class="info-box">
                     <i class="bi bi-clock"></i>
-                    <strong>Estimated time:</strong> 25-35 minutes. Your expert evaluation is invaluable for this research.
+                    <strong>Estimated time:</strong> ~20 minutes. Your expert evaluation is invaluable for this research.
                 </div>
 
                 <h5 class="section-title">Evaluation Dimensions</h5>
@@ -408,7 +480,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="eval-card">
-                            <strong><i class="bi bi-diagram-3 text-success me-2"></i>Biological Validity</strong>
+                            <strong><i class="bi bi-diagram-3 text-success me-2"></i>Clinical Validity</strong>
                             <p class="mb-0 text-muted small">Accurate interpretation, literature grounding, clinical relevance</p>
                         </div>
                     </div>
@@ -472,8 +544,8 @@
 
                 <!-- Dimension 2: Biological Validity -->
                 <div class="eval-dimension">
-                    <div class="dimension-label">2. Biological / Clinical Validity</div>
-                    <div class="dimension-desc">Are biological interpretations accurate? Is the analysis grounded in relevant literature?</div>
+                    <div class="dimension-label">2. Clinical Validity</div>
+                    <div class="dimension-desc">Are clinical interpretations accurate? Is the analysis grounded in relevant literature? Are findings clinically meaningful?</div>
                     <div class="likert-scale" data-dimension="bio_a">
                         <label><input type="radio" name="bio_a" value="1"><span class="likert-btn">1</span></label>
                         <label><input type="radio" name="bio_a" value="2"><span class="likert-btn">2</span></label>
@@ -623,8 +695,8 @@
 
                 <!-- Dimension 2: Biological Validity -->
                 <div class="eval-dimension">
-                    <div class="dimension-label">2. Biological / Clinical Validity</div>
-                    <div class="dimension-desc">Are biological interpretations accurate? Is the analysis grounded in relevant literature?</div>
+                    <div class="dimension-label">2. Clinical Validity</div>
+                    <div class="dimension-desc">Are clinical interpretations accurate? Is the analysis grounded in relevant literature? Are findings clinically meaningful?</div>
                     <div class="likert-scale" data-dimension="bio_b">
                         <label><input type="radio" name="bio_b" value="1"><span class="likert-btn">1</span></label>
                         <label><input type="radio" name="bio_b" value="2"><span class="likert-btn">2</span></label>
@@ -774,8 +846,8 @@
 
                 <!-- Dimension 2: Biological Validity -->
                 <div class="eval-dimension">
-                    <div class="dimension-label">2. Biological / Clinical Validity</div>
-                    <div class="dimension-desc">Are biological interpretations accurate? Is the analysis grounded in relevant literature?</div>
+                    <div class="dimension-label">2. Clinical Validity</div>
+                    <div class="dimension-desc">Are clinical interpretations accurate? Is the analysis grounded in relevant literature? Are findings clinically meaningful?</div>
                     <div class="likert-scale" data-dimension="bio_c">
                         <label><input type="radio" name="bio_c" value="1"><span class="likert-btn">1</span></label>
                         <label><input type="radio" name="bio_c" value="2"><span class="likert-btn">2</span></label>
@@ -903,76 +975,44 @@
                 <p class="text-muted">Based on your evaluation of all three models, please provide comparative rankings.</p>
 
                 <h5 class="section-title"><i class="bi bi-trophy me-2"></i>Overall Preference Ranking</h5>
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-success"><i class="bi bi-1-circle-fill me-1"></i> 1st Place (Best)</label>
-                        <select class="form-select ranking-select" id="rank1" required>
-                            <option value="" selected disabled>Select Model...</option>
-                            <option value="Model A">Model A</option>
-                            <option value="Model B">Model B</option>
-                            <option value="Model C">Model C</option>
-                        </select>
+
+                <h5 class="section-title"><i class="bi bi-sort-numeric-down me-2"></i>Drag & Drop Ranking</h5>
+                <p class="text-muted">Drag the models to rank them from best (left) to worst (right) for biomarker discovery research.</p>
+
+                <div class="drag-ranking-container mb-4">
+                    <div class="ranking-labels d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">1st (Best)</span>
+                        <span class="badge bg-secondary">2nd</span>
+                        <span class="badge bg-danger">3rd (Worst)</span>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-secondary"><i class="bi bi-2-circle-fill me-1"></i> 2nd Place</label>
-                        <select class="form-select ranking-select" id="rank2" required>
-                            <option value="" selected disabled>Select Model...</option>
-                            <option value="Model A">Model A</option>
-                            <option value="Model B">Model B</option>
-                            <option value="Model C">Model C</option>
-                        </select>
+                    <div class="ranking-slots d-flex gap-3" id="rankingSlots">
+                        <div class="ranking-slot" data-rank="1">
+                            <div class="slot-placeholder">Drop here</div>
+                        </div>
+                        <div class="ranking-slot" data-rank="2">
+                            <div class="slot-placeholder">Drop here</div>
+                        </div>
+                        <div class="ranking-slot" data-rank="3">
+                            <div class="slot-placeholder">Drop here</div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-danger"><i class="bi bi-3-circle-fill me-1"></i> 3rd Place (Worst)</label>
-                        <select class="form-select ranking-select" id="rank3" required>
-                            <option value="" selected disabled>Select Model...</option>
-                            <option value="Model A">Model A</option>
-                            <option value="Model B">Model B</option>
-                            <option value="Model C">Model C</option>
-                        </select>
+                    <div class="model-pool mt-4" id="modelPool">
+                        <p class="text-muted small mb-2"><i class="bi bi-hand-index-thumb me-1"></i>Drag models from here:</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <div class="draggable-model" draggable="true" data-model="Model A">
+                                <span class="model-badge model-a">Model A</span>
+                            </div>
+                            <div class="draggable-model" draggable="true" data-model="Model B">
+                                <span class="model-badge model-b">Model B</span>
+                            </div>
+                            <div class="draggable-model" draggable="true" data-model="Model C">
+                                <span class="model-badge model-c">Model C</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="rank-error" class="alert alert-danger" style="display:none;">
-                    <i class="bi bi-exclamation-triangle me-2"></i>You cannot select the same model twice. Please assign unique ranks.
-                </div>
-
-                <h5 class="section-title"><i class="bi bi-arrows-angle-contract me-2"></i>Pairwise Comparisons</h5>
-                <p class="text-muted">For each pair, select which model you prefer for biomarker discovery research.</p>
-
-                <!-- Pairwise 1: A vs B -->
-                <div class="pairwise-card">
-                    <h6 class="fw-bold mb-3">For biomarker discovery, I prefer:</h6>
-                    <div class="pairwise-options">
-                        <input type="radio" class="btn-check" name="pairwise_ab" id="pair_ab_a" value="Model A">
-                        <label class="btn btn-outline-primary" for="pair_ab_a"><span class="model-badge model-a">Model A</span></label>
-                        
-                        <input type="radio" class="btn-check" name="pairwise_ab" id="pair_ab_b" value="Model B">
-                        <label class="btn btn-outline-primary" for="pair_ab_b"><span class="model-badge model-b">Model B</span></label>
-                    </div>
-                </div>
-
-                <!-- Pairwise 2: B vs C -->
-                <div class="pairwise-card">
-                    <h6 class="fw-bold mb-3">For biomarker discovery, I prefer:</h6>
-                    <div class="pairwise-options">
-                        <input type="radio" class="btn-check" name="pairwise_bc" id="pair_bc_b" value="Model B">
-                        <label class="btn btn-outline-primary" for="pair_bc_b"><span class="model-badge model-b">Model B</span></label>
-                        
-                        <input type="radio" class="btn-check" name="pairwise_bc" id="pair_bc_c" value="Model C">
-                        <label class="btn btn-outline-primary" for="pair_bc_c"><span class="model-badge model-c">Model C</span></label>
-                    </div>
-                </div>
-
-                <!-- Pairwise 3: A vs C -->
-                <div class="pairwise-card">
-                    <h6 class="fw-bold mb-3">For biomarker discovery, I prefer:</h6>
-                    <div class="pairwise-options">
-                        <input type="radio" class="btn-check" name="pairwise_ac" id="pair_ac_a" value="Model A">
-                        <label class="btn btn-outline-primary" for="pair_ac_a"><span class="model-badge model-a">Model A</span></label>
-                        
-                        <input type="radio" class="btn-check" name="pairwise_ac" id="pair_ac_c" value="Model C">
-                        <label class="btn btn-outline-primary" for="pair_ac_c"><span class="model-badge model-c">Model C</span></label>
-                    </div>
+                    <i class="bi bi-exclamation-triangle me-2"></i>Please rank all three models before proceeding.
                 </div>
 
                 <h5 class="section-title"><i class="bi bi-clipboard2-check me-2"></i>Actionability Assessment</h5>
@@ -1273,6 +1313,34 @@
             return Array.from(checkboxes).map(cb => cb.value);
         }
 
+        // Get model from ranking slot
+        function getRankFromSlot(rank) {
+            const slot = document.querySelector(`.ranking-slot[data-rank="${rank}"]`);
+            const model = slot ? slot.querySelector('.draggable-model') : null;
+            return model ? model.dataset.model : null;
+        }
+
+        // Derive pairwise comparisons from ranking
+        function derivePairwiseFromRanking() {
+            const rank1 = getRankFromSlot(1);
+            const rank2 = getRankFromSlot(2);
+            const rank3 = getRankFromSlot(3);
+            const rankOrder = [rank1, rank2, rank3];
+            
+            const getWinner = (a, b) => {
+                const posA = rankOrder.indexOf(a);
+                const posB = rankOrder.indexOf(b);
+                if (posA === -1 || posB === -1) return null;
+                return posA < posB ? a : b;
+            };
+            
+            return {
+                a_vs_b: getWinner('Model A', 'Model B'),
+                b_vs_c: getWinner('Model B', 'Model C'),
+                a_vs_c: getWinner('Model A', 'Model C')
+            };
+        }
+
         function validateStep(step) {
             if (step === 1) {
                 const name = document.getElementById('userName').value;
@@ -1299,24 +1367,20 @@
             }
 
             if (step === 6) {
-                const r1 = document.getElementById('rank1').value;
-                const r2 = document.getElementById('rank2').value;
-                const r3 = document.getElementById('rank3').value;
-                if (!r1 || !r2 || !r3) {
-                    alert("Please complete the ranking for all positions.");
-                    return false;
-                }
-                if (r1 === r2 || r1 === r3 || r2 === r3) {
+                // Check drag-and-drop ranking
+                const slots = document.querySelectorAll('.ranking-slot');
+                let allFilled = true;
+                slots.forEach(slot => {
+                    if (!slot.querySelector('.draggable-model')) {
+                        allFilled = false;
+                    }
+                });
+                if (!allFilled) {
                     document.getElementById('rank-error').style.display = 'block';
+                    alert("Please rank all three models by dragging them to the slots.");
                     return false;
                 }
                 document.getElementById('rank-error').style.display = 'none';
-
-                // Check pairwise
-                if (!getRadioValue('pairwise_ab') || !getRadioValue('pairwise_bc') || !getRadioValue('pairwise_ac')) {
-                    alert("Please complete all pairwise comparisons.");
-                    return false;
-                }
 
                 // Check actionability
                 if (!getRadioValue('actionability')) {
@@ -1378,7 +1442,7 @@
                 // Model A Ratings
                 model_a_ratings: {
                     scientific_rigor: getRadioValue('rigor_a'),
-                    biological_validity: getRadioValue('bio_a'),
+                    clinical_validity: getRadioValue('bio_a'),
                     technical_quality: getRadioValue('tech_a'),
                     insight_novelty: getRadioValue('insight_a'),
                     presentation_clarity: getRadioValue('clarity_a'),
@@ -1392,7 +1456,7 @@
                 // Model B Ratings
                 model_b_ratings: {
                     scientific_rigor: getRadioValue('rigor_b'),
-                    biological_validity: getRadioValue('bio_b'),
+                    clinical_validity: getRadioValue('bio_b'),
                     technical_quality: getRadioValue('tech_b'),
                     insight_novelty: getRadioValue('insight_b'),
                     presentation_clarity: getRadioValue('clarity_b'),
@@ -1406,7 +1470,7 @@
                 // Model C Ratings
                 model_c_ratings: {
                     scientific_rigor: getRadioValue('rigor_c'),
-                    biological_validity: getRadioValue('bio_c'),
+                    clinical_validity: getRadioValue('bio_c'),
                     technical_quality: getRadioValue('tech_c'),
                     insight_novelty: getRadioValue('insight_c'),
                     presentation_clarity: getRadioValue('clarity_c'),
@@ -1419,20 +1483,16 @@
 
                 // Comparative Rankings
                 rankings: {
-                    rank1_raw: document.getElementById('rank1').value,
-                    rank1_mapped: modelMapping[document.getElementById('rank1').value],
-                    rank2_raw: document.getElementById('rank2').value,
-                    rank2_mapped: modelMapping[document.getElementById('rank2').value],
-                    rank3_raw: document.getElementById('rank3').value,
-                    rank3_mapped: modelMapping[document.getElementById('rank3').value]
+                    rank1_raw: getRankFromSlot(1),
+                    rank1_mapped: modelMapping[getRankFromSlot(1)],
+                    rank2_raw: getRankFromSlot(2),
+                    rank2_mapped: modelMapping[getRankFromSlot(2)],
+                    rank3_raw: getRankFromSlot(3),
+                    rank3_mapped: modelMapping[getRankFromSlot(3)]
                 },
 
-                // Pairwise Comparisons
-                pairwise: {
-                    a_vs_b: getRadioValue('pairwise_ab'),
-                    b_vs_c: getRadioValue('pairwise_bc'),
-                    a_vs_c: getRadioValue('pairwise_ac')
-                },
+                // Pairwise Comparisons (derived from ranking)
+                pairwise: derivePairwiseFromRanking(),
 
                 // Actionability & Confidence
                 actionability: getRadioValue('actionability'),
@@ -1532,13 +1592,74 @@
             document.getElementById('effort_value').textContent = `${e.target.value}%`;
         });
 
-        // Ranking duplicate prevention hint
-        const rankSelects = document.querySelectorAll('.ranking-select');
-        rankSelects.forEach(select => {
-            select.addEventListener('change', () => {
-                document.getElementById('rank-error').style.display = 'none';
+        // --- Drag and Drop Ranking ---
+        function initDragAndDrop() {
+            const draggables = document.querySelectorAll('.draggable-model');
+            const slots = document.querySelectorAll('.ranking-slot');
+            const modelPool = document.getElementById('modelPool');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggable.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', draggable.dataset.model);
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
             });
-        });
+
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    slot.classList.add('drag-over');
+                });
+
+                slot.addEventListener('dragleave', () => {
+                    slot.classList.remove('drag-over');
+                });
+
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    
+                    const modelName = e.dataTransfer.getData('text/plain');
+                    const dragged = document.querySelector(`.draggable-model[data-model="${modelName}"]`);
+                    
+                    if (dragged) {
+                        // If slot already has a model, move it back to pool
+                        const existingModel = slot.querySelector('.draggable-model');
+                        if (existingModel) {
+                            modelPool.querySelector('.d-flex').appendChild(existingModel);
+                        }
+                        
+                        // Hide placeholder and add model
+                        const placeholder = slot.querySelector('.slot-placeholder');
+                        if (placeholder) placeholder.style.display = 'none';
+                        
+                        slot.appendChild(dragged);
+                        slot.classList.add('filled');
+                        
+                        // Hide error if shown
+                        document.getElementById('rank-error').style.display = 'none';
+                    }
+                });
+
+                // Allow clicking to remove model from slot
+                slot.addEventListener('dblclick', () => {
+                    const model = slot.querySelector('.draggable-model');
+                    if (model) {
+                        modelPool.querySelector('.d-flex').appendChild(model);
+                        const placeholder = slot.querySelector('.slot-placeholder');
+                        if (placeholder) placeholder.style.display = 'block';
+                        slot.classList.remove('filled');
+                    }
+                });
+            });
+        }
+
+        // Initialize drag and drop when DOM is ready
+        initDragAndDrop();
 
         console.log("CoDaS Evaluation v2 initialized.");
     </script>
