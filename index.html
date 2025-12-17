@@ -3,22 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biomarker Discovery Agent Evaluation</title>
+    <title>CoDaS: Biomarker Discovery Agent Evaluation</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --dark-blue: #084298;
+            --light-bg: #f4f6f8;
+            --success-green: #198754;
+            --warning-orange: #fd7e14;
+            --danger-red: #dc3545;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f6f8;
+            background-color: var(--light-bg);
             color: #212529;
             padding-bottom: 50px;
         }
         .container {
-            max-width: 900px;
+            max-width: 960px;
         }
         .step-container {
             display: none;
@@ -37,23 +46,32 @@
         }
         .header-title {
             font-weight: 700;
-            color: #0d6efd;
+            color: var(--primary-blue);
             margin-bottom: 10px;
+        }
+        .section-title {
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
         }
         .pdf-viewer {
             width: 100%;
-            height: 750px;
+            height: 650px;
             border: 1px solid #dfe6e9;
             border-radius: 8px;
         }
         .nav-tabs .nav-link {
             color: #495057;
             font-weight: 500;
+            padding: 12px 24px;
         }
         .nav-tabs .nav-link.active {
             font-weight: 700;
-            color: #0d6efd;
-            border-top: 3px solid #0d6efd;
+            color: var(--primary-blue);
+            border-top: 3px solid var(--primary-blue);
         }
         .progress {
             height: 8px;
@@ -71,23 +89,233 @@
         .required-star {
             color: red;
         }
+        /* Likert Scale Styling */
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .likert-scale label {
+            flex: 1;
+            text-align: center;
+        }
+        .likert-scale input[type="radio"] {
+            display: none;
+        }
+        .likert-scale .likert-btn {
+            display: block;
+            padding: 10px 8px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .likert-scale .likert-btn:hover {
+            border-color: var(--primary-blue);
+            background-color: #f8f9fa;
+        }
+        .likert-scale input[type="radio"]:checked + .likert-btn {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+        }
+        .likert-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        /* Evaluation Card */
+        .eval-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        .eval-card.model-a { border-left-color: #6f42c1; }
+        .eval-card.model-b { border-left-color: #20c997; }
+        .eval-card.model-c { border-left-color: #fd7e14; }
+        .eval-dimension {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .eval-dimension:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .dimension-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #343a40;
+        }
+        .dimension-desc {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        /* Model Badge */
+        .model-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .model-badge.model-a { background: #e9d5ff; color: #6f42c1; }
+        .model-badge.model-b { background: #d1fae5; color: #059669; }
+        .model-badge.model-c { background: #ffedd5; color: #c2410c; }
+        /* Checkbox Styling */
+        .error-checkbox {
+            margin-bottom: 10px;
+        }
+        .error-checkbox .form-check-input:checked {
+            background-color: var(--danger-red);
+            border-color: var(--danger-red);
+        }
+        /* Pairwise Comparison */
+        .pairwise-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .pairwise-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .pairwise-options .btn-outline-primary {
+            min-width: 120px;
+            padding: 12px 24px;
+            font-weight: 600;
+        }
+        .pairwise-options .btn-check:checked + .btn-outline-primary {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        /* Info Box */
+        .info-box {
+            background: #e7f1ff;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        .info-box i {
+            color: var(--primary-blue);
+            margin-right: 8px;
+        }
+        /* Confidence Slider */
+        .confidence-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #dc3545, #ffc107, #198754);
+            border-radius: 4px;
+            outline: none;
+        }
+        .confidence-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .confidence-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+        /* Time Saved Highlight */
+        .time-highlight {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .time-highlight .big-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--success-green);
+        }
+        /* Textarea Styling */
+        .qual-textarea {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+        .qual-textarea:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+        /* Step Navigation Dots */
+        .step-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dee2e6;
+            transition: all 0.3s;
+        }
+        .step-dot.active {
+            background: var(--primary-blue);
+            transform: scale(1.2);
+        }
+        .step-dot.completed {
+            background: var(--success-green);
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .step-container { padding: 25px; }
+            .likert-scale { flex-wrap: wrap; }
+            .likert-scale label { flex: 0 0 18%; }
+            .pairwise-options { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
-
     <div class="container py-5">
         
         <!-- Progress Bar -->
         <div class="mb-4">
-            <h5 id="step-indicator" class="text-muted text-center mb-3">Step 1 of 4</h5>
+            <h5 id="step-indicator" class="text-muted text-center mb-3">Step 1 of 7</h5>
             <div class="progress">
-                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 14.3%" aria-valuenow="14.3" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="step-dots" id="step-dots">
+                <div class="step-dot active" data-step="1"></div>
+                <div class="step-dot" data-step="2"></div>
+                <div class="step-dot" data-step="3"></div>
+                <div class="step-dot" data-step="4"></div>
+                <div class="step-dot" data-step="5"></div>
+                <div class="step-dot" data-step="6"></div>
+                <div class="step-dot" data-step="7"></div>
             </div>
         </div>
 
         <form id="mainForm" onsubmit="return false;">
             
-            <!-- STEP 1: Participant Info -->
+            <!-- ==================== STEP 1: Participant Info ==================== -->
             <div class="step-container active" id="step1">
                 <h2 class="header-title">Participant Information</h2>
                 <p class="text-muted mb-4">Please provide your background information to begin the evaluation.</p>
@@ -107,100 +335,577 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Years of Experience in Bioinformatics/DS <span class="required-star">*</span></label>
-                        <input type="number" class="form-control" id="userExp" placeholder="e.g. 5" required>
+                        <input type="number" class="form-control" id="userExp" placeholder="e.g. 5" min="0" max="50" required>
                     </div>
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <label class="form-label">Primary Expertise <span class="required-star">*</span></label>
                         <select class="form-select" id="userExpertise" required>
                             <option value="" selected disabled>Select...</option>
                             <option value="Bioinformatics">Bioinformatics (Genomics/Transcriptomics)</option>
                             <option value="Clinical Research">Clinical Research / Medicine</option>
-                            <option value="Computer Science">Computer Science / AI / NLP</option>
-                            <option value="Biology">Molecular Biology</option>
+                            <option value="Data Science">Data Science / Statistics</option>
+                            <option value="Computer Science">Computer Science / AI / ML</option>
+                            <option value="Biology">Molecular Biology / Biochemistry</option>
+                            <option value="Wearables">Wearable Technology / Digital Health</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">How familiar are you with AI-assisted research tools? <span class="required-star">*</span></label>
+                        <select class="form-select" id="userAIFamiliarity" required>
+                            <option value="" selected disabled>Select...</option>
+                            <option value="Never">Never used</option>
+                            <option value="Beginner">Beginner (tried a few times)</option>
+                            <option value="Intermediate">Intermediate (regular user)</option>
+                            <option value="Advanced">Advanced (power user / developer)</option>
+                        </select>
+                    </div>
                 </div>
-
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="button" class="btn btn-primary px-4" id="btnStep1">Next &rarr;</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep1">Next <i class="bi bi-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- STEP 2: Introduction & Guidelines -->
+            <!-- ==================== STEP 2: Introduction & Guidelines ==================== -->
             <div class="step-container" id="step2">
-                <h2 class="header-title">About CoDaS & Guidelines</h2>
+                <h2 class="header-title">About CoDaS & Evaluation Guidelines</h2>
                 
                 <div class="card bg-light border-0 mb-4">
                     <div class="card-body">
-                        <h4 class="card-title text-primary fw-bold">What is CoDaS?</h4>
+                        <h4 class="card-title text-primary fw-bold"><i class="bi bi-robot me-2"></i>What is CoDaS?</h4>
                         <p class="card-text">
-                            <strong>CoDaS (Context-aware Data Science Assistant)</strong> is an automated AI agent designed to perform end-to-end biomarker discovery. 
-                            Unlike traditional scripts, CoDaS autonomously formulates hypotheses, searches for datasets, writes code for analysis, and interprets biological results.
+                            <strong>CoDaS (Context-aware Data Science Assistant)</strong> is an automated AI agent designed to perform end-to-end biomarker discovery from wearable sensor data. 
+                            Unlike traditional scripts, CoDaS autonomously formulates hypotheses, searches for datasets, writes code for analysis, and interprets biological/clinical results.
                         </p>
                         <p class="card-text mb-0">
-                            The goal of this research is to evaluate whether CoDaS can generate research outputs comparable to human experts or existing semi-automated tools.
+                            The goal of this research is to evaluate whether CoDaS can generate research outputs comparable to human experts or existing AI tools.
                         </p>
                     </div>
                 </div>
 
                 <div class="alert alert-info">
-                    <h5 class="alert-heading fw-bold">Evaluation Guidelines</h5>
+                    <h5 class="alert-heading fw-bold"><i class="bi bi-clipboard-check me-2"></i>Evaluation Guidelines</h5>
                     <ul class="mb-0">
-                        <li>You will be presented with <strong>3 PDF outputs (Model A, B, C)</strong>.</li>
-                        <li>These outputs are <strong>blinded</strong> (you will not know which one is CoDaS).</li>
-                        <li>Please review the PDFs based on:
-                            <ul>
-                                <li><strong>Logical Flow:</strong> Is the analysis process reasonable?</li>
-                                <li><strong>Code/Method Quality:</strong> Is the methodology sound?</li>
-                                <li><strong>Insight:</strong> Are the biological interpretations valid?</li>
-                            </ul>
-                        </li>
+                        <li>You will be presented with <strong>3 PDF outputs (Model A, B, C)</strong> - results are <strong>blinded</strong>.</li>
+                        <li>For each model, you will rate multiple quality dimensions on a 5-point scale.</li>
+                        <li>You will identify any errors, issues, or concerns for each output.</li>
+                        <li>Finally, you will provide overall rankings and time estimations.</li>
                     </ul>
                 </div>
 
+                <div class="info-box">
+                    <i class="bi bi-clock"></i>
+                    <strong>Estimated time:</strong> 25-35 minutes. Your expert evaluation is invaluable for this research.
+                </div>
+
+                <h5 class="section-title">Evaluation Dimensions</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="eval-card">
+                            <strong><i class="bi bi-journal-check text-primary me-2"></i>Scientific Rigor</strong>
+                            <p class="mb-0 text-muted small">Hypothesis clarity, statistical validity, proper methodology</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="eval-card">
+                            <strong><i class="bi bi-diagram-3 text-success me-2"></i>Biological Validity</strong>
+                            <p class="mb-0 text-muted small">Accurate interpretation, literature grounding, clinical relevance</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="eval-card">
+                            <strong><i class="bi bi-code-slash text-info me-2"></i>Technical Quality</strong>
+                            <p class="mb-0 text-muted small">Code correctness, preprocessing, reproducibility</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="eval-card">
+                            <strong><i class="bi bi-lightbulb text-warning me-2"></i>Insight & Novelty</strong>
+                            <p class="mb-0 text-muted small">Non-obvious discoveries, actionable findings</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="eval-card">
+                            <strong><i class="bi bi-file-earmark-text text-secondary me-2"></i>Presentation Clarity</strong>
+                            <p class="mb-0 text-muted small">Logical flow, figure quality, readability</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="eval-card">
+                            <strong><i class="bi bi-shield-check text-danger me-2"></i>Trustworthiness</strong>
+                            <p class="mb-0 text-muted small">Would you cite this? Confidence in conclusions</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="button" class="btn btn-outline-secondary" id="btnPrev2">&larr; Back</button>
-                    <button type="button" class="btn btn-primary px-4" id="btnStep2">Start Evaluation &rarr;</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev2"><i class="bi bi-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep2">Start Evaluation <i class="bi bi-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- STEP 3: Blinded Evaluation -->
+            <!-- ==================== STEP 3: Model A Detailed Evaluation ==================== -->
             <div class="step-container" id="step3">
-                <h2 class="header-title">Blinded Output Comparison</h2>
-                <p class="text-muted">Please review the three outputs below and rank them.</p>
+                <h2 class="header-title">Evaluate Model A <span class="model-badge model-a">Model A</span></h2>
+                <p class="text-muted">Please review the PDF output below and rate each dimension.</p>
 
-                <!-- PDF Tabs -->
-                <ul class="nav nav-tabs mb-3" id="pdfTabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active" id="tab-a" data-bs-toggle="tab" data-bs-target="#modelA" type="button">Model A</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" id="tab-b" data-bs-toggle="tab" data-bs-target="#modelB" type="button">Model B</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" id="tab-c" data-bs-toggle="tab" data-bs-target="#modelC" type="button">Model C</button>
-                    </li>
-                </ul>
+                <!-- PDF Viewer for Model A -->
+                <div class="mb-4">
+                    <iframe src="./pdfs/codas.pdf" class="pdf-viewer" id="pdfViewerA"></iframe>
+                </div>
 
-                <div class="tab-content mb-4">
-                    <div class="tab-pane fade show active" id="modelA">
-                        <iframe src="./pdfs/codas.pdf" class="pdf-viewer"></iframe>
+                <h5 class="section-title"><i class="bi bi-star me-2"></i>Quality Assessment</h5>
+                
+                <!-- Dimension 1: Scientific Rigor -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">1. Scientific Rigor</div>
+                    <div class="dimension-desc">Is the hypothesis clear? Are statistical methods appropriate? Are conclusions well-supported?</div>
+                    <div class="likert-scale" data-dimension="rigor_a">
+                        <label><input type="radio" name="rigor_a" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="rigor_a" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="rigor_a" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="rigor_a" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="rigor_a" value="5"><span class="likert-btn">5</span></label>
                     </div>
-                    <div class="tab-pane fade" id="modelB">
-                        <iframe src="./pdfs/biomni.pdf" class="pdf-viewer"></iframe>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 2: Biological Validity -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">2. Biological / Clinical Validity</div>
+                    <div class="dimension-desc">Are biological interpretations accurate? Is the analysis grounded in relevant literature?</div>
+                    <div class="likert-scale" data-dimension="bio_a">
+                        <label><input type="radio" name="bio_a" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="bio_a" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="bio_a" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="bio_a" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="bio_a" value="5"><span class="likert-btn">5</span></label>
                     </div>
-                    <div class="tab-pane fade" id="modelC">
-                        <iframe src="./pdfs/colab_dsa.pdf" class="pdf-viewer"></iframe>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 3: Technical Quality -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">3. Technical / Code Quality</div>
+                    <div class="dimension-desc">Is the code correct? Is data preprocessing appropriate? Would you be able to reproduce the analysis?</div>
+                    <div class="likert-scale" data-dimension="tech_a">
+                        <label><input type="radio" name="tech_a" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="tech_a" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="tech_a" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="tech_a" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="tech_a" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 4: Insight & Novelty -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">4. Insight & Novelty</div>
+                    <div class="dimension-desc">Does the analysis reveal non-obvious insights? Are the findings actionable for further research?</div>
+                    <div class="likert-scale" data-dimension="insight_a">
+                        <label><input type="radio" name="insight_a" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="insight_a" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="insight_a" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="insight_a" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="insight_a" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 5: Presentation Clarity -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">5. Presentation Clarity</div>
+                    <div class="dimension-desc">Is the output well-organized? Are figures clear and informative? Is the writing quality acceptable?</div>
+                    <div class="likert-scale" data-dimension="clarity_a">
+                        <label><input type="radio" name="clarity_a" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="clarity_a" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="clarity_a" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="clarity_a" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="clarity_a" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 6: Trustworthiness -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">6. Overall Trustworthiness</div>
+                    <div class="dimension-desc">Would you trust these findings? Would you cite this in your own research?</div>
+                    <div class="likert-scale" data-dimension="trust_a">
+                        <label><input type="radio" name="trust_a" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="trust_a" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="trust_a" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="trust_a" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="trust_a" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Would not trust</span><span>Skeptical</span><span>Neutral</span><span>Mostly trust</span><span>Fully trust</span></div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>Error / Issue Detection</h5>
+                <p class="text-muted">Check all issues you identified in this output (if any):</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_a_stat" name="errors_a" value="statistical">
+                            <label class="form-check-label" for="err_a_stat">Statistical errors or inappropriate methods</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_a_bio" name="errors_a" value="biological">
+                            <label class="form-check-label" for="err_a_bio">Biological misinterpretations</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_a_halluc" name="errors_a" value="hallucination">
+                            <label class="form-check-label" for="err_a_halluc">Unsupported claims / hallucinations</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_a_missing" name="errors_a" value="missing">
+                            <label class="form-check-label" for="err_a_missing">Missing important considerations</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_a_code" name="errors_a" value="code">
+                            <label class="form-check-label" for="err_a_code">Code bugs or data handling issues</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_a_other" name="errors_a" value="other">
+                            <label class="form-check-label" for="err_a_other">Other issues</label>
+                        </div>
                     </div>
                 </div>
 
-                <hr>
+                <div class="mt-3">
+                    <label class="form-label fw-bold">Please describe any specific issues you found (optional):</label>
+                    <textarea class="form-control qual-textarea" id="errors_a_detail" rows="3" placeholder="Describe specific errors, concerns, or areas for improvement..."></textarea>
+                </div>
 
-                <h4 class="mb-3">Preference Ranking</h4>
-                <div class="row g-3">
+                <h5 class="section-title"><i class="bi bi-chat-quote me-2"></i>Qualitative Feedback</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What are the TOP 2 STRENGTHS of Model A?</label>
+                    <textarea class="form-control qual-textarea" id="strengths_a" rows="2" placeholder="e.g., Clear methodology, novel biomarker candidates..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What are the TOP 2 WEAKNESSES of Model A?</label>
+                    <textarea class="form-control qual-textarea" id="weaknesses_a" rows="2" placeholder="e.g., Limited validation, unclear preprocessing steps..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev3"><i class="bi bi-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep3">Evaluate Model B <i class="bi bi-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 4: Model B Detailed Evaluation ==================== -->
+            <div class="step-container" id="step4">
+                <h2 class="header-title">Evaluate Model B <span class="model-badge model-b">Model B</span></h2>
+                <p class="text-muted">Please review the PDF output below and rate each dimension.</p>
+
+                <!-- PDF Viewer for Model B -->
+                <div class="mb-4">
+                    <iframe src="./pdfs/biomni.pdf" class="pdf-viewer" id="pdfViewerB"></iframe>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-star me-2"></i>Quality Assessment</h5>
+                
+                <!-- Dimension 1: Scientific Rigor -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">1. Scientific Rigor</div>
+                    <div class="dimension-desc">Is the hypothesis clear? Are statistical methods appropriate? Are conclusions well-supported?</div>
+                    <div class="likert-scale" data-dimension="rigor_b">
+                        <label><input type="radio" name="rigor_b" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="rigor_b" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="rigor_b" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="rigor_b" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="rigor_b" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 2: Biological Validity -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">2. Biological / Clinical Validity</div>
+                    <div class="dimension-desc">Are biological interpretations accurate? Is the analysis grounded in relevant literature?</div>
+                    <div class="likert-scale" data-dimension="bio_b">
+                        <label><input type="radio" name="bio_b" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="bio_b" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="bio_b" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="bio_b" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="bio_b" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 3: Technical Quality -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">3. Technical / Code Quality</div>
+                    <div class="dimension-desc">Is the code correct? Is data preprocessing appropriate? Would you be able to reproduce the analysis?</div>
+                    <div class="likert-scale" data-dimension="tech_b">
+                        <label><input type="radio" name="tech_b" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="tech_b" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="tech_b" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="tech_b" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="tech_b" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 4: Insight & Novelty -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">4. Insight & Novelty</div>
+                    <div class="dimension-desc">Does the analysis reveal non-obvious insights? Are the findings actionable for further research?</div>
+                    <div class="likert-scale" data-dimension="insight_b">
+                        <label><input type="radio" name="insight_b" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="insight_b" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="insight_b" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="insight_b" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="insight_b" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 5: Presentation Clarity -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">5. Presentation Clarity</div>
+                    <div class="dimension-desc">Is the output well-organized? Are figures clear and informative? Is the writing quality acceptable?</div>
+                    <div class="likert-scale" data-dimension="clarity_b">
+                        <label><input type="radio" name="clarity_b" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="clarity_b" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="clarity_b" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="clarity_b" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="clarity_b" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 6: Trustworthiness -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">6. Overall Trustworthiness</div>
+                    <div class="dimension-desc">Would you trust these findings? Would you cite this in your own research?</div>
+                    <div class="likert-scale" data-dimension="trust_b">
+                        <label><input type="radio" name="trust_b" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="trust_b" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="trust_b" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="trust_b" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="trust_b" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Would not trust</span><span>Skeptical</span><span>Neutral</span><span>Mostly trust</span><span>Fully trust</span></div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>Error / Issue Detection</h5>
+                <p class="text-muted">Check all issues you identified in this output (if any):</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_b_stat" name="errors_b" value="statistical">
+                            <label class="form-check-label" for="err_b_stat">Statistical errors or inappropriate methods</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_b_bio" name="errors_b" value="biological">
+                            <label class="form-check-label" for="err_b_bio">Biological misinterpretations</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_b_halluc" name="errors_b" value="hallucination">
+                            <label class="form-check-label" for="err_b_halluc">Unsupported claims / hallucinations</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_b_missing" name="errors_b" value="missing">
+                            <label class="form-check-label" for="err_b_missing">Missing important considerations</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_b_code" name="errors_b" value="code">
+                            <label class="form-check-label" for="err_b_code">Code bugs or data handling issues</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_b_other" name="errors_b" value="other">
+                            <label class="form-check-label" for="err_b_other">Other issues</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label fw-bold">Please describe any specific issues you found (optional):</label>
+                    <textarea class="form-control qual-textarea" id="errors_b_detail" rows="3" placeholder="Describe specific errors, concerns, or areas for improvement..."></textarea>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-chat-quote me-2"></i>Qualitative Feedback</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What are the TOP 2 STRENGTHS of Model B?</label>
+                    <textarea class="form-control qual-textarea" id="strengths_b" rows="2" placeholder="e.g., Clear methodology, novel biomarker candidates..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What are the TOP 2 WEAKNESSES of Model B?</label>
+                    <textarea class="form-control qual-textarea" id="weaknesses_b" rows="2" placeholder="e.g., Limited validation, unclear preprocessing steps..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev4"><i class="bi bi-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep4">Evaluate Model C <i class="bi bi-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 5: Model C Detailed Evaluation ==================== -->
+            <div class="step-container" id="step5">
+                <h2 class="header-title">Evaluate Model C <span class="model-badge model-c">Model C</span></h2>
+                <p class="text-muted">Please review the PDF output below and rate each dimension.</p>
+
+                <!-- PDF Viewer for Model C -->
+                <div class="mb-4">
+                    <iframe src="./pdfs/colab_dsa.pdf" class="pdf-viewer" id="pdfViewerC"></iframe>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-star me-2"></i>Quality Assessment</h5>
+                
+                <!-- Dimension 1: Scientific Rigor -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">1. Scientific Rigor</div>
+                    <div class="dimension-desc">Is the hypothesis clear? Are statistical methods appropriate? Are conclusions well-supported?</div>
+                    <div class="likert-scale" data-dimension="rigor_c">
+                        <label><input type="radio" name="rigor_c" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="rigor_c" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="rigor_c" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="rigor_c" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="rigor_c" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 2: Biological Validity -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">2. Biological / Clinical Validity</div>
+                    <div class="dimension-desc">Are biological interpretations accurate? Is the analysis grounded in relevant literature?</div>
+                    <div class="likert-scale" data-dimension="bio_c">
+                        <label><input type="radio" name="bio_c" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="bio_c" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="bio_c" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="bio_c" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="bio_c" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 3: Technical Quality -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">3. Technical / Code Quality</div>
+                    <div class="dimension-desc">Is the code correct? Is data preprocessing appropriate? Would you be able to reproduce the analysis?</div>
+                    <div class="likert-scale" data-dimension="tech_c">
+                        <label><input type="radio" name="tech_c" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="tech_c" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="tech_c" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="tech_c" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="tech_c" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 4: Insight & Novelty -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">4. Insight & Novelty</div>
+                    <div class="dimension-desc">Does the analysis reveal non-obvious insights? Are the findings actionable for further research?</div>
+                    <div class="likert-scale" data-dimension="insight_c">
+                        <label><input type="radio" name="insight_c" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="insight_c" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="insight_c" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="insight_c" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="insight_c" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 5: Presentation Clarity -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">5. Presentation Clarity</div>
+                    <div class="dimension-desc">Is the output well-organized? Are figures clear and informative? Is the writing quality acceptable?</div>
+                    <div class="likert-scale" data-dimension="clarity_c">
+                        <label><input type="radio" name="clarity_c" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="clarity_c" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="clarity_c" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="clarity_c" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="clarity_c" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+                </div>
+
+                <!-- Dimension 6: Trustworthiness -->
+                <div class="eval-dimension">
+                    <div class="dimension-label">6. Overall Trustworthiness</div>
+                    <div class="dimension-desc">Would you trust these findings? Would you cite this in your own research?</div>
+                    <div class="likert-scale" data-dimension="trust_c">
+                        <label><input type="radio" name="trust_c" value="1"><span class="likert-btn">1</span></label>
+                        <label><input type="radio" name="trust_c" value="2"><span class="likert-btn">2</span></label>
+                        <label><input type="radio" name="trust_c" value="3"><span class="likert-btn">3</span></label>
+                        <label><input type="radio" name="trust_c" value="4"><span class="likert-btn">4</span></label>
+                        <label><input type="radio" name="trust_c" value="5"><span class="likert-btn">5</span></label>
+                    </div>
+                    <div class="likert-labels"><span>Would not trust</span><span>Skeptical</span><span>Neutral</span><span>Mostly trust</span><span>Fully trust</span></div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>Error / Issue Detection</h5>
+                <p class="text-muted">Check all issues you identified in this output (if any):</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_c_stat" name="errors_c" value="statistical">
+                            <label class="form-check-label" for="err_c_stat">Statistical errors or inappropriate methods</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_c_bio" name="errors_c" value="biological">
+                            <label class="form-check-label" for="err_c_bio">Biological misinterpretations</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_c_halluc" name="errors_c" value="hallucination">
+                            <label class="form-check-label" for="err_c_halluc">Unsupported claims / hallucinations</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_c_missing" name="errors_c" value="missing">
+                            <label class="form-check-label" for="err_c_missing">Missing important considerations</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_c_code" name="errors_c" value="code">
+                            <label class="form-check-label" for="err_c_code">Code bugs or data handling issues</label>
+                        </div>
+                        <div class="error-checkbox form-check">
+                            <input class="form-check-input" type="checkbox" id="err_c_other" name="errors_c" value="other">
+                            <label class="form-check-label" for="err_c_other">Other issues</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label fw-bold">Please describe any specific issues you found (optional):</label>
+                    <textarea class="form-control qual-textarea" id="errors_c_detail" rows="3" placeholder="Describe specific errors, concerns, or areas for improvement..."></textarea>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-chat-quote me-2"></i>Qualitative Feedback</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What are the TOP 2 STRENGTHS of Model C?</label>
+                    <textarea class="form-control qual-textarea" id="strengths_c" rows="2" placeholder="e.g., Clear methodology, novel biomarker candidates..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What are the TOP 2 WEAKNESSES of Model C?</label>
+                    <textarea class="form-control qual-textarea" id="weaknesses_c" rows="2" placeholder="e.g., Limited validation, unclear preprocessing steps..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev5"><i class="bi bi-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep5">Comparative Ranking <i class="bi bi-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 6: Comparative Ranking & Pairwise ==================== -->
+            <div class="step-container" id="step6">
+                <h2 class="header-title">Comparative Judgment</h2>
+                <p class="text-muted">Based on your evaluation of all three models, please provide comparative rankings.</p>
+
+                <h5 class="section-title"><i class="bi bi-trophy me-2"></i>Overall Preference Ranking</h5>
+                <div class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-success">1st Place (Best)</label>
+                        <label class="form-label fw-bold text-success"><i class="bi bi-1-circle-fill me-1"></i> 1st Place (Best)</label>
                         <select class="form-select ranking-select" id="rank1" required>
                             <option value="" selected disabled>Select Model...</option>
                             <option value="Model A">Model A</option>
@@ -209,7 +914,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-secondary">2nd Place</label>
+                        <label class="form-label fw-bold text-secondary"><i class="bi bi-2-circle-fill me-1"></i> 2nd Place</label>
                         <select class="form-select ranking-select" id="rank2" required>
                             <option value="" selected disabled>Select Model...</option>
                             <option value="Model A">Model A</option>
@@ -218,7 +923,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-danger">3rd Place (Worst)</label>
+                        <label class="form-label fw-bold text-danger"><i class="bi bi-3-circle-fill me-1"></i> 3rd Place (Worst)</label>
                         <select class="form-select ranking-select" id="rank3" required>
                             <option value="" selected disabled>Select Model...</option>
                             <option value="Model A">Model A</option>
@@ -227,19 +932,109 @@
                         </select>
                     </div>
                 </div>
-                <div id="rank-error" class="text-danger mt-2" style="display:none; font-size:0.9rem;">
-                    * You cannot select the same model twice. Please assign unique ranks.
+                <div id="rank-error" class="alert alert-danger" style="display:none;">
+                    <i class="bi bi-exclamation-triangle me-2"></i>You cannot select the same model twice. Please assign unique ranks.
                 </div>
 
-                <div class="d-flex justify-content-between mt-5">
-                    <button type="button" class="btn btn-outline-secondary" id="btnPrev3">&larr; Back</button>
-                    <button type="button" class="btn btn-primary px-4" id="btnStep3">Next &rarr;</button>
+                <h5 class="section-title"><i class="bi bi-arrows-angle-contract me-2"></i>Pairwise Comparisons</h5>
+                <p class="text-muted">For each pair, select which model you prefer for biomarker discovery research.</p>
+
+                <!-- Pairwise 1: A vs B -->
+                <div class="pairwise-card">
+                    <h6 class="fw-bold mb-3">For biomarker discovery, I prefer:</h6>
+                    <div class="pairwise-options">
+                        <input type="radio" class="btn-check" name="pairwise_ab" id="pair_ab_a" value="Model A">
+                        <label class="btn btn-outline-primary" for="pair_ab_a"><span class="model-badge model-a">Model A</span></label>
+                        
+                        <input type="radio" class="btn-check" name="pairwise_ab" id="pair_ab_b" value="Model B">
+                        <label class="btn btn-outline-primary" for="pair_ab_b"><span class="model-badge model-b">Model B</span></label>
+                    </div>
+                </div>
+
+                <!-- Pairwise 2: B vs C -->
+                <div class="pairwise-card">
+                    <h6 class="fw-bold mb-3">For biomarker discovery, I prefer:</h6>
+                    <div class="pairwise-options">
+                        <input type="radio" class="btn-check" name="pairwise_bc" id="pair_bc_b" value="Model B">
+                        <label class="btn btn-outline-primary" for="pair_bc_b"><span class="model-badge model-b">Model B</span></label>
+                        
+                        <input type="radio" class="btn-check" name="pairwise_bc" id="pair_bc_c" value="Model C">
+                        <label class="btn btn-outline-primary" for="pair_bc_c"><span class="model-badge model-c">Model C</span></label>
+                    </div>
+                </div>
+
+                <!-- Pairwise 3: A vs C -->
+                <div class="pairwise-card">
+                    <h6 class="fw-bold mb-3">For biomarker discovery, I prefer:</h6>
+                    <div class="pairwise-options">
+                        <input type="radio" class="btn-check" name="pairwise_ac" id="pair_ac_a" value="Model A">
+                        <label class="btn btn-outline-primary" for="pair_ac_a"><span class="model-badge model-a">Model A</span></label>
+                        
+                        <input type="radio" class="btn-check" name="pairwise_ac" id="pair_ac_c" value="Model C">
+                        <label class="btn btn-outline-primary" for="pair_ac_c"><span class="model-badge model-c">Model C</span></label>
+                    </div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-clipboard2-check me-2"></i>Actionability Assessment</h5>
+                <p class="text-muted">If you were writing a research paper, how would you use the <strong>best-ranked</strong> output?</p>
+                
+                <div class="mb-4">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="actionability" id="action1" value="direct">
+                        <label class="form-check-label" for="action1">
+                            <strong>Directly use findings</strong> with minor verification
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="actionability" id="action2" value="starting_point">
+                        <label class="form-check-label" for="action2">
+                            <strong>Use as starting point</strong>, requires significant validation
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="actionability" id="action3" value="hypothesis_only">
+                        <label class="form-check-label" for="action3">
+                            <strong>Use for hypothesis generation only</strong>, would redo analysis
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="actionability" id="action4" value="would_not_use">
+                        <label class="form-check-label" for="action4">
+                            <strong>Would not use</strong> any of the outputs
+                        </label>
+                    </div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-percent me-2"></i>Confidence in Rankings</h5>
+                <p class="text-muted">How confident are you in your ranking decision?</p>
+                <div class="mb-4">
+                    <input type="range" class="confidence-slider" id="ranking_confidence" min="0" max="100" value="50">
+                    <div class="confidence-labels">
+                        <span>Not confident (guessing)</span>
+                        <span>Very confident</span>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span class="badge bg-primary fs-6" id="confidence_value">50%</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev6"><i class="bi bi-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnStep6">Time & Final Questions <i class="bi bi-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- STEP 4: Time Estimation -->
-            <div class="step-container" id="step4">
-                <h2 class="header-title">Time Estimation</h2>
+            <!-- ==================== STEP 7: Time Estimation & Final ==================== -->
+            <div class="step-container" id="step7">
+                <h2 class="header-title">Time Estimation & Final Feedback</h2>
+
+                <div class="time-highlight">
+                    <div class="text-muted mb-2">The AI agent completed this analysis in approximately</div>
+                    <div class="big-number">~45 minutes</div>
+                    <div class="text-muted mt-2">(end-to-end, including report generation)</div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-clock-history me-2"></i>Manual Time Estimation</h5>
                 <p class="text-muted">
                     If you were to perform this biomarker discovery task <strong>manually</strong> (without automated agents), 
                     how long would each step take?
@@ -249,11 +1044,11 @@
                     <!-- Subtask 1 -->
                     <div class="task-row row align-items-center">
                         <div class="col-md-6">
-                            <label class="fw-bold">1. Literature Review & Gene Selection</label>
-                            <div class="form-text">Searching papers, identifying target biomarkers/genes.</div>
+                            <label class="fw-bold">1. Literature Review & Hypothesis Formation</label>
+                            <div class="form-text">Searching papers, identifying target biomarkers, formulating research questions.</div>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" class="form-control" id="time1" placeholder="Value">
+                            <input type="number" class="form-control" id="time1" placeholder="Value" min="0">
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="unit1">
@@ -268,10 +1063,10 @@
                     <div class="task-row row align-items-center">
                         <div class="col-md-6">
                             <label class="fw-bold">2. Data Acquisition & Cleaning</label>
-                            <div class="form-text">Downloading from GEO/TCGA, mapping probes, normalization.</div>
+                            <div class="form-text">Finding datasets, downloading, preprocessing, quality control.</div>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" class="form-control" id="time2" placeholder="Value">
+                            <input type="number" class="form-control" id="time2" placeholder="Value" min="0">
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="unit2">
@@ -285,11 +1080,11 @@
                     <!-- Subtask 3 -->
                     <div class="task-row row align-items-center">
                         <div class="col-md-6">
-                            <label class="fw-bold">3. Differential Expression Analysis (DEA)</label>
-                            <div class="form-text">Running DESeq2/Limma, statistical testing.</div>
+                            <label class="fw-bold">3. Statistical Analysis</label>
+                            <div class="form-text">Running statistical tests, differential analysis, correlation studies.</div>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" class="form-control" id="time3" placeholder="Value">
+                            <input type="number" class="form-control" id="time3" placeholder="Value" min="0">
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="unit3">
@@ -304,10 +1099,10 @@
                     <div class="task-row row align-items-center">
                         <div class="col-md-6">
                             <label class="fw-bold">4. Feature Selection & ML Modeling</label>
-                            <div class="form-text">Dimensionality reduction, training classifiers, tuning hyperparams.</div>
+                            <div class="form-text">Dimensionality reduction, training classifiers, hyperparameter tuning.</div>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" class="form-control" id="time4" placeholder="Value">
+                            <input type="number" class="form-control" id="time4" placeholder="Value" min="0">
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="unit4">
@@ -321,11 +1116,11 @@
                     <!-- Subtask 5 -->
                     <div class="task-row row align-items-center">
                         <div class="col-md-6">
-                            <label class="fw-bold">5. Biological Interpretation (GO/KEGG)</label>
-                            <div class="form-text">Pathway enrichment analysis, functional annotation.</div>
+                            <label class="fw-bold">5. Biological Interpretation</label>
+                            <div class="form-text">Pathway analysis, literature validation, clinical relevance assessment.</div>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" class="form-control" id="time5" placeholder="Value">
+                            <input type="number" class="form-control" id="time5" placeholder="Value" min="0">
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="unit5">
@@ -336,14 +1131,14 @@
                         </div>
                     </div>
 
-                     <!-- Subtask 6 -->
-                     <div class="task-row row align-items-center">
+                    <!-- Subtask 6 -->
+                    <div class="task-row row align-items-center">
                         <div class="col-md-6">
                             <label class="fw-bold">6. Report Writing & Documentation</label>
-                            <div class="form-text">Summarizing findings, creating figures, writing the manuscript.</div>
+                            <div class="form-text">Summarizing findings, creating figures, writing the manuscript draft.</div>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" class="form-control" id="time6" placeholder="Value">
+                            <input type="number" class="form-control" id="time6" placeholder="Value" min="0">
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="unit6">
@@ -355,19 +1150,68 @@
                     </div>
                 </div>
 
+                <h5 class="section-title"><i class="bi bi-graph-up-arrow me-2"></i>Effort Reduction</h5>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">What percentage of manual work would the best AI output save you?</label>
+                    <input type="range" class="form-range" id="effort_saved" min="0" max="100" value="50">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted small">0% (No savings)</span>
+                        <span class="badge bg-success fs-6" id="effort_value">50%</span>
+                        <span class="text-muted small">100% (Complete replacement)</span>
+                    </div>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-shield-check me-2"></i>Validation Requirements</h5>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">What additional validation would you require before trusting these AI findings?</label>
+                    <textarea class="form-control qual-textarea" id="validation_needed" rows="3" placeholder="e.g., External dataset validation, manual code review, expert consultation..."></textarea>
+                </div>
+
+                <h5 class="section-title"><i class="bi bi-lightbulb me-2"></i>Final Reflections</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">What surprised you (positively or negatively) about the AI-generated outputs?</label>
+                    <textarea class="form-control qual-textarea" id="surprises" rows="3" placeholder="Share any unexpected observations..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">In what scenarios would you use an AI co-scientist tool like this?</label>
+                    <textarea class="form-control qual-textarea" id="use_scenarios" rows="3" placeholder="e.g., Initial exploration, hypothesis generation, literature review..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Any additional comments or suggestions?</label>
+                    <textarea class="form-control qual-textarea" id="final_comments" rows="3" placeholder="Optional feedback..."></textarea>
+                </div>
+
                 <div class="d-flex justify-content-between mt-5">
-                    <button type="button" class="btn btn-outline-secondary" id="btnPrev4">&larr; Back</button>
-                    <button type="button" class="btn btn-success btn-lg px-5" id="submitBtn">Submit Annotation</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnPrev7"><i class="bi bi-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-success btn-lg px-5" id="submitBtn">
+                        <i class="bi bi-check-circle me-2"></i>Submit Evaluation
+                    </button>
                 </div>
             </div>
 
         </form>
     </div>
 
-    <!-- Bootstrap Bundle JS (for Tabs) -->
+    <!-- Completion Modal -->
+    <div class="modal fade" id="completionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">Thank You!</h3>
+                    <p class="text-muted">Your evaluation has been submitted successfully. Your expert feedback is invaluable for this research.</p>
+                    <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Firebase Logic (Realtime Database) -->
+    <!-- Firebase Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -384,26 +1228,49 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        
         const db = getDatabase(app);
 
         // --- NAVIGATION STATE ---
         let currentStep = 1;
-        const totalSteps = 4;
+        const totalSteps = 7;
 
         function updateUI() {
+            // Hide all steps
             for (let i = 1; i <= totalSteps; i++) {
                 const el = document.getElementById(`step${i}`);
                 if (el) el.classList.remove('active');
             }
+            // Show current step
             const currentEl = document.getElementById(`step${currentStep}`);
             if (currentEl) currentEl.classList.add('active');
-            
+
+            // Update progress bar
             const percent = (currentStep / totalSteps) * 100;
             document.getElementById('progress-bar').style.width = `${percent}%`;
             document.getElementById('step-indicator').innerText = `Step ${currentStep} of ${totalSteps}`;
-            
+
+            // Update step dots
+            const dots = document.querySelectorAll('.step-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index + 1 < currentStep) {
+                    dot.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    dot.classList.add('active');
+                }
+            });
+
             window.scrollTo(0, 0);
+        }
+
+        function getRadioValue(name) {
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            return selected ? selected.value : null;
+        }
+
+        function getCheckboxValues(name) {
+            const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+            return Array.from(checkboxes).map(cb => cb.value);
         }
 
         function validateStep(step) {
@@ -413,12 +1280,25 @@
                 const affil = document.getElementById('userAffiliation').value;
                 const exp = document.getElementById('userExp').value;
                 const expert = document.getElementById('userExpertise').value;
-                if (!name || !email || !affil || !exp || !expert) {
+                const aiFam = document.getElementById('userAIFamiliarity').value;
+                if (!name || !email || !affil || !exp || !expert || !aiFam) {
                     alert("Please fill in all required fields.");
                     return false;
                 }
             }
-            if (step === 3) {
+
+            if (step === 3 || step === 4 || step === 5) {
+                const suffix = step === 3 ? 'a' : (step === 4 ? 'b' : 'c');
+                const dimensions = ['rigor', 'bio', 'tech', 'insight', 'clarity', 'trust'];
+                for (const dim of dimensions) {
+                    if (!getRadioValue(`${dim}_${suffix}`)) {
+                        alert(`Please rate all quality dimensions for Model ${suffix.toUpperCase()}.`);
+                        return false;
+                    }
+                }
+            }
+
+            if (step === 6) {
                 const r1 = document.getElementById('rank1').value;
                 const r2 = document.getElementById('rank2').value;
                 const r3 = document.getElementById('rank3').value;
@@ -428,11 +1308,23 @@
                 }
                 if (r1 === r2 || r1 === r3 || r2 === r3) {
                     document.getElementById('rank-error').style.display = 'block';
-                    alert("Duplicate rankings detected. Please assign a unique model to each rank.");
                     return false;
                 }
                 document.getElementById('rank-error').style.display = 'none';
+
+                // Check pairwise
+                if (!getRadioValue('pairwise_ab') || !getRadioValue('pairwise_bc') || !getRadioValue('pairwise_ac')) {
+                    alert("Please complete all pairwise comparisons.");
+                    return false;
+                }
+
+                // Check actionability
+                if (!getRadioValue('actionability')) {
+                    alert("Please select an actionability option.");
+                    return false;
+                }
             }
+
             return true;
         }
 
@@ -445,24 +1337,27 @@
             }
         }
 
-        function prevStep(step) {
+        function prevStep() {
             if (currentStep > 1) {
                 currentStep--;
                 updateUI();
             }
         }
 
-        async function submitData() {
-            console.log("submitData called");
+        function convertToHours(value, unit) {
+            if (!value) return null;
+            const v = parseFloat(value);
+            if (unit === 'Days') return v * 8; // 8-hour workday
+            if (unit === 'Weeks') return v * 40; // 40-hour work week
+            return v;
+        }
 
-            const t1 = document.getElementById('time1').value;
-            if (!t1) {
-                if (!confirm("You haven't filled out all time estimations. Submit anyway?")) return;
-            }
+        async function submitData() {
+            if (!validateStep(6)) return;
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "Saving...";
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
 
             const modelMapping = {
                 "Model A": "CoDaS",
@@ -475,55 +1370,177 @@
                     name: document.getElementById('userName').value,
                     email: document.getElementById('userEmail').value,
                     affiliation: document.getElementById('userAffiliation').value,
-                    experience: document.getElementById('userExp').value,
+                    experience_years: document.getElementById('userExp').value,
                     expertise: document.getElementById('userExpertise').value,
+                    ai_familiarity: document.getElementById('userAIFamiliarity').value
                 },
+
+                // Model A Ratings
+                model_a_ratings: {
+                    scientific_rigor: getRadioValue('rigor_a'),
+                    biological_validity: getRadioValue('bio_a'),
+                    technical_quality: getRadioValue('tech_a'),
+                    insight_novelty: getRadioValue('insight_a'),
+                    presentation_clarity: getRadioValue('clarity_a'),
+                    trustworthiness: getRadioValue('trust_a'),
+                    errors_identified: getCheckboxValues('errors_a'),
+                    errors_detail: document.getElementById('errors_a_detail').value,
+                    strengths: document.getElementById('strengths_a').value,
+                    weaknesses: document.getElementById('weaknesses_a').value
+                },
+
+                // Model B Ratings
+                model_b_ratings: {
+                    scientific_rigor: getRadioValue('rigor_b'),
+                    biological_validity: getRadioValue('bio_b'),
+                    technical_quality: getRadioValue('tech_b'),
+                    insight_novelty: getRadioValue('insight_b'),
+                    presentation_clarity: getRadioValue('clarity_b'),
+                    trustworthiness: getRadioValue('trust_b'),
+                    errors_identified: getCheckboxValues('errors_b'),
+                    errors_detail: document.getElementById('errors_b_detail').value,
+                    strengths: document.getElementById('strengths_b').value,
+                    weaknesses: document.getElementById('weaknesses_b').value
+                },
+
+                // Model C Ratings
+                model_c_ratings: {
+                    scientific_rigor: getRadioValue('rigor_c'),
+                    biological_validity: getRadioValue('bio_c'),
+                    technical_quality: getRadioValue('tech_c'),
+                    insight_novelty: getRadioValue('insight_c'),
+                    presentation_clarity: getRadioValue('clarity_c'),
+                    trustworthiness: getRadioValue('trust_c'),
+                    errors_identified: getCheckboxValues('errors_c'),
+                    errors_detail: document.getElementById('errors_c_detail').value,
+                    strengths: document.getElementById('strengths_c').value,
+                    weaknesses: document.getElementById('weaknesses_c').value
+                },
+
+                // Comparative Rankings
                 rankings: {
                     rank1_raw: document.getElementById('rank1').value,
                     rank1_mapped: modelMapping[document.getElementById('rank1').value],
                     rank2_raw: document.getElementById('rank2').value,
                     rank2_mapped: modelMapping[document.getElementById('rank2').value],
                     rank3_raw: document.getElementById('rank3').value,
-                    rank3_mapped: modelMapping[document.getElementById('rank3').value],
+                    rank3_mapped: modelMapping[document.getElementById('rank3').value]
                 },
+
+                // Pairwise Comparisons
+                pairwise: {
+                    a_vs_b: getRadioValue('pairwise_ab'),
+                    b_vs_c: getRadioValue('pairwise_bc'),
+                    a_vs_c: getRadioValue('pairwise_ac')
+                },
+
+                // Actionability & Confidence
+                actionability: getRadioValue('actionability'),
+                ranking_confidence: document.getElementById('ranking_confidence').value,
+
+                // Time Estimation
                 time_estimation: {
-                    step1_lit_review: { val: document.getElementById('time1').value, unit: document.getElementById('unit1').value },
-                    step2_data_prep: { val: document.getElementById('time2').value, unit: document.getElementById('unit2').value },
-                    step3_dea: { val: document.getElementById('time3').value, unit: document.getElementById('unit3').value },
-                    step4_ml: { val: document.getElementById('time4').value, unit: document.getElementById('unit4').value },
-                    step5_interpretation: { val: document.getElementById('time5').value, unit: document.getElementById('unit5').value },
-                    step6_reporting: { val: document.getElementById('time6').value, unit: document.getElementById('unit6').value },
+                    step1_literature: {
+                        value: document.getElementById('time1').value,
+                        unit: document.getElementById('unit1').value,
+                        hours: convertToHours(document.getElementById('time1').value, document.getElementById('unit1').value)
+                    },
+                    step2_data: {
+                        value: document.getElementById('time2').value,
+                        unit: document.getElementById('unit2').value,
+                        hours: convertToHours(document.getElementById('time2').value, document.getElementById('unit2').value)
+                    },
+                    step3_statistics: {
+                        value: document.getElementById('time3').value,
+                        unit: document.getElementById('unit3').value,
+                        hours: convertToHours(document.getElementById('time3').value, document.getElementById('unit3').value)
+                    },
+                    step4_ml: {
+                        value: document.getElementById('time4').value,
+                        unit: document.getElementById('unit4').value,
+                        hours: convertToHours(document.getElementById('time4').value, document.getElementById('unit4').value)
+                    },
+                    step5_interpretation: {
+                        value: document.getElementById('time5').value,
+                        unit: document.getElementById('unit5').value,
+                        hours: convertToHours(document.getElementById('time5').value, document.getElementById('unit5').value)
+                    },
+                    step6_reporting: {
+                        value: document.getElementById('time6').value,
+                        unit: document.getElementById('unit6').value,
+                        hours: convertToHours(document.getElementById('time6').value, document.getElementById('unit6').value)
+                    }
                 },
-                timestamp: new Date().toISOString()
+
+                // Effort & Final
+                effort_saved_percent: document.getElementById('effort_saved').value,
+                validation_needed: document.getElementById('validation_needed').value,
+                surprises: document.getElementById('surprises').value,
+                use_scenarios: document.getElementById('use_scenarios').value,
+                final_comments: document.getElementById('final_comments').value,
+
+                // Metadata
+                timestamp: new Date().toISOString(),
+                user_agent: navigator.userAgent
             };
 
             try {
-                console.log("Sending to Realtime DB...", data);
-                const newRef = push(ref(db, "evaluations"));
+                const newRef = push(ref(db, "codas_evaluations_v2"));
                 await set(newRef, data);
-                console.log("Realtime DB write success");
 
-                alert("Thank you! Your evaluation has been submitted successfully.");
-                // 원하는 홈 경로로 변경 (예: "./index.html" 또는 "/")
-                window.location.href = "./index.html";
+                // Show completion modal
+                const modal = new bootstrap.Modal(document.getElementById('completionModal'));
+                modal.show();
+
+                // Reset form after modal close
+                document.getElementById('completionModal').addEventListener('hidden.bs.modal', () => {
+                    window.location.href = "./index.html";
+                });
+
             } catch (error) {
-                console.error("Error adding document: ", error);
-                alert("Submission failed. Check console for details.");
+                console.error("Error submitting data:", error);
+                alert("Submission failed. Please check your connection and try again.");
                 btn.disabled = false;
-                btn.innerText = "Submit Annotation";
+                btn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Submit Evaluation';
             }
         }
 
-        // Attach event listeners
+        // --- Event Listeners ---
         document.getElementById('btnStep1').addEventListener('click', () => nextStep(1));
         document.getElementById('btnStep2').addEventListener('click', () => nextStep(2));
-        document.getElementById('btnPrev2').addEventListener('click', () => prevStep(2));
         document.getElementById('btnStep3').addEventListener('click', () => nextStep(3));
-        document.getElementById('btnPrev3').addEventListener('click', () => prevStep(3));
-        document.getElementById('btnPrev4').addEventListener('click', () => prevStep(4));
+        document.getElementById('btnStep4').addEventListener('click', () => nextStep(4));
+        document.getElementById('btnStep5').addEventListener('click', () => nextStep(5));
+        document.getElementById('btnStep6').addEventListener('click', () => nextStep(6));
+
+        document.getElementById('btnPrev2').addEventListener('click', prevStep);
+        document.getElementById('btnPrev3').addEventListener('click', prevStep);
+        document.getElementById('btnPrev4').addEventListener('click', prevStep);
+        document.getElementById('btnPrev5').addEventListener('click', prevStep);
+        document.getElementById('btnPrev6').addEventListener('click', prevStep);
+        document.getElementById('btnPrev7').addEventListener('click', prevStep);
+
         document.getElementById('submitBtn').addEventListener('click', submitData);
 
-        console.log("Firebase initialized and Event Listeners attached.");
+        // Confidence slider display
+        document.getElementById('ranking_confidence').addEventListener('input', (e) => {
+            document.getElementById('confidence_value').textContent = `${e.target.value}%`;
+        });
+
+        // Effort saved slider display
+        document.getElementById('effort_saved').addEventListener('input', (e) => {
+            document.getElementById('effort_value').textContent = `${e.target.value}%`;
+        });
+
+        // Ranking duplicate prevention hint
+        const rankSelects = document.querySelectorAll('.ranking-select');
+        rankSelects.forEach(select => {
+            select.addEventListener('change', () => {
+                document.getElementById('rank-error').style.display = 'none';
+            });
+        });
+
+        console.log("CoDaS Evaluation v2 initialized.");
     </script>
 </body>
 </html>
