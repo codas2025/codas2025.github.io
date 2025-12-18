@@ -431,6 +431,20 @@
                             <option value="Advanced">Advanced (power user / developer)</option>
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Do you have experience reviewing papers for scientific venues? <span class="required-star">*</span></label>
+                        <select class="form-select" id="userReviewExp" required>
+                            <option value="" selected disabled>Select...</option>
+                            <option value="None">No review experience</option>
+                            <option value="Occasional">Occasional (1-5 papers/year)</option>
+                            <option value="Regular">Regular (6-15 papers/year)</option>
+                            <option value="Frequent">Frequent (16+ papers/year)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Which venues have you reviewed for? (optional)</label>
+                        <input type="text" class="form-control" id="userReviewVenues" placeholder="e.g., NeurIPS, ICML, Nature Digital Medicine, JAMIA...">
+                    </div>
                 </div>
                 <div class="d-flex justify-content-end mt-4">
                     <button type="button" class="btn btn-primary px-4" id="btnStep1">Next <i class="bi bi-arrow-right"></i></button>
@@ -475,41 +489,30 @@
                 </div>
 
                 <h5 class="section-title">Evaluation Dimensions</h5>
+                <p class="text-muted">For each model, you will rate:</p>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="eval-card">
                             <strong><i class="bi bi-journal-check text-primary me-2"></i>Scientific Rigor</strong>
-                            <p class="mb-0 text-muted small">Hypothesis clarity, statistical validity, proper methodology</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="eval-card">
-                            <strong><i class="bi bi-diagram-3 text-success me-2"></i>Clinical Validity</strong>
-                            <p class="mb-0 text-muted small">Accurate interpretation, literature grounding, clinical relevance</p>
+                            <p class="mb-0 text-muted small">Hypothesis clarity, statistical validity</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="eval-card">
                             <strong><i class="bi bi-code-slash text-info me-2"></i>Technical Quality</strong>
-                            <p class="mb-0 text-muted small">Code correctness, preprocessing, reproducibility</p>
+                            <p class="mb-0 text-muted small">Code correctness, reproducibility</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="eval-card">
-                            <strong><i class="bi bi-lightbulb text-warning me-2"></i>Insight & Novelty</strong>
-                            <p class="mb-0 text-muted small">Non-obvious discoveries, actionable findings</p>
+                            <strong><i class="bi bi-lightbulb text-warning me-2"></i>Insight & Presentation</strong>
+                            <p class="mb-0 text-muted small">Novelty of insights, presentation clarity</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="eval-card">
-                            <strong><i class="bi bi-file-earmark-text text-secondary me-2"></i>Presentation Clarity</strong>
-                            <p class="mb-0 text-muted small">Logical flow, figure quality, readability</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="eval-card">
-                            <strong><i class="bi bi-shield-check text-danger me-2"></i>Trustworthiness</strong>
-                            <p class="mb-0 text-muted small">Would you cite this? Confidence in conclusions</p>
+                        <div class="eval-card" style="border-left-color: #6f42c1;">
+                            <strong><i class="bi bi-file-earmark-text me-2" style="color: #6f42c1;"></i>Reviewer Assessment</strong>
+                            <p class="mb-0 text-muted small">Soundness, Presentation, Contribution, Overall, Confidence (NeurIPS/ICLR format)</p>
                         </div>
                     </div>
                 </div>
@@ -532,88 +535,170 @@
 
                 <h5 class="section-title"><i class="bi bi-star me-2"></i>Quality Assessment</h5>
                 
-                <!-- Dimension 1: Scientific Rigor -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">1. Scientific Rigor</div>
-                    <div class="dimension-desc">Is the hypothesis clear? Are statistical methods appropriate? Are conclusions well-supported?</div>
-                    <div class="likert-scale" data-dimension="rigor_a">
-                        <label><input type="radio" name="rigor_a" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="rigor_a" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="rigor_a" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="rigor_a" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="rigor_a" value="5"><span class="likert-btn">5</span></label>
+                <!-- Scientific Rigor Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-primary mb-3"><i class="bi bi-journal-check me-2"></i>Scientific Rigor</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">1a. Hypothesis Clarity</div>
+                        <div class="dimension-desc">Is the research question/hypothesis clearly stated and well-motivated?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="hypo_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="hypo_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="hypo_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="hypo_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="hypo_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">1b. Statistical Validity</div>
+                        <div class="dimension-desc">Are the statistical methods appropriate and correctly applied?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="stat_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="stat_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="stat_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="stat_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="stat_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 2: Biological Validity -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">2. Clinical Validity</div>
-                    <div class="dimension-desc">Are clinical interpretations accurate? Is the analysis grounded in relevant literature? Are findings clinically meaningful?</div>
-                    <div class="likert-scale" data-dimension="bio_a">
-                        <label><input type="radio" name="bio_a" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="bio_a" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="bio_a" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="bio_a" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="bio_a" value="5"><span class="likert-btn">5</span></label>
+                <!-- Technical Quality Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-info mb-3"><i class="bi bi-code-slash me-2"></i>Technical Quality</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">3a. Code Correctness</div>
+                        <div class="dimension-desc">Is the code/analysis pipeline correct and free of bugs?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="code_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="code_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="code_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="code_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="code_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">3b. Reproducibility</div>
+                        <div class="dimension-desc">Could you reproduce this analysis given the provided information?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="repro_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="repro_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="repro_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="repro_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="repro_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Not possible</span><span></span><span>With effort</span><span></span><span>Easily</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 3: Technical Quality -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">3. Technical / Code Quality</div>
-                    <div class="dimension-desc">Is the code correct? Is data preprocessing appropriate? Would you be able to reproduce the analysis?</div>
-                    <div class="likert-scale" data-dimension="tech_a">
-                        <label><input type="radio" name="tech_a" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="tech_a" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="tech_a" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="tech_a" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="tech_a" value="5"><span class="likert-btn">5</span></label>
+                <!-- Insight & Presentation Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-warning mb-3"><i class="bi bi-lightbulb me-2"></i>Insight & Presentation</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">4a. Novelty of Insights</div>
+                        <div class="dimension-desc">Does the analysis reveal non-obvious or actionable insights?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="novelty_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="novelty_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="novelty_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="novelty_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="novelty_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>None</span><span></span><span>Some</span><span></span><span>Significant</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">4b. Presentation Clarity</div>
+                        <div class="dimension-desc">Is the output well-organized with clear figures and readable writing?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="clarity_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="clarity_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="clarity_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="clarity_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="clarity_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 4: Insight & Novelty -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">4. Insight & Novelty</div>
-                    <div class="dimension-desc">Does the analysis reveal non-obvious insights? Are the findings actionable for further research?</div>
-                    <div class="likert-scale" data-dimension="insight_a">
-                        <label><input type="radio" name="insight_a" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="insight_a" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="insight_a" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="insight_a" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="insight_a" value="5"><span class="likert-btn">5</span></label>
+                <!-- Publication Readiness - Reviewer Format -->
+                <div class="eval-card mb-3" style="border-left-color: #6f42c1;">
+                    <h6 class="fw-bold mb-3" style="color: #6f42c1;"><i class="bi bi-file-earmark-text me-2"></i>Publication Readiness (Reviewer Format)</h6>
+                    <p class="text-muted small mb-3">Rate this output as if you were reviewing it for a top ML/health venue (e.g., NeurIPS, ICLR, Nature Digital Medicine).</p>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Soundness</div>
+                        <div class="dimension-desc">Are the claims well-supported by theoretical/empirical evidence?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="soundness_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="soundness_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="soundness_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="soundness_a" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
-                </div>
 
-                <!-- Dimension 5: Presentation Clarity -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">5. Presentation Clarity</div>
-                    <div class="dimension-desc">Is the output well-organized? Are figures clear and informative? Is the writing quality acceptable?</div>
-                    <div class="likert-scale" data-dimension="clarity_a">
-                        <label><input type="radio" name="clarity_a" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="clarity_a" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="clarity_a" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="clarity_a" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="clarity_a" value="5"><span class="likert-btn">5</span></label>
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Presentation</div>
+                        <div class="dimension-desc">Is the output clearly written and well-organized?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="presentation_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="presentation_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="presentation_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="presentation_a" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
-                </div>
 
-                <!-- Dimension 6: Trustworthiness -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">6. Overall Trustworthiness</div>
-                    <div class="dimension-desc">Would you trust these findings? Would you cite this in your own research?</div>
-                    <div class="likert-scale" data-dimension="trust_a">
-                        <label><input type="radio" name="trust_a" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="trust_a" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="trust_a" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="trust_a" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="trust_a" value="5"><span class="likert-btn">5</span></label>
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Contribution</div>
+                        <div class="dimension-desc">Are the findings novel and significant to the field?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="contribution_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="contribution_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="contribution_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="contribution_a" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Would not trust</span><span>Skeptical</span><span>Neutral</span><span>Mostly trust</span><span>Fully trust</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Overall Score</div>
+                        <div class="dimension-desc">Your overall assessment of this work.</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="overall_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="overall_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="overall_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="overall_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="overall_a" value="5"><span class="likert-btn">5</span></label>
+                            <label><input type="radio" name="overall_a" value="6"><span class="likert-btn">6</span></label>
+                            <label><input type="radio" name="overall_a" value="7"><span class="likert-btn">7</span></label>
+                            <label><input type="radio" name="overall_a" value="8"><span class="likert-btn">8</span></label>
+                            <label><input type="radio" name="overall_a" value="9"><span class="likert-btn">9</span></label>
+                            <label><input type="radio" name="overall_a" value="10"><span class="likert-btn">10</span></label>
+                        </div>
+                        <div class="likert-labels"><span>1: Strong Reject</span><span></span><span></span><span>5: Borderline</span><span></span><span></span><span></span><span></span><span>10: Strong Accept</span></div>
+                    </div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Confidence</div>
+                        <div class="dimension-desc">How confident are you in your assessment?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="confidence_a" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="confidence_a" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="confidence_a" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="confidence_a" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="confidence_a" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>1: Low</span><span></span><span>3: Medium</span><span></span><span>5: High (Expert)</span></div>
+                    </div>
                 </div>
 
                 <h5 class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>Error / Issue Detection</h5>
@@ -627,7 +712,7 @@
                         </div>
                         <div class="error-checkbox form-check">
                             <input class="form-check-input" type="checkbox" id="err_a_bio" name="errors_a" value="biological">
-                            <label class="form-check-label" for="err_a_bio">Biological misinterpretations</label>
+                            <label class="form-check-label" for="err_a_bio">Clinical/biological misinterpretations</label>
                         </div>
                         <div class="error-checkbox form-check">
                             <input class="form-check-input" type="checkbox" id="err_a_halluc" name="errors_a" value="hallucination">
@@ -650,21 +735,6 @@
                     </div>
                 </div>
 
-                <div class="mt-3">
-                    <label class="form-label fw-bold">Please describe any specific issues you found (optional):</label>
-                    <textarea class="form-control qual-textarea" id="errors_a_detail" rows="3" placeholder="Describe specific errors, concerns, or areas for improvement..."></textarea>
-                </div>
-
-                <h5 class="section-title"><i class="bi bi-chat-quote me-2"></i>Qualitative Feedback</h5>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">What are the TOP 2 STRENGTHS of Model A?</label>
-                    <textarea class="form-control qual-textarea" id="strengths_a" rows="2" placeholder="e.g., Clear methodology, novel biomarker candidates..."></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">What are the TOP 2 WEAKNESSES of Model A?</label>
-                    <textarea class="form-control qual-textarea" id="weaknesses_a" rows="2" placeholder="e.g., Limited validation, unclear preprocessing steps..."></textarea>
-                </div>
-
                 <div class="d-flex justify-content-between mt-4">
                     <button type="button" class="btn btn-outline-secondary" id="btnPrev3"><i class="bi bi-arrow-left"></i> Back</button>
                     <button type="button" class="btn btn-primary px-4" id="btnStep3">Evaluate Model B <i class="bi bi-arrow-right"></i></button>
@@ -683,88 +753,170 @@
 
                 <h5 class="section-title"><i class="bi bi-star me-2"></i>Quality Assessment</h5>
                 
-                <!-- Dimension 1: Scientific Rigor -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">1. Scientific Rigor</div>
-                    <div class="dimension-desc">Is the hypothesis clear? Are statistical methods appropriate? Are conclusions well-supported?</div>
-                    <div class="likert-scale" data-dimension="rigor_b">
-                        <label><input type="radio" name="rigor_b" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="rigor_b" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="rigor_b" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="rigor_b" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="rigor_b" value="5"><span class="likert-btn">5</span></label>
+                <!-- Scientific Rigor Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-primary mb-3"><i class="bi bi-journal-check me-2"></i>Scientific Rigor</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">1a. Hypothesis Clarity</div>
+                        <div class="dimension-desc">Is the research question/hypothesis clearly stated and well-motivated?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="hypo_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="hypo_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="hypo_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="hypo_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="hypo_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">1b. Statistical Validity</div>
+                        <div class="dimension-desc">Are the statistical methods appropriate and correctly applied?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="stat_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="stat_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="stat_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="stat_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="stat_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 2: Biological Validity -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">2. Clinical Validity</div>
-                    <div class="dimension-desc">Are clinical interpretations accurate? Is the analysis grounded in relevant literature? Are findings clinically meaningful?</div>
-                    <div class="likert-scale" data-dimension="bio_b">
-                        <label><input type="radio" name="bio_b" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="bio_b" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="bio_b" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="bio_b" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="bio_b" value="5"><span class="likert-btn">5</span></label>
+                <!-- Technical Quality Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-info mb-3"><i class="bi bi-code-slash me-2"></i>Technical Quality</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">3a. Code Correctness</div>
+                        <div class="dimension-desc">Is the code/analysis pipeline correct and free of bugs?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="code_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="code_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="code_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="code_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="code_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">3b. Reproducibility</div>
+                        <div class="dimension-desc">Could you reproduce this analysis given the provided information?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="repro_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="repro_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="repro_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="repro_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="repro_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Not possible</span><span></span><span>With effort</span><span></span><span>Easily</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 3: Technical Quality -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">3. Technical / Code Quality</div>
-                    <div class="dimension-desc">Is the code correct? Is data preprocessing appropriate? Would you be able to reproduce the analysis?</div>
-                    <div class="likert-scale" data-dimension="tech_b">
-                        <label><input type="radio" name="tech_b" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="tech_b" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="tech_b" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="tech_b" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="tech_b" value="5"><span class="likert-btn">5</span></label>
+                <!-- Insight & Presentation Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-warning mb-3"><i class="bi bi-lightbulb me-2"></i>Insight & Presentation</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">4a. Novelty of Insights</div>
+                        <div class="dimension-desc">Does the analysis reveal non-obvious or actionable insights?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="novelty_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="novelty_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="novelty_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="novelty_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="novelty_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>None</span><span></span><span>Some</span><span></span><span>Significant</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">4b. Presentation Clarity</div>
+                        <div class="dimension-desc">Is the output well-organized with clear figures and readable writing?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="clarity_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="clarity_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="clarity_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="clarity_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="clarity_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 4: Insight & Novelty -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">4. Insight & Novelty</div>
-                    <div class="dimension-desc">Does the analysis reveal non-obvious insights? Are the findings actionable for further research?</div>
-                    <div class="likert-scale" data-dimension="insight_b">
-                        <label><input type="radio" name="insight_b" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="insight_b" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="insight_b" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="insight_b" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="insight_b" value="5"><span class="likert-btn">5</span></label>
+                <!-- Publication Readiness - Reviewer Format -->
+                <div class="eval-card mb-3" style="border-left-color: #6f42c1;">
+                    <h6 class="fw-bold mb-3" style="color: #6f42c1;"><i class="bi bi-file-earmark-text me-2"></i>Publication Readiness (Reviewer Format)</h6>
+                    <p class="text-muted small mb-3">Rate this output as if you were reviewing it for a top ML/health venue (e.g., NeurIPS, ICLR, Nature Digital Medicine).</p>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Soundness</div>
+                        <div class="dimension-desc">Are the claims well-supported by theoretical/empirical evidence?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="soundness_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="soundness_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="soundness_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="soundness_b" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
-                </div>
 
-                <!-- Dimension 5: Presentation Clarity -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">5. Presentation Clarity</div>
-                    <div class="dimension-desc">Is the output well-organized? Are figures clear and informative? Is the writing quality acceptable?</div>
-                    <div class="likert-scale" data-dimension="clarity_b">
-                        <label><input type="radio" name="clarity_b" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="clarity_b" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="clarity_b" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="clarity_b" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="clarity_b" value="5"><span class="likert-btn">5</span></label>
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Presentation</div>
+                        <div class="dimension-desc">Is the output clearly written and well-organized?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="presentation_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="presentation_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="presentation_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="presentation_b" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
-                </div>
 
-                <!-- Dimension 6: Trustworthiness -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">6. Overall Trustworthiness</div>
-                    <div class="dimension-desc">Would you trust these findings? Would you cite this in your own research?</div>
-                    <div class="likert-scale" data-dimension="trust_b">
-                        <label><input type="radio" name="trust_b" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="trust_b" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="trust_b" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="trust_b" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="trust_b" value="5"><span class="likert-btn">5</span></label>
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Contribution</div>
+                        <div class="dimension-desc">Are the findings novel and significant to the field?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="contribution_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="contribution_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="contribution_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="contribution_b" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Would not trust</span><span>Skeptical</span><span>Neutral</span><span>Mostly trust</span><span>Fully trust</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Overall Score</div>
+                        <div class="dimension-desc">Your overall assessment of this work.</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="overall_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="overall_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="overall_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="overall_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="overall_b" value="5"><span class="likert-btn">5</span></label>
+                            <label><input type="radio" name="overall_b" value="6"><span class="likert-btn">6</span></label>
+                            <label><input type="radio" name="overall_b" value="7"><span class="likert-btn">7</span></label>
+                            <label><input type="radio" name="overall_b" value="8"><span class="likert-btn">8</span></label>
+                            <label><input type="radio" name="overall_b" value="9"><span class="likert-btn">9</span></label>
+                            <label><input type="radio" name="overall_b" value="10"><span class="likert-btn">10</span></label>
+                        </div>
+                        <div class="likert-labels"><span>1: Strong Reject</span><span></span><span></span><span>5: Borderline</span><span></span><span></span><span></span><span></span><span>10: Strong Accept</span></div>
+                    </div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Confidence</div>
+                        <div class="dimension-desc">How confident are you in your assessment?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="confidence_b" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="confidence_b" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="confidence_b" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="confidence_b" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="confidence_b" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>1: Low</span><span></span><span>3: Medium</span><span></span><span>5: High (Expert)</span></div>
+                    </div>
                 </div>
 
                 <h5 class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>Error / Issue Detection</h5>
@@ -778,7 +930,7 @@
                         </div>
                         <div class="error-checkbox form-check">
                             <input class="form-check-input" type="checkbox" id="err_b_bio" name="errors_b" value="biological">
-                            <label class="form-check-label" for="err_b_bio">Biological misinterpretations</label>
+                            <label class="form-check-label" for="err_b_bio">Clinical/biological misinterpretations</label>
                         </div>
                         <div class="error-checkbox form-check">
                             <input class="form-check-input" type="checkbox" id="err_b_halluc" name="errors_b" value="hallucination">
@@ -801,21 +953,6 @@
                     </div>
                 </div>
 
-                <div class="mt-3">
-                    <label class="form-label fw-bold">Please describe any specific issues you found (optional):</label>
-                    <textarea class="form-control qual-textarea" id="errors_b_detail" rows="3" placeholder="Describe specific errors, concerns, or areas for improvement..."></textarea>
-                </div>
-
-                <h5 class="section-title"><i class="bi bi-chat-quote me-2"></i>Qualitative Feedback</h5>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">What are the TOP 2 STRENGTHS of Model B?</label>
-                    <textarea class="form-control qual-textarea" id="strengths_b" rows="2" placeholder="e.g., Clear methodology, novel biomarker candidates..."></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">What are the TOP 2 WEAKNESSES of Model B?</label>
-                    <textarea class="form-control qual-textarea" id="weaknesses_b" rows="2" placeholder="e.g., Limited validation, unclear preprocessing steps..."></textarea>
-                </div>
-
                 <div class="d-flex justify-content-between mt-4">
                     <button type="button" class="btn btn-outline-secondary" id="btnPrev4"><i class="bi bi-arrow-left"></i> Back</button>
                     <button type="button" class="btn btn-primary px-4" id="btnStep4">Evaluate Model C <i class="bi bi-arrow-right"></i></button>
@@ -834,88 +971,170 @@
 
                 <h5 class="section-title"><i class="bi bi-star me-2"></i>Quality Assessment</h5>
                 
-                <!-- Dimension 1: Scientific Rigor -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">1. Scientific Rigor</div>
-                    <div class="dimension-desc">Is the hypothesis clear? Are statistical methods appropriate? Are conclusions well-supported?</div>
-                    <div class="likert-scale" data-dimension="rigor_c">
-                        <label><input type="radio" name="rigor_c" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="rigor_c" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="rigor_c" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="rigor_c" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="rigor_c" value="5"><span class="likert-btn">5</span></label>
+                <!-- Scientific Rigor Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-primary mb-3"><i class="bi bi-journal-check me-2"></i>Scientific Rigor</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">1a. Hypothesis Clarity</div>
+                        <div class="dimension-desc">Is the research question/hypothesis clearly stated and well-motivated?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="hypo_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="hypo_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="hypo_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="hypo_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="hypo_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">1b. Statistical Validity</div>
+                        <div class="dimension-desc">Are the statistical methods appropriate and correctly applied?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="stat_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="stat_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="stat_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="stat_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="stat_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 2: Biological Validity -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">2. Clinical Validity</div>
-                    <div class="dimension-desc">Are clinical interpretations accurate? Is the analysis grounded in relevant literature? Are findings clinically meaningful?</div>
-                    <div class="likert-scale" data-dimension="bio_c">
-                        <label><input type="radio" name="bio_c" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="bio_c" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="bio_c" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="bio_c" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="bio_c" value="5"><span class="likert-btn">5</span></label>
+                <!-- Technical Quality Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-info mb-3"><i class="bi bi-code-slash me-2"></i>Technical Quality</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">3a. Code Correctness</div>
+                        <div class="dimension-desc">Is the code/analysis pipeline correct and free of bugs?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="code_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="code_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="code_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="code_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="code_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">3b. Reproducibility</div>
+                        <div class="dimension-desc">Could you reproduce this analysis given the provided information?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="repro_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="repro_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="repro_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="repro_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="repro_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Not possible</span><span></span><span>With effort</span><span></span><span>Easily</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 3: Technical Quality -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">3. Technical / Code Quality</div>
-                    <div class="dimension-desc">Is the code correct? Is data preprocessing appropriate? Would you be able to reproduce the analysis?</div>
-                    <div class="likert-scale" data-dimension="tech_c">
-                        <label><input type="radio" name="tech_c" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="tech_c" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="tech_c" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="tech_c" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="tech_c" value="5"><span class="likert-btn">5</span></label>
+                <!-- Insight & Presentation Section -->
+                <div class="eval-card mb-3">
+                    <h6 class="fw-bold text-warning mb-3"><i class="bi bi-lightbulb me-2"></i>Insight & Presentation</h6>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">4a. Novelty of Insights</div>
+                        <div class="dimension-desc">Does the analysis reveal non-obvious or actionable insights?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="novelty_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="novelty_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="novelty_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="novelty_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="novelty_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>None</span><span></span><span>Some</span><span></span><span>Significant</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">4b. Presentation Clarity</div>
+                        <div class="dimension-desc">Is the output well-organized with clear figures and readable writing?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="clarity_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="clarity_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="clarity_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="clarity_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="clarity_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span></span><span>Average</span><span></span><span>Excellent</span></div>
+                    </div>
                 </div>
 
-                <!-- Dimension 4: Insight & Novelty -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">4. Insight & Novelty</div>
-                    <div class="dimension-desc">Does the analysis reveal non-obvious insights? Are the findings actionable for further research?</div>
-                    <div class="likert-scale" data-dimension="insight_c">
-                        <label><input type="radio" name="insight_c" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="insight_c" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="insight_c" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="insight_c" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="insight_c" value="5"><span class="likert-btn">5</span></label>
+                <!-- Publication Readiness - Reviewer Format -->
+                <div class="eval-card mb-3" style="border-left-color: #6f42c1;">
+                    <h6 class="fw-bold mb-3" style="color: #6f42c1;"><i class="bi bi-file-earmark-text me-2"></i>Publication Readiness (Reviewer Format)</h6>
+                    <p class="text-muted small mb-3">Rate this output as if you were reviewing it for a top ML/health venue (e.g., NeurIPS, ICLR, Nature Digital Medicine).</p>
+                    
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Soundness</div>
+                        <div class="dimension-desc">Are the claims well-supported by theoretical/empirical evidence?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="soundness_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="soundness_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="soundness_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="soundness_c" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
-                </div>
 
-                <!-- Dimension 5: Presentation Clarity -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">5. Presentation Clarity</div>
-                    <div class="dimension-desc">Is the output well-organized? Are figures clear and informative? Is the writing quality acceptable?</div>
-                    <div class="likert-scale" data-dimension="clarity_c">
-                        <label><input type="radio" name="clarity_c" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="clarity_c" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="clarity_c" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="clarity_c" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="clarity_c" value="5"><span class="likert-btn">5</span></label>
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Presentation</div>
+                        <div class="dimension-desc">Is the output clearly written and well-organized?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="presentation_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="presentation_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="presentation_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="presentation_c" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Poor</span><span>Below Average</span><span>Average</span><span>Good</span><span>Excellent</span></div>
-                </div>
 
-                <!-- Dimension 6: Trustworthiness -->
-                <div class="eval-dimension">
-                    <div class="dimension-label">6. Overall Trustworthiness</div>
-                    <div class="dimension-desc">Would you trust these findings? Would you cite this in your own research?</div>
-                    <div class="likert-scale" data-dimension="trust_c">
-                        <label><input type="radio" name="trust_c" value="1"><span class="likert-btn">1</span></label>
-                        <label><input type="radio" name="trust_c" value="2"><span class="likert-btn">2</span></label>
-                        <label><input type="radio" name="trust_c" value="3"><span class="likert-btn">3</span></label>
-                        <label><input type="radio" name="trust_c" value="4"><span class="likert-btn">4</span></label>
-                        <label><input type="radio" name="trust_c" value="5"><span class="likert-btn">5</span></label>
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Contribution</div>
+                        <div class="dimension-desc">Are the findings novel and significant to the field?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="contribution_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="contribution_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="contribution_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="contribution_c" value="4"><span class="likert-btn">4</span></label>
+                        </div>
+                        <div class="likert-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
                     </div>
-                    <div class="likert-labels"><span>Would not trust</span><span>Skeptical</span><span>Neutral</span><span>Mostly trust</span><span>Fully trust</span></div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Overall Score</div>
+                        <div class="dimension-desc">Your overall assessment of this work.</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="overall_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="overall_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="overall_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="overall_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="overall_c" value="5"><span class="likert-btn">5</span></label>
+                            <label><input type="radio" name="overall_c" value="6"><span class="likert-btn">6</span></label>
+                            <label><input type="radio" name="overall_c" value="7"><span class="likert-btn">7</span></label>
+                            <label><input type="radio" name="overall_c" value="8"><span class="likert-btn">8</span></label>
+                            <label><input type="radio" name="overall_c" value="9"><span class="likert-btn">9</span></label>
+                            <label><input type="radio" name="overall_c" value="10"><span class="likert-btn">10</span></label>
+                        </div>
+                        <div class="likert-labels"><span>1: Strong Reject</span><span></span><span></span><span>5: Borderline</span><span></span><span></span><span></span><span></span><span>10: Strong Accept</span></div>
+                    </div>
+
+                    <div class="eval-dimension">
+                        <div class="dimension-label">Confidence</div>
+                        <div class="dimension-desc">How confident are you in your assessment?</div>
+                        <div class="likert-scale">
+                            <label><input type="radio" name="confidence_c" value="1"><span class="likert-btn">1</span></label>
+                            <label><input type="radio" name="confidence_c" value="2"><span class="likert-btn">2</span></label>
+                            <label><input type="radio" name="confidence_c" value="3"><span class="likert-btn">3</span></label>
+                            <label><input type="radio" name="confidence_c" value="4"><span class="likert-btn">4</span></label>
+                            <label><input type="radio" name="confidence_c" value="5"><span class="likert-btn">5</span></label>
+                        </div>
+                        <div class="likert-labels"><span>1: Low</span><span></span><span>3: Medium</span><span></span><span>5: High (Expert)</span></div>
+                    </div>
                 </div>
 
                 <h5 class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>Error / Issue Detection</h5>
@@ -929,7 +1148,7 @@
                         </div>
                         <div class="error-checkbox form-check">
                             <input class="form-check-input" type="checkbox" id="err_c_bio" name="errors_c" value="biological">
-                            <label class="form-check-label" for="err_c_bio">Biological misinterpretations</label>
+                            <label class="form-check-label" for="err_c_bio">Clinical/biological misinterpretations</label>
                         </div>
                         <div class="error-checkbox form-check">
                             <input class="form-check-input" type="checkbox" id="err_c_halluc" name="errors_c" value="hallucination">
@@ -952,21 +1171,6 @@
                     </div>
                 </div>
 
-                <div class="mt-3">
-                    <label class="form-label fw-bold">Please describe any specific issues you found (optional):</label>
-                    <textarea class="form-control qual-textarea" id="errors_c_detail" rows="3" placeholder="Describe specific errors, concerns, or areas for improvement..."></textarea>
-                </div>
-
-                <h5 class="section-title"><i class="bi bi-chat-quote me-2"></i>Qualitative Feedback</h5>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">What are the TOP 2 STRENGTHS of Model C?</label>
-                    <textarea class="form-control qual-textarea" id="strengths_c" rows="2" placeholder="e.g., Clear methodology, novel biomarker candidates..."></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">What are the TOP 2 WEAKNESSES of Model C?</label>
-                    <textarea class="form-control qual-textarea" id="weaknesses_c" rows="2" placeholder="e.g., Limited validation, unclear preprocessing steps..."></textarea>
-                </div>
-
                 <div class="d-flex justify-content-between mt-4">
                     <button type="button" class="btn btn-outline-secondary" id="btnPrev5"><i class="bi bi-arrow-left"></i> Back</button>
                     <button type="button" class="btn btn-primary px-4" id="btnStep5">Comparative Ranking <i class="bi bi-arrow-right"></i></button>
@@ -977,8 +1181,6 @@
             <div class="step-container" id="step6">
                 <h2 class="header-title">Comparative Judgment</h2>
                 <p class="text-muted">Based on your evaluation of all three models, please provide comparative rankings.</p>
-
-                <h5 class="section-title"><i class="bi bi-trophy me-2"></i>Overall Preference Ranking</h5>
 
                 <h5 class="section-title"><i class="bi bi-sort-numeric-down me-2"></i>Drag & Drop Ranking</h5>
                 <p class="text-muted">Drag the models to rank them from best (left) to worst (right) for biomarker discovery research.</p>
@@ -1353,7 +1555,8 @@
                 const exp = document.getElementById('userExp').value;
                 const expert = document.getElementById('userExpertise').value;
                 const aiFam = document.getElementById('userAIFamiliarity').value;
-                if (!name || !email || !affil || !exp || !expert || !aiFam) {
+                const reviewExp = document.getElementById('userReviewExp').value;
+                if (!name || !email || !affil || !exp || !expert || !aiFam || !reviewExp) {
                     alert("Please fill in all required fields.");
                     return false;
                 }
@@ -1361,10 +1564,19 @@
 
             if (step === 3 || step === 4 || step === 5) {
                 const suffix = step === 3 ? 'a' : (step === 4 ? 'b' : 'c');
-                const dimensions = ['rigor', 'bio', 'tech', 'insight', 'clarity', 'trust'];
-                for (const dim of dimensions) {
+                // Quality dimensions
+                const qualityDims = ['hypo', 'stat', 'code', 'repro', 'novelty', 'clarity'];
+                for (const dim of qualityDims) {
                     if (!getRadioValue(`${dim}_${suffix}`)) {
                         alert(`Please rate all quality dimensions for Model ${suffix.toUpperCase()}.`);
+                        return false;
+                    }
+                }
+                // Reviewer format dimensions
+                const reviewerDims = ['soundness', 'presentation', 'contribution', 'overall', 'confidence'];
+                for (const dim of reviewerDims) {
+                    if (!getRadioValue(`${dim}_${suffix}`)) {
+                        alert(`Please complete all reviewer assessment fields for Model ${suffix.toUpperCase()}.`);
                         return false;
                     }
                 }
@@ -1440,49 +1652,66 @@
                     affiliation: document.getElementById('userAffiliation').value,
                     experience_years: document.getElementById('userExp').value,
                     expertise: document.getElementById('userExpertise').value,
-                    ai_familiarity: document.getElementById('userAIFamiliarity').value
+                    ai_familiarity: document.getElementById('userAIFamiliarity').value,
+                    review_experience: document.getElementById('userReviewExp').value,
+                    review_venues: document.getElementById('userReviewVenues').value
                 },
 
                 // Model A Ratings
                 model_a_ratings: {
-                    scientific_rigor: getRadioValue('rigor_a'),
-                    clinical_validity: getRadioValue('bio_a'),
-                    technical_quality: getRadioValue('tech_a'),
-                    insight_novelty: getRadioValue('insight_a'),
+                    // Quality Assessment
+                    hypothesis_clarity: getRadioValue('hypo_a'),
+                    statistical_validity: getRadioValue('stat_a'),
+                    code_correctness: getRadioValue('code_a'),
+                    reproducibility: getRadioValue('repro_a'),
+                    novelty: getRadioValue('novelty_a'),
                     presentation_clarity: getRadioValue('clarity_a'),
-                    trustworthiness: getRadioValue('trust_a'),
-                    errors_identified: getCheckboxValues('errors_a'),
-                    errors_detail: document.getElementById('errors_a_detail').value,
-                    strengths: document.getElementById('strengths_a').value,
-                    weaknesses: document.getElementById('weaknesses_a').value
+                    // Reviewer Format
+                    soundness: getRadioValue('soundness_a'),
+                    presentation: getRadioValue('presentation_a'),
+                    contribution: getRadioValue('contribution_a'),
+                    overall_score: getRadioValue('overall_a'),
+                    reviewer_confidence: getRadioValue('confidence_a'),
+                    // Errors
+                    errors_identified: getCheckboxValues('errors_a')
                 },
 
                 // Model B Ratings
                 model_b_ratings: {
-                    scientific_rigor: getRadioValue('rigor_b'),
-                    clinical_validity: getRadioValue('bio_b'),
-                    technical_quality: getRadioValue('tech_b'),
-                    insight_novelty: getRadioValue('insight_b'),
+                    // Quality Assessment
+                    hypothesis_clarity: getRadioValue('hypo_b'),
+                    statistical_validity: getRadioValue('stat_b'),
+                    code_correctness: getRadioValue('code_b'),
+                    reproducibility: getRadioValue('repro_b'),
+                    novelty: getRadioValue('novelty_b'),
                     presentation_clarity: getRadioValue('clarity_b'),
-                    trustworthiness: getRadioValue('trust_b'),
-                    errors_identified: getCheckboxValues('errors_b'),
-                    errors_detail: document.getElementById('errors_b_detail').value,
-                    strengths: document.getElementById('strengths_b').value,
-                    weaknesses: document.getElementById('weaknesses_b').value
+                    // Reviewer Format
+                    soundness: getRadioValue('soundness_b'),
+                    presentation: getRadioValue('presentation_b'),
+                    contribution: getRadioValue('contribution_b'),
+                    overall_score: getRadioValue('overall_b'),
+                    reviewer_confidence: getRadioValue('confidence_b'),
+                    // Errors
+                    errors_identified: getCheckboxValues('errors_b')
                 },
 
                 // Model C Ratings
                 model_c_ratings: {
-                    scientific_rigor: getRadioValue('rigor_c'),
-                    clinical_validity: getRadioValue('bio_c'),
-                    technical_quality: getRadioValue('tech_c'),
-                    insight_novelty: getRadioValue('insight_c'),
+                    // Quality Assessment
+                    hypothesis_clarity: getRadioValue('hypo_c'),
+                    statistical_validity: getRadioValue('stat_c'),
+                    code_correctness: getRadioValue('code_c'),
+                    reproducibility: getRadioValue('repro_c'),
+                    novelty: getRadioValue('novelty_c'),
                     presentation_clarity: getRadioValue('clarity_c'),
-                    trustworthiness: getRadioValue('trust_c'),
-                    errors_identified: getCheckboxValues('errors_c'),
-                    errors_detail: document.getElementById('errors_c_detail').value,
-                    strengths: document.getElementById('strengths_c').value,
-                    weaknesses: document.getElementById('weaknesses_c').value
+                    // Reviewer Format
+                    soundness: getRadioValue('soundness_c'),
+                    presentation: getRadioValue('presentation_c'),
+                    contribution: getRadioValue('contribution_c'),
+                    overall_score: getRadioValue('overall_c'),
+                    reviewer_confidence: getRadioValue('confidence_c'),
+                    // Errors
+                    errors_identified: getCheckboxValues('errors_c')
                 },
 
                 // Comparative Rankings
