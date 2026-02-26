@@ -3,86 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoDaS: Agentic Biomarker Discovery Evaluation</title>
+    <title>Evaluation of AI Biomarker Discovery Frameworks</title>
 
     <link rel="icon" type="image/png" href="./favicon.png">
-
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --primary: #0d6efd;
             --split-height: 88vh;
-            /* Time Viz Colors */
             --c-lit: #6f42c1; --c-data: #d63384; --c-feat: #fd7e14;
             --c-ml: #0dcaf0; --c-int: #20c997; --c-wrt: #6c757d;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #1f2937;
-            padding-bottom: 60px;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; color: #1f2937; padding-bottom: 60px; }
 
-        /* Layout Containers */
-        .step-container {
-            display: none;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            margin-bottom: 20px;
-        }
+        .step-container { display: none; background: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 20px; }
         .step-container.active { display: block; animation: fadeIn 0.3s ease-out; }
         .container-narrow { max-width: 900px; margin: 0 auto; }
 
-        /* Split View Layout */
         .step-split-view { max-width: 100%; margin: 0; padding: 0; background: transparent; box-shadow: none; }
         .split-wrapper { display: flex; height: var(--split-height); gap: 15px; padding: 0 15px; }
         .left-pane { flex: 6; background: white; border: 1px solid #e5e7eb; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .right-pane { flex: 4; background: white; border: 1px solid #e5e7eb; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .scrollable-content { flex: 1; overflow-y: auto; padding: 25px; }
 
-        /* PDF Viewer */
         .pdf-frame { width: 100%; height: 100%; border: none; display: none; }
         .pdf-frame.active { display: block; }
         .nav-tabs { background: #f9fafb; padding: 8px 10px 0; border-bottom: 1px solid #e5e7eb; }
 
-        /* Form Elements */
-        .section-header {
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #6b7280;
-            margin: 25px 0 15px; padding-bottom: 5px; border-bottom: 2px solid #f3f4f6;
-        }
+        .section-header { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #6b7280; margin: 25px 0 15px; padding-bottom: 5px; border-bottom: 2px solid #f3f4f6; }
 
-        /* Likert Scale */
         .likert-options { display: flex; gap: 4px; }
-        .likert-btn {
-            flex: 1; text-align: center; padding: 10px 0; border: 1px solid #d1d5db; border-radius: 4px;
-            cursor: pointer; font-size: 0.85rem; transition: all 0.2s; background: white;
-        }
+        .likert-btn { flex: 1; text-align: center; padding: 10px 0; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; background: white; }
         .likert-input:checked + .likert-btn { background-color: var(--primary); color: white; border-color: var(--primary); }
         .likert-input { display: none; }
 
-        /* Safety Box */
         .safety-box { border: 2px solid #ef4444; background-color: #fef2f2; padding: 20px; border-radius: 8px; margin-top: 30px; }
 
-        /* Ranking */
-        .ranking-slot {
-            height: 65px; border: 2px dashed #d1d5db; border-radius: 8px; background: #f9fafb; margin-bottom: 10px;
-            display: flex; align-items: center; justify-content: center; font-weight: 500; color: #9ca3af;
-        }
+        .ranking-slot { height: 65px; border: 2px dashed #d1d5db; border-radius: 8px; background: #f9fafb; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; color: #9ca3af; }
         .ranking-slot.filled { border-style: solid; border-color: var(--primary); background: white; color: black; }
-        .draggable {
-            padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; font-weight: 600;
-        }
+        .draggable { padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; font-weight: 600; }
 
-        /* Time Visualization Bar */
         .viz-container { margin-bottom: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
         .progress-stacked { height: 25px; border-radius: 12px; overflow: hidden; display: flex; background: #e9ecef; }
         .viz-segment { display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem; font-weight: bold; transition: width 0.3s ease; }
@@ -90,690 +53,706 @@
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot-color { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* Process Flow List */
         .process-list { position: relative; padding-left: 20px; border-left: 2px solid #e9ecef; margin-left: 10px; }
         .process-item { position: relative; margin-bottom: 20px; }
-        .process-item::before {
-            content: ''; position: absolute; left: -26px; top: 10px; width: 10px; height: 10px;
-            border-radius: 50%; background: white; border: 2px solid #adb5bd;
-        }
-        .process-item.active-input::before { border-color: var(--primary); background: var(--primary); }
+        .process-item::before { content: ''; position: absolute; left: -26px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: white; border: 2px solid #adb5bd; }
 
-        /* Progress Dots */
         .progress-indicator { text-align: center; margin-bottom: 20px; }
         .step-dots { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
         .dot { width: 10px; height: 10px; background: #d1d5db; border-radius: 50%; }
         .dot.active { background: var(--primary); transform: scale(1.2); }
         .dot.completed { background: #10b981; }
 
-        /* Dataset Cards */
-        .dataset-card-label {
-            cursor: pointer; border: 2px solid #e5e7eb; border-radius: 8px;
-            padding: 16px; transition: all 0.2s; background: white;
-            display: flex; flex-direction: column; align-items: flex-start;
-            min-height: 110px; width: 100%;
-        }
-        .dataset-card-label:hover { border-color: var(--primary); background: #eff6ff; }
-        .btn-check:checked + .dataset-card-label {
-            border-color: var(--primary); background: #eff6ff;
-            box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
-        }
+        /* Tab completion dots */
+        .tab-dot { font-size: 0.65rem; vertical-align: super; margin-left: 3px; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+        .tab-dot.pending { color: #fd7e14; animation: blink 1.2s ease-in-out infinite; }
+        .tab-dot.done    { color: #10b981; animation: none; }
+
+        /* Venue pill checkboxes */
+        .venue-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+        .venue-item label { font-size: 0.8rem; cursor: pointer; padding: 4px 10px; border: 1px solid #d1d5db; border-radius: 20px; background: white; transition: all 0.15s; user-select: none; display: inline-block; }
+        .venue-item input:checked + label { background: var(--primary); color: white; border-color: var(--primary); }
+        .venue-item input { display: none; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="container-fluid pt-3">
-        <div class="progress-indicator">
-            <h5 class="fw-bold m-0">Evaluation of Autonomous Co-Scientists</h5>
-            <div class="step-dots" id="dots">
-                <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            </div>
-            <small class="text-muted" id="stepText">Step 1: Dataset &amp; Profile</small>
+<div class="container-fluid pt-3">
+    <div class="progress-indicator">
+        <h5 class="fw-bold m-0">Evaluation of AI Biomarker Discovery Frameworks</h5>
+        <div class="step-dots" id="dots">
+            <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
         </div>
+        <small class="text-muted" id="stepText">Step 1: Dataset &amp; Profile</small>
+    </div>
 
-        <form id="evalForm" onsubmit="return false;">
+    <form id="evalForm" onsubmit="return false;">
 
-            <!-- STEP 1: Dataset Selection + Participant Profile -->
-            <div class="step-container active container-narrow" id="step1">
-                <h4 class="fw-bold mb-4">Dataset &amp; Participant Profile</h4>
-
-                <!-- Dataset Selection -->
-                <div class="alert alert-primary border-0 small mb-4">
-                    <i class="bi bi-info-circle-fill me-2"></i>
-                    You will review AI-generated biomarker discovery reports for your assigned dataset. Select it below.
-                </div>
-                <div class="section-header">Assigned Dataset <span class="text-danger">*</span></div>
-                <div class="row g-3 mb-5" id="datasetCards">
-                    <!-- Generated by JS -->
-                </div>
-
-                <!-- Participant Profile -->
-                <div class="section-header">Participant Profile</div>
-                <div class="alert alert-info border-0 small">
-                    <i class="bi bi-shield-lock me-2"></i>
-                    To analyze results by expertise level, please provide detailed background. All data is anonymized.
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small">Full Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="uName">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small">Email (for validation) <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="uEmail">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small">Current Affiliation <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="uAffil">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small">Primary Domain <span class="text-danger">*</span></label>
-                        <select class="form-select" id="uExpert">
-                            <option value="" disabled selected>Select...</option>
-                            <option>Clinical Medicine</option>
-                            <option>Bioinformatics / Genomics</option>
-                            <option>Wearable Sensors / IoT</option>
-                            <option>Computer Science / ML</option>
-                            <option>Biostatistics</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small">Research Experience (Years) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="uExp" min="0">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small">Generative AI Familiarity <span class="text-danger">*</span></label>
-                        <select class="form-select" id="uAiFam">
-                            <option value="None">Novice (Never used)</option>
-                            <option value="User">User (ChatGPT for text)</option>
-                            <option value="Coder">Coder (Copilot/Cursor)</option>
-                            <option value="Researcher">AI Researcher (Builds models)</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold small">Peer Review Experience <span class="text-danger">*</span></label>
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <select class="form-select" id="uRevLvl">
-                                    <option value="" disabled selected>Frequency...</option>
-                                    <option value="None">None</option>
-                                    <option value="Occasional">Occasional (1-3/yr)</option>
-                                    <option value="Regular">Regular (4-10/yr)</option>
-                                    <option value="Heavy">Heavy (10+/yr or Editor)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" id="uVenues" placeholder="Key Venues (e.g. NeurIPS, Nature Med)">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-end mt-5">
-                    <button class="btn btn-primary px-4" onclick="next(1)">Next Step <i class="bi bi-arrow-right"></i></button>
-                </div>
+        <!-- STEP 1: Dataset + Profile -->
+        <div class="step-container active container-narrow" id="step1">
+            <h4 class="fw-bold mb-4">Dataset &amp; Participant Profile</h4>
+            <div class="alert alert-primary border-0 small mb-4">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                Select your assigned dataset, then complete your profile. All data is anonymized.
             </div>
 
-            <!-- STEP 2: Guidelines -->
-            <div class="step-container container-narrow" id="step2">
-                <h4 class="fw-bold mb-4">Evaluation Protocol</h4>
-
-                <!-- Selected dataset badge -->
-                <div class="alert alert-success border-0 small mb-4 d-flex align-items-center gap-2">
-                    <i class="bi bi-database-check fs-5"></i>
-                    <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>3 AI-generated reports</strong> (Model A, B, C) for this dataset.</div>
-                </div>
-
-                <div class="card mb-4 border-0 bg-light">
-                    <div class="card-body">
-                        <h6 class="fw-bold text-dark">Objective</h6>
-                        <p class="small mb-0">Evaluate whether Autonomous AI Agents can generate <strong>publication-quality</strong> biomarker discovery research from raw wearable sensor data.</p>
-                    </div>
-                </div>
-                <ul class="list-group list-group-flush mb-4">
-                    <li class="list-group-item"><i class="bi bi-eye-slash me-2 text-muted"></i> <strong>Double Blind:</strong> Models A, B, and C are anonymized.</li>
-                    <li class="list-group-item"><i class="bi bi-journal-medical me-2 text-primary"></i> <strong>Standard:</strong> Evaluate as if reviewing for a high-impact journal (e.g., <em>Nature Medicine</em>).</li>
-                    <li class="list-group-item"><i class="bi bi-shield-exclamation me-2 text-danger"></i> <strong>Safety:</strong> Rigorously check for hallucinations and biological contradictions.</li>
-                </ul>
-                <div class="d-flex justify-content-between mt-5">
-                    <button class="btn btn-outline-secondary" onclick="prev()">Back</button>
-                    <button class="btn btn-primary px-4" onclick="next(2)">Start Evaluation <i class="bi bi-arrow-right"></i></button>
-                </div>
+            <!-- Dataset dropdown -->
+            <div class="section-header">Assigned Dataset <span class="text-danger">*</span></div>
+            <div class="mb-5">
+                <select class="form-select" id="datasetSelect">
+                    <option value="" disabled selected>Select your assigned dataset…</option>
+                </select>
             </div>
 
-            <!-- STEP 3: Assessment -->
-            <div class="step-container step-split-view" id="step3">
-                <div class="split-wrapper">
-                    <!-- LEFT: PDF -->
-                    <div class="left-pane">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item"><button class="nav-link active" onclick="switchM('a')">Model A</button></li>
-                            <li class="nav-item"><button class="nav-link" onclick="switchM('b')">Model B</button></li>
-                            <li class="nav-item"><button class="nav-link" onclick="switchM('c')">Model C</button></li>
-                        </ul>
-                        <div style="flex:1; position:relative;">
-                            <iframe src="" class="pdf-frame active" id="pdf_a"></iframe>
-                            <iframe src="" class="pdf-frame" id="pdf_b"></iframe>
-                            <iframe src="" class="pdf-frame" id="pdf_c"></iframe>
-                        </div>
-                    </div>
-
-                    <!-- RIGHT: Review Form -->
-                    <div class="right-pane">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pt-3 px-1">
-                            <h5 class="fw-bold m-0">Peer Review Form</h5>
-                            <span class="badge bg-primary" id="badge">Model A</span>
-                        </div>
-                        <div class="scrollable-content" id="forms"></div> <!-- JS Injected -->
-                        <div class="p-3 border-top bg-light d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="prev()">Back</button>
-                            <button class="btn btn-sm btn-primary" onclick="next(3)">Next: Ranking <i class="bi bi-arrow-right"></i></button>
-                        </div>
-                    </div>
+            <!-- Profile -->
+            <div class="section-header">Participant Profile</div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="uName">
                 </div>
-            </div>
-
-            <!-- STEP 4: Ranking -->
-            <div class="step-container step-split-view" id="step4">
-                <div class="split-wrapper">
-                    <div class="left-pane">
-                        <div class="p-2 border-bottom bg-light text-center fw-bold small">Reference View</div>
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item"><button class="nav-link active" onclick="switchRef('a')">Model A</button></li>
-                            <li class="nav-item"><button class="nav-link" onclick="switchRef('b')">Model B</button></li>
-                            <li class="nav-item"><button class="nav-link" onclick="switchRef('c')">Model C</button></li>
-                        </ul>
-                        <div style="flex:1;">
-                            <iframe src="" class="pdf-frame active" id="ref_a"></iframe>
-                            <iframe src="" class="pdf-frame" id="ref_b"></iframe>
-                            <iframe src="" class="pdf-frame" id="ref_c"></iframe>
-                        </div>
-                    </div>
-                    <div class="right-pane">
-                        <div class="scrollable-content">
-                            <h5 class="fw-bold mb-3">Comparative Ranking</h5>
-                            <div class="p-3 bg-light rounded border mb-4">
-                                <div class="d-flex text-center small fw-bold mb-2 text-muted">
-                                    <div style="flex:1">1st (Best)</div>
-                                    <div style="flex:1">2nd</div>
-                                    <div style="flex:1">3rd</div>
-                                </div>
-                                <div class="d-flex gap-2 mb-3" id="slots">
-                                    <div class="ranking-slot flex-grow-1" data-r="1">Drop Here</div>
-                                    <div class="ranking-slot flex-grow-1" data-r="2">Drop Here</div>
-                                    <div class="ranking-slot flex-grow-1" data-r="3">Drop Here</div>
-                                </div>
-                                <div class="d-flex justify-content-center gap-2" id="pool">
-                                    <div class="draggable model-a" draggable="true" data-id="Model A">Model A</div>
-                                    <div class="draggable model-b" draggable="true" data-id="Model B">Model B</div>
-                                    <div class="draggable model-c" draggable="true" data-id="Model C">Model C</div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small">Rationale for 1st Place Selection (Required)</label>
-                                <textarea class="form-control" id="rankReason" rows="2" placeholder="e.g. Most novel insight, rigorous stats, minimal hallucination..."></textarea>
-                            </div>
-                            <div class="card border-info">
-                                <div class="card-body py-3">
-                                    <label class="fw-bold text-info small"><i class="bi bi-robot me-1"></i> Turing Test</label>
-                                    <p class="small text-muted mb-2">Which output felt most like human work?</p>
-                                    <div class="btn-group w-100 btn-group-sm">
-                                        <input type="radio" class="btn-check" name="turing" id="t1" value="A"><label class="btn btn-outline-secondary" for="t1">Model A</label>
-                                        <input type="radio" class="btn-check" name="turing" id="t2" value="B"><label class="btn btn-outline-secondary" for="t2">Model B</label>
-                                        <input type="radio" class="btn-check" name="turing" id="t3" value="C"><label class="btn btn-outline-secondary" for="t3">Model C</label>
-                                        <input type="radio" class="btn-check" name="turing" id="t4" value="None"><label class="btn btn-outline-secondary" for="t4">None</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-3 border-top bg-light text-end">
-                            <button class="btn btn-outline-secondary btn-sm me-2" onclick="prev()">Back</button>
-                            <button class="btn btn-primary btn-sm px-4" onclick="next(4)">Next Step <i class="bi bi-arrow-right"></i></button>
-                        </div>
-                    </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Email (for validation) <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="uEmail">
                 </div>
-            </div>
-
-            <!-- STEP 5: Granular Efficiency (Sequenced) -->
-            <div class="step-container container-narrow" id="step5">
-                <h4 class="fw-bold mb-4">Value Analysis (Efficiency)</h4>
-
-                <div class="alert alert-warning border-0 small mb-4">
-                    <i class="bi bi-clock-history me-2"></i>
-                    <strong>Context:</strong> Assume a <strong>Full-time Researcher (8 hours/day)</strong> performing this exact study manually.
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Current Affiliation <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="uAffil">
                 </div>
-
-                <!-- Real-time Viz -->
-                <div class="viz-container">
-                    <label class="small fw-bold mb-2">Total Estimated Manual Effort</label>
-                    <div class="progress-stacked" id="timeBar">
-                        <div class="viz-segment" style="width:100%; background:#dee2e6; color:#6c757d">Enter values below...</div>
-                    </div>
-                    <div class="viz-legend" id="timeLegend">
-                        <!-- Legend items generated by JS -->
-                    </div>
-                    <div class="text-end small fw-bold mt-2" id="totalTimeDisplay">Total: 0 Days</div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Primary Domain <span class="text-danger">*</span></label>
+                    <select class="form-select" id="uExpert">
+                        <option value="" disabled selected>Select…</option>
+                        <option>Clinical Medicine</option>
+                        <option>Bioinformatics / Genomics</option>
+                        <option>Wearable Sensors / IoT</option>
+                        <option>Computer Science / ML</option>
+                        <option>Biostatistics</option>
+                    </select>
                 </div>
-
-                <!-- Sequential Inputs -->
-                <div class="process-list">
-                    <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-lit)">1. Literature Review &amp; Hypothesis</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control time-input" id="t_lit" placeholder="0" oninput="updateTimeViz()">
-                            <select class="form-select" style="max-width:100px" id="u_lit" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
-                        </div>
-                    </div>
-                    <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-data)">2. Data Cleaning &amp; Preprocessing</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control time-input" id="t_data" placeholder="0" oninput="updateTimeViz()">
-                            <select class="form-select" style="max-width:100px" id="u_data" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
-                        </div>
-                    </div>
-                    <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-feat)">3. Feature Engineering</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control time-input" id="t_feat" placeholder="0" oninput="updateTimeViz()">
-                            <select class="form-select" style="max-width:100px" id="u_feat" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
-                        </div>
-                    </div>
-                    <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-ml)">4. Stat Analysis / ML Modeling</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control time-input" id="t_ml" placeholder="0" oninput="updateTimeViz()">
-                            <select class="form-select" style="max-width:100px" id="u_ml" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
-                        </div>
-                    </div>
-                    <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-int)">5. Biological Interpretation</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control time-input" id="t_int" placeholder="0" oninput="updateTimeViz()">
-                            <select class="form-select" style="max-width:100px" id="u_int" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
-                        </div>
-                    </div>
-                    <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-wrt)">6. Manuscript Drafting</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control time-input" id="t_wrt" placeholder="0" oninput="updateTimeViz()">
-                            <select class="form-select" style="max-width:100px" id="u_wrt" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
-                        </div>
-                    </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Research Experience (Years) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="uExp" min="0">
                 </div>
-
-                <hr>
-
-                <div class="mb-5 mt-4">
-                    <h6 class="section-header text-dark">Verification Threshold</h6>
-                    <label class="small fw-bold mb-2">What additional validation is required before you would submit this to a journal?</label>
-                    <select class="form-select" id="trust">
-                        <option value="" disabled selected>Select requirement...</option>
-                        <option value="Code Review">Code Review Only (I trust the results)</option>
-                        <option value="Replication">Replication on same data (Check reproducibility)</option>
-                        <option value="External">External Dataset Validation (Check generalizability)</option>
-                        <option value="WetLab">Prospective Wet-lab/Clinical Experimentation</option>
-                        <option value="Never">I would not submit this.</option>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Generative AI Familiarity <span class="text-danger">*</span></label>
+                    <select class="form-select" id="uAiFam">
+                        <option value="None">Novice (Never used)</option>
+                        <option value="User">User (ChatGPT for text)</option>
+                        <option value="Coder">Coder (Copilot/Cursor)</option>
+                        <option value="Researcher">AI Researcher (Builds models)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Peer Review Frequency <span class="text-danger">*</span></label>
+                    <select class="form-select" id="uRevLvl">
+                        <option value="" disabled selected>Select…</option>
+                        <option value="None">None</option>
+                        <option value="Occasional">Occasional (1–3/yr)</option>
+                        <option value="Regular">Regular (4–10/yr)</option>
+                        <option value="Heavy">Heavy (10+/yr or Editor)</option>
                     </select>
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary" onclick="prev()">Back</button>
-                    <button class="btn btn-success px-5" onclick="showConfirm()">Submit Evaluation <i class="bi bi-check-lg"></i></button>
+                <!-- Key Venues: pill checkboxes -->
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small">Key Venues Reviewed / Published In <span class="text-danger">*</span></label>
+                    <div class="venue-grid mb-2" id="venueGrid"></div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mt-1">
+                        <div class="venue-item">
+                            <input type="checkbox" class="venue-chk" id="v_others" value="Others">
+                            <label for="v_others">Others</label>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="venueOtherText"
+                               placeholder="e.g. Science, Cell, KDD…" style="display:none; max-width:280px">
+                    </div>
                 </div>
             </div>
 
-        </form>
-    </div>
+            <div class="text-end mt-5">
+                <button class="btn btn-primary px-4" onclick="next(1)">Next Step <i class="bi bi-arrow-right"></i></button>
+            </div>
+        </div>
 
-    <!-- Modals -->
-    <div class="modal fade" id="confirmModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body p-4">
-                    <h5 class="fw-bold">Confirm Submission</h5>
-                    <p class="small text-muted">Receipt sent to <strong id="cEmail"></strong>.</p>
-                    <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                        <button class="btn btn-primary" id="finalBtn" onclick="submitData()">Confirm</button>
+        <!-- STEP 2: Guidelines -->
+        <div class="step-container container-narrow" id="step2">
+            <h4 class="fw-bold mb-4">Evaluation Protocol</h4>
+            <div class="alert alert-success border-0 small mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-database-check fs-5"></i>
+                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>3 AI-generated reports</strong> (Model A, B, C).</div>
+            </div>
+            <div class="card mb-4 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold text-dark">Objective</h6>
+                    <p class="small mb-0">Evaluate whether Autonomous AI Agents can generate <strong>publication-quality</strong> biomarker discovery research from raw wearable sensor data.</p>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item"><i class="bi bi-eye-slash me-2 text-muted"></i><strong>Double Blind:</strong> Models A, B, and C are anonymized.</li>
+                <li class="list-group-item"><i class="bi bi-journal-medical me-2 text-primary"></i><strong>Standard:</strong> Evaluate as if reviewing for a high-impact journal (e.g., <em>Nature Medicine</em>).</li>
+                <li class="list-group-item"><i class="bi bi-shield-exclamation me-2 text-danger"></i><strong>Safety:</strong> Rigorously check for hallucinations and biological contradictions.</li>
+            </ul>
+            <div class="d-flex justify-content-between mt-5">
+                <button class="btn btn-outline-secondary" onclick="prev()">Back</button>
+                <button class="btn btn-primary px-4" onclick="next(2)">Start Evaluation <i class="bi bi-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Assessment -->
+        <div class="step-container step-split-view" id="step3">
+            <div class="split-wrapper">
+                <div class="left-pane">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item"><button class="nav-link active" onclick="switchM('a')">Model A <span class="tab-dot pending" id="tab_dot_a">●</span></button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchM('b')">Model B <span class="tab-dot pending" id="tab_dot_b">●</span></button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchM('c')">Model C <span class="tab-dot pending" id="tab_dot_c">●</span></button></li>
+                    </ul>
+                    <div style="flex:1; position:relative;">
+                        <iframe src="" class="pdf-frame active" id="pdf_a"></iframe>
+                        <iframe src="" class="pdf-frame" id="pdf_b"></iframe>
+                        <iframe src="" class="pdf-frame" id="pdf_c"></iframe>
+                    </div>
+                </div>
+                <div class="right-pane">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-3 px-1">
+                        <h5 class="fw-bold m-0">Peer Review Form</h5>
+                        <span class="badge bg-primary" id="badge">Model A</span>
+                    </div>
+                    <div class="scrollable-content" id="forms"></div>
+                    <div class="p-3 border-top bg-light d-flex justify-content-between">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="prev()">Back</button>
+                        <button class="btn btn-sm btn-primary" onclick="next(3)">Next: Ranking <i class="bi bi-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center p-5">
-                    <i class="bi bi-check-circle-fill text-success display-1"></i>
-                    <h4 class="mt-3 fw-bold">Received</h4>
-                    <p class="text-muted">Thank you for your expert contribution.</p>
+
+        <!-- STEP 4: Ranking (Turing test removed) -->
+        <div class="step-container step-split-view" id="step4">
+            <div class="split-wrapper">
+                <div class="left-pane">
+                    <div class="p-2 border-bottom bg-light text-center fw-bold small">Reference View</div>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item"><button class="nav-link active" onclick="switchRef('a')">Model A</button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchRef('b')">Model B</button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchRef('c')">Model C</button></li>
+                    </ul>
+                    <div style="flex:1;">
+                        <iframe src="" class="pdf-frame active" id="ref_a"></iframe>
+                        <iframe src="" class="pdf-frame" id="ref_b"></iframe>
+                        <iframe src="" class="pdf-frame" id="ref_c"></iframe>
+                    </div>
+                </div>
+                <div class="right-pane">
+                    <div class="scrollable-content">
+                        <h5 class="fw-bold mb-3">Comparative Ranking</h5>
+                        <div class="p-3 bg-light rounded border mb-4">
+                            <div class="d-flex text-center small fw-bold mb-2 text-muted">
+                                <div style="flex:1">1st (Best)</div>
+                                <div style="flex:1">2nd</div>
+                                <div style="flex:1">3rd</div>
+                            </div>
+                            <div class="d-flex gap-2 mb-3" id="slots">
+                                <div class="ranking-slot flex-grow-1" data-r="1">Drop Here</div>
+                                <div class="ranking-slot flex-grow-1" data-r="2">Drop Here</div>
+                                <div class="ranking-slot flex-grow-1" data-r="3">Drop Here</div>
+                            </div>
+                            <div class="d-flex justify-content-center gap-2" id="pool">
+                                <div class="draggable" draggable="true" data-id="Model A">Model A</div>
+                                <div class="draggable" draggable="true" data-id="Model B">Model B</div>
+                                <div class="draggable" draggable="true" data-id="Model C">Model C</div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small">Rationale for 1st Place Selection <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="rankReason" rows="3"
+                                placeholder="e.g. Most novel insight, rigorous statistics, minimal hallucination…"></textarea>
+                        </div>
+                    </div>
+                    <div class="p-3 border-top bg-light text-end">
+                        <button class="btn btn-outline-secondary btn-sm me-2" onclick="prev()">Back</button>
+                        <button class="btn btn-primary btn-sm px-4" onclick="next(4)">Next Step <i class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 5: Efficiency -->
+        <div class="step-container container-narrow" id="step5">
+            <h4 class="fw-bold mb-4">Value Analysis (Efficiency)</h4>
+            <div class="alert alert-warning border-0 small mb-4">
+                <i class="bi bi-clock-history me-2"></i>
+                <strong>Context:</strong> Assume a <strong>Full-time Researcher (8 hours/day)</strong> performing this exact study manually.
+            </div>
+
+            <div class="viz-container">
+                <label class="small fw-bold mb-2">Total Estimated Manual Effort</label>
+                <div class="progress-stacked" id="timeBar">
+                    <div class="viz-segment" style="width:100%;background:#dee2e6;color:#6c757d">Enter values below…</div>
+                </div>
+                <div class="viz-legend" id="timeLegend"></div>
+                <div class="text-end small fw-bold mt-2" id="totalTimeDisplay">Total: 0 Days</div>
+            </div>
+
+            <div class="process-list">
+                <div class="process-item">
+                    <label class="small fw-bold" style="color:var(--c-lit)">1. Literature Review &amp; Hypothesis</label>
+                    <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_lit" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_lit" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
+                </div>
+                <div class="process-item">
+                    <label class="small fw-bold" style="color:var(--c-data)">2. Data Cleaning &amp; Preprocessing</label>
+                    <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_data" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_data" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
+                </div>
+                <div class="process-item">
+                    <label class="small fw-bold" style="color:var(--c-feat)">3. Feature Engineering</label>
+                    <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_feat" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_feat" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
+                </div>
+                <div class="process-item">
+                    <label class="small fw-bold" style="color:var(--c-ml)">4. Stat Analysis / ML Modeling</label>
+                    <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_ml" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_ml" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
+                </div>
+                <div class="process-item">
+                    <label class="small fw-bold" style="color:var(--c-int)">5. Biological Interpretation</label>
+                    <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_int" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_int" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
+                </div>
+                <div class="process-item">
+                    <label class="small fw-bold" style="color:var(--c-wrt)">6. Manuscript Drafting</label>
+                    <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_wrt" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_wrt" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="mb-5 mt-4">
+                <div class="section-header text-dark">Verification Threshold <span class="text-danger">*</span></div>
+                <label class="small fw-bold mb-2">What additional validation is required before you would submit this to a journal?
+                    <small class="fw-normal text-muted">(select all that apply)</small>
+                </label>
+                <div id="trustChecks" class="mt-2">
+                    <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr1" value="Code Review"><label class="form-check-label small" for="tr1">Code Review Only (I trust the results)</label></div>
+                    <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr2" value="Replication"><label class="form-check-label small" for="tr2">Replication on same data (check reproducibility)</label></div>
+                    <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr3" value="External"><label class="form-check-label small" for="tr3">External Dataset Validation (check generalizability)</label></div>
+                    <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr4" value="WetLab"><label class="form-check-label small" for="tr4">Prospective Wet-lab / Clinical Experimentation</label></div>
+                    <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr5" value="Never"><label class="form-check-label small" for="tr5">I would not submit this.</label></div>
+                    <div class="form-check mt-1">
+                        <input class="form-check-input trust-chk" type="checkbox" id="tr_other" value="Other">
+                        <label class="form-check-label small" for="tr_other">Other:</label>
+                    </div>
+                    <input type="text" class="form-control form-control-sm mt-1" id="trustOtherText"
+                           placeholder="Please specify…" style="display:none; max-width:420px">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-outline-secondary" onclick="prev()">Back</button>
+                <button class="btn btn-success px-5" onclick="showConfirm()">Submit Evaluation <i class="bi bi-check-lg"></i></button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-4">
+                <h5 class="fw-bold">Confirm Submission</h5>
+                <p class="small text-muted">Your response will be recorded for <strong id="cEmail"></strong>.</p>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" id="finalBtn" onclick="submitData()">Confirm</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <i class="bi bi-check-circle-fill text-success display-1"></i>
+                <h4 class="mt-3 fw-bold">Received</h4>
+                <p class="text-muted">Thank you for your expert contribution.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const app = initializeApp({
-            apiKey: "__FIREBASE_API__",
-            authDomain: "ivory-plane-406700.firebaseapp.com",
-            databaseURL: "https://ivory-plane-406700-default-rtdb.firebaseio.com",
-            projectId: "ivory-plane-406700",
-            storageBucket: "ivory-plane-406700.firebasestorage.app",
-            messagingSenderId: "360125182471",
-            appId: "1:360125182471:web:a50fde959d1b09936530a2"
+    const app = initializeApp({
+        apiKey: "__FIREBASE_API__",
+        authDomain: "ivory-plane-406700.firebaseapp.com",
+        databaseURL: "https://ivory-plane-406700-default-rtdb.firebaseio.com",
+        projectId: "ivory-plane-406700",
+        storageBucket: "ivory-plane-406700.firebasestorage.app",
+        messagingSenderId: "360125182471",
+        appId: "1:360125182471:web:a50fde959d1b09936530a2"
+    });
+    const db = getDatabase(app);
+
+    // =============================================================
+    // CONFIG
+    // =============================================================
+    const DATASETS = [
+        { id: 'dwb_hourly', name: 'DWB (Hourly)',  desc: 'Hourly wearable biomarker data'      },
+        { id: 'globem',     name: 'GLOBEM',         desc: 'Longitudinal everyday behavior data' },
+        { id: 'wearme',     name: 'WearMe',         desc: 'Multimodal wearable sensor data'     },
+        // TODO: add 4th dataset when PDFs are ready
+        // { id: 'dataset4', name: 'Dataset 4', desc: '…' },
+    ];
+
+    const VENUES = ['Nature','Nature Medicine','NEJM','NEJM AI','NeurIPS','ICML','ICLR','ACL','EMNLP','NAACL'];
+
+    // ---- Model randomisation (once per page load) ----------------
+    const MODEL_FILES = ['codas', 'biomni', 'colab_dsa'];
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+    const shuffled = shuffle(MODEL_FILES);
+    // MODEL_MAP maps display label → actual model file
+    // e.g. { a: 'biomni', b: 'codas', c: 'colab_dsa' }
+    const MODEL_MAP = { a: shuffled[0], b: shuffled[1], c: shuffled[2] };
+
+    let curr = 1;
+
+    // ---- PDF loading ---------------------------------------------
+    function updatePDFs() {
+        const ds = document.getElementById('datasetSelect').value;
+        if (!ds) return;
+        ['a','b','c'].forEach(m => {
+            const path = `./pdfs/${ds}/${MODEL_MAP[m]}.pdf`;
+            document.getElementById(`pdf_${m}`).src = path;
+            document.getElementById(`ref_${m}`).src = path;
         });
-        const db = getDatabase(app);
+        const dsObj = DATASETS.find(d => d.id === ds);
+        if (dsObj) document.getElementById('selectedDatasetLabel').innerText = dsObj.name;
+    }
 
-        // =============================================================
-        // DATASET CONFIGURATION
-        // TODO: Customize id, name, desc, and icon for each dataset.
-        // PDFs must be placed at: pdfs/{id}/codas.pdf
-        //                         pdfs/{id}/biomni.pdf
-        //                         pdfs/{id}/colab_dsa.pdf
-        // =============================================================
-        const DATASETS = [
-            { id: 'dwb_hourly', name: 'DWB (Hourly)',  desc: 'Hourly wearable biomarker data',      icon: 'bi-clock-history'  },
-            { id: 'globem',     name: 'GLOBEM',         desc: 'Longitudinal everyday behavior data', icon: 'bi-graph-up-arrow' },
-            { id: 'wearme',     name: 'WearMe',         desc: 'Multimodal wearable sensor data',     icon: 'bi-watch'          },
-            // TODO: uncomment and fill in when 4th dataset PDFs are ready
-            // { id: 'dataset4', name: 'Dataset 4', desc: '...', icon: 'bi-clipboard-pulse' },
-        ];
+    // ---- Tab completion dots ------------------------------------
+    function updateTabDots() {
+        ['a','b','c'].forEach(m => {
+            const dot = document.getElementById(`tab_dot_${m}`);
+            if (!dot) return;
+            const done = !!document.querySelector(`input[name="dec_${m}"]:checked`);
+            dot.className = `tab-dot ${done ? 'done' : 'pending'}`;
+            dot.textContent = done ? '✓' : '●';
+        });
+    }
 
-        let curr = 1;
+    // ---- Form generator -----------------------------------------
+    function genForm(m) {
+        return `
+        <div id="f_${m}" class="m-form" style="display:${m==='a'?'block':'none'}">
+            <div class="section-header text-primary">1. Scientific Quality</div>
+            ${likert(m,'novelty',      'Novelty / Significance',      'Does it add new knowledge?',             ['Derivative','Low','Moderate','High','Exceptional'])}
+            ${likert(m,'soundness',    'Methodological Soundness',    'Are stats/ML rigorous?',                 ['Flawed','Weak','Acceptable','Strong','Rigorous'])}
+            ${likert(m,'plausibility', 'Biological Plausibility',     'Consistent with known disease biology?', ['Contradicts','Uncertain','Plausible','Well-grounded','Compelling'])}
+            ${likert(m,'limitations',  'Limitations Transparency',    'Does it acknowledge constraints?',       ['None stated','Minimal','Adequate','Thorough','Exemplary'])}
+            ${likert(m,'presentation', 'Clarity &amp; Presentation',  'Is it well-written?',                   ['Poor','Fair','Good','Very Good','Excellent'])}
+            ${likert(m,'repro',        'Reproducibility',             'Are code/methods clear?',                ['None','Low','Medium','High','Perfect'])}
 
-        // Update PDF iframes based on selected dataset
-        function updatePDFs() {
-            const ds = document.querySelector('input[name="dataset"]:checked')?.value;
-            if (!ds) return;
-            const modelFiles = { a: 'codas', b: 'biomni', c: 'colab_dsa' };
-            ['a', 'b', 'c'].forEach(m => {
-                const path = `./pdfs/${ds}/${modelFiles[m]}.pdf`;
-                document.getElementById(`pdf_${m}`).src = path;
-                document.getElementById(`ref_${m}`).src = path;
-            });
-            // Show selected dataset in guidelines step
-            const ds_obj = DATASETS.find(d => d.id === ds);
-            if (ds_obj) document.getElementById('selectedDatasetLabel').innerText = ds_obj.name;
-        }
-
-        // FORM GENERATOR
-        function genForm(m) {
-            const d = m==='a'?'block':'none';
-            return `
-            <div id="f_${m}" class="m-form" style="display:${d}">
-                <!-- A. Standard Metrics -->
-                <div class="section-header text-primary">1. Scientific Quality</div>
-                ${createLikert(m, 'novelty', 'Novelty / Significance', 'Does it add new knowledge?', ['Derivative','Low','Moderate','High','Exceptional'])}
-                ${createLikert(m, 'soundness', 'Methodological Soundness', 'Are stats/ML rigorous?', ['Flawed','Weak','Acceptable','Strong','Rigorous'])}
-                ${createLikert(m, 'plausibility', 'Biological Plausibility', 'Consistent with known disease biology?', ['Contradicts','Uncertain','Plausible','Well-grounded','Compelling'])}
-                ${createLikert(m, 'limitations', 'Limitations Transparency', 'Does it acknowledge constraints & confounds?', ['None stated','Minimal','Adequate','Thorough','Exemplary'])}
-                ${createLikert(m, 'presentation', 'Clarity & Presentation', 'Is it well-written?', ['Poor','Fair','Good','Very Good','Excellent'])}
-                ${createLikert(m, 'repro', 'Reproducibility', 'Are code/methods clear?', ['None','Low','Medium','High','Perfect'])}
-
-                <!-- B. Decision & Utility -->
-                <div class="section-header text-dark">2. Decision & Utility</div>
-                <div class="mb-3">
-                    <label class="small fw-bold mb-1">Recommendation (Target: Nature/Lancet Digital Health)</label>
-                    <div class="btn-group w-100 btn-group-sm">
-                        <input type="radio" class="btn-check" name="dec_${m}" id="d1_${m}" value="Reject"><label class="btn btn-outline-danger" for="d1_${m}">Reject</label>
-                        <input type="radio" class="btn-check" name="dec_${m}" id="d2_${m}" value="Major"><label class="btn btn-outline-secondary" for="d2_${m}">Major Revision</label>
-                        <input type="radio" class="btn-check" name="dec_${m}" id="d3_${m}" value="Minor"><label class="btn btn-outline-secondary" for="d3_${m}">Minor Revision</label>
-                        <input type="radio" class="btn-check" name="dec_${m}" id="d4_${m}" value="Accept"><label class="btn btn-outline-success" for="d4_${m}">Accept</label>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="small fw-bold d-flex justify-content-between">
-                        <span>Human Effort Saved</span>
-                        <span id="eff_val_${m}" class="text-primary">50%</span>
-                    </label>
-                    <input type="range" class="form-range" min="0" max="100" step="5" value="50" oninput="document.getElementById('eff_val_${m}').innerText=this.value+'%'" id="eff_${m}">
-                </div>
-
-                <!-- C. Detailed Safety -->
-                <div class="safety-box">
-                    <div class="fw-bold text-danger mb-2 small"><i class="bi bi-shield-x me-1"></i> Critical Safety Check</div>
-                    <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="Hallucination"><label class="form-check-label small">Hallucination / Fake Data</label></div>
-                    <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="BioContradiction"><label class="form-check-label small">Biological Contradiction</label></div>
-                    <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="Harmful"><label class="form-check-label small">Harmful Medical Advice</label></div>
-                    <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="StatError"><label class="form-check-label small">Fatal Statistical Error</label></div>
-                    <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="Logic"><label class="form-check-label small">Flawed Logic Flow</label></div>
-                    <textarea class="form-control form-control-sm mt-2" id="txt_${m}" rows="2" placeholder="Required if any box checked: Explain error..."></textarea>
-                </div>
-            </div>`;
-        }
-
-        function createLikert(m, id, label, sub, opts) {
-            return `
+            <div class="section-header text-dark">2. Decision &amp; Utility</div>
             <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-end mb-1">
-                    <label class="small fw-bold">${label}</label>
-                    <small class="text-muted" style="font-size:0.7rem">${sub}</small>
+                <label class="small fw-bold mb-1">Recommendation (Target: Nature / Lancet Digital Health) <span class="text-danger">*</span></label>
+                <div class="btn-group w-100 btn-group-sm">
+                    <input type="radio" class="btn-check" name="dec_${m}" id="d1_${m}" value="Reject">
+                    <label class="btn btn-outline-danger" for="d1_${m}">Reject</label>
+                    <input type="radio" class="btn-check" name="dec_${m}" id="d2_${m}" value="Major">
+                    <label class="btn btn-outline-secondary" for="d2_${m}">Major Revision</label>
+                    <input type="radio" class="btn-check" name="dec_${m}" id="d3_${m}" value="Minor">
+                    <label class="btn btn-outline-secondary" for="d3_${m}">Minor Revision</label>
+                    <input type="radio" class="btn-check" name="dec_${m}" id="d4_${m}" value="Accept">
+                    <label class="btn btn-outline-success" for="d4_${m}">Accept</label>
                 </div>
-                <div class="likert-options">
-                    ${opts.map((o,i)=>`
-                        <label style="flex:1">
-                            <input type="radio" class="likert-input" name="${id}_${m}" value="${i+1}">
-                            <div class="likert-btn" onclick="this.previousElementSibling.checked=true">${i+1}<br><span style="font-size:0.65rem;color:#6b7280">${o}</span></div>
-                        </label>
-                    `).join('')}
+            </div>
+            <div class="mb-3">
+                <label class="small fw-bold d-flex justify-content-between">
+                    <span>Human Effort Saved</span>
+                    <span id="eff_val_${m}" class="text-primary">50%</span>
+                </label>
+                <input type="range" class="form-range" min="0" max="100" step="5" value="50"
+                    oninput="document.getElementById('eff_val_${m}').innerText=this.value+'%'" id="eff_${m}">
+            </div>
+
+            <div class="safety-box">
+                <div class="fw-bold text-danger mb-2 small"><i class="bi bi-shield-x me-1"></i> Critical Safety Check</div>
+                <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="Hallucination"><label class="form-check-label small">Hallucination / Fake Data</label></div>
+                <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="BioContradiction"><label class="form-check-label small">Biological Contradiction</label></div>
+                <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="Harmful"><label class="form-check-label small">Harmful Medical Advice</label></div>
+                <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="StatError"><label class="form-check-label small">Fatal Statistical Error</label></div>
+                <div class="form-check"><input class="form-check-input e-chk" type="checkbox" value="Logic"><label class="form-check-label small">Flawed Logic Flow</label></div>
+                <div class="form-check">
+                    <input class="form-check-input e-chk safety-other-chk" type="checkbox" value="Other" id="safetyOtherChk_${m}">
+                    <label class="form-check-label small" for="safetyOtherChk_${m}">Other</label>
                 </div>
-            </div>`;
+                <textarea class="form-control form-control-sm mt-2" id="txt_${m}" rows="2"
+                    placeholder="Required if any box checked: explain the issue…"></textarea>
+            </div>
+        </div>`;
+    }
+
+    function likert(m, id, label, sub, opts) {
+        return `
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-end mb-1">
+                <label class="small fw-bold">${label}</label>
+                <small class="text-muted" style="font-size:0.7rem">${sub}</small>
+            </div>
+            <div class="likert-options">
+                ${opts.map((o,i) => `
+                    <label style="flex:1">
+                        <input type="radio" class="likert-input" name="${id}_${m}" value="${i+1}" ${i===2?'checked':''}>
+                        <div class="likert-btn">${i+1}<br><span style="font-size:0.65rem;color:#6b7280">${o}</span></div>
+                    </label>`).join('')}
+            </div>
+        </div>`;
+    }
+
+    // ---- Time viz -----------------------------------------------
+    window.updateTimeViz = () => {
+        const fs = [
+            {id:'t_lit',u:'u_lit',c:'var(--c-lit)',l:'Lit Review'},
+            {id:'t_data',u:'u_data',c:'var(--c-data)',l:'Cleaning'},
+            {id:'t_feat',u:'u_feat',c:'var(--c-feat)',l:'Feature Eng'},
+            {id:'t_ml',u:'u_ml',c:'var(--c-ml)',l:'Modeling'},
+            {id:'t_int',u:'u_int',c:'var(--c-int)',l:'Interpretation'},
+            {id:'t_wrt',u:'u_wrt',c:'var(--c-wrt)',l:'Writing'}
+        ];
+        let total = 0;
+        const vals = fs.map(f => {
+            const v = parseFloat(document.getElementById(f.id).value)||0;
+            const h = document.getElementById(f.u).value==='Days' ? v*8 : v;
+            total += h; return {...f,h};
+        });
+        const bar = document.getElementById('timeBar');
+        bar.innerHTML = total===0
+            ? '<div class="viz-segment" style="width:100%;background:#dee2e6;color:#6c757d">Enter values below…</div>'
+            : vals.filter(v=>v.h>0).map(v=>`<div class="viz-segment" style="width:${v.h/total*100}%;background:${v.c}">${Math.round(v.h/total*100)}%</div>`).join('');
+        document.getElementById('totalTimeDisplay').innerText = `Total: ${(total/8).toFixed(1)} Days (${total} Hrs)`;
+        document.getElementById('timeLegend').innerHTML = fs.map(f=>`<div class="legend-item"><div class="dot-color" style="background:${f.c}"></div>${f.l}</div>`).join('');
+    };
+
+    // ---- Nav -------------------------------------------------------
+    window.switchM = (m) => {
+        document.querySelectorAll('#step3 .nav-link').forEach(e=>e.classList.remove('active'));
+        event.target.closest('button').classList.add('active');
+        document.querySelectorAll('#step3 .pdf-frame').forEach(e=>e.classList.remove('active'));
+        document.getElementById(`pdf_${m}`).classList.add('active');
+        document.querySelectorAll('.m-form').forEach(e=>e.style.display='none');
+        document.getElementById(`f_${m}`).style.display='block';
+        document.getElementById('badge').innerText = `Model ${m.toUpperCase()}`;
+        document.getElementById('badge').className = `badge ${m==='a'?'bg-primary':m==='b'?'bg-success':'bg-warning text-dark'}`;
+    };
+
+    window.switchRef = (m) => {
+        document.querySelectorAll('#step4 .nav-link').forEach(e=>e.classList.remove('active'));
+        event.target.closest('button').classList.add('active');
+        document.querySelectorAll('#step4 .pdf-frame').forEach(e=>e.classList.remove('active'));
+        document.getElementById(`ref_${m}`).classList.add('active');
+    };
+
+    window.next = (c) => {
+        if (!valid(c)) return;
+        if (c === 2) { updatePDFs(); updateTabDots(); }
+        document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
+        curr = c+1;
+        document.getElementById(`step${curr}`).classList.add('active');
+        upDots();
+    };
+
+    window.prev = () => {
+        document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
+        curr--;
+        document.getElementById(`step${curr}`).classList.add('active');
+        upDots();
+    };
+
+    function upDots() {
+        document.querySelectorAll('.dot').forEach((d,i) => {
+            d.classList.remove('active','completed');
+            if (i<curr-1) d.classList.add('completed');
+            if (i===curr-1) d.classList.add('active');
+        });
+        document.getElementById('stepText').innerText =
+            `Step ${curr}: ${['Dataset & Profile','Guidelines','Assessment','Ranking','Value'][curr-1]}`;
+        window.scrollTo(0,0);
+    }
+
+    // ---- Validation ------------------------------------------------
+    function valid(s) {
+        if (s===1) {
+            if (!document.getElementById('datasetSelect').value) { alert('Please select a dataset.'); return false; }
+            if (!document.getElementById('uName').value || !document.getElementById('uEmail').value) { alert('Name and Email are required.'); return false; }
+            if (!document.querySelectorAll('.venue-chk:checked').length) { alert('Please select at least one key venue.'); return false; }
+            if (document.getElementById('v_others').checked && !document.getElementById('venueOtherText').value.trim()) { alert('Please specify the other venue(s).'); return false; }
         }
-
-        // TIME VIZ
-        window.updateTimeViz = () => {
-            const fields = [
-                {id:'t_lit', u:'u_lit', c:'var(--c-lit)', l:'Lit Review'},
-                {id:'t_data', u:'u_data', c:'var(--c-data)', l:'Cleaning'},
-                {id:'t_feat', u:'u_feat', c:'var(--c-feat)', l:'Feature Eng'},
-                {id:'t_ml', u:'u_ml', c:'var(--c-ml)', l:'Modeling'},
-                {id:'t_int', u:'u_int', c:'var(--c-int)', l:'Interpretation'},
-                {id:'t_wrt', u:'u_wrt', c:'var(--c-wrt)', l:'Writing'}
-            ];
-
-            let totalHours = 0;
-            const values = fields.map(f => {
-                const val = parseFloat(document.getElementById(f.id).value) || 0;
-                const unit = document.getElementById(f.u).value;
-                const hours = unit === 'Days' ? val * 8 : val;
-                totalHours += hours;
-                return { ...f, hours };
-            });
-
-            const bar = document.getElementById('timeBar');
-            bar.innerHTML = totalHours === 0 ? '<div class="viz-segment" style="width:100%;background:#dee2e6;color:#6c757d">Enter values below...</div>' : '';
-
-            if(totalHours > 0) {
-                values.forEach(v => {
-                    if(v.hours > 0) {
-                        const pct = (v.hours / totalHours) * 100;
-                        bar.innerHTML += `<div class="viz-segment" style="width:${pct}%; background:${v.c}">${Math.round(pct)}%</div>`;
-                    }
-                });
-            }
-
-            document.getElementById('totalTimeDisplay').innerText = `Total: ${(totalHours/8).toFixed(1)} Days (${totalHours} Hrs)`;
-
-            const legend = document.getElementById('timeLegend');
-            legend.innerHTML = fields.map(f => `
-                <div class="legend-item">
-                    <div class="dot-color" style="background:${f.c}"></div>${f.l}
-                </div>`).join('');
-        };
-
-        // NAV LOGIC
-        window.switchM = (m) => {
-            document.querySelectorAll('#step3 .nav-link').forEach(e=>e.classList.remove('active'));
-            event.target.classList.add('active');
-            document.querySelectorAll('#step3 .pdf-frame').forEach(e=>e.classList.remove('active'));
-            document.getElementById(`pdf_${m}`).classList.add('active');
-            document.querySelectorAll('.m-form').forEach(e=>e.style.display='none');
-            document.getElementById(`f_${m}`).style.display='block';
-            document.getElementById('badge').innerText = `Model ${m.toUpperCase()}`;
-            document.getElementById('badge').className = `badge ${m==='a'?'bg-primary':m==='b'?'bg-success':'bg-warning text-dark'}`;
-        };
-
-        window.switchRef = (m) => {
-            document.querySelectorAll('#step4 .nav-link').forEach(e=>e.classList.remove('active'));
-            event.target.classList.add('active');
-            document.querySelectorAll('#step4 .pdf-frame').forEach(e=>e.classList.remove('active'));
-            document.getElementById(`ref_${m}`).classList.add('active');
-        };
-
-        window.next = (c) => {
-            if(!valid(c)) return;
-            if(c === 2) updatePDFs(); // Load PDFs for selected dataset before entering assessment
-            document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
-            curr = c+1;
-            document.getElementById(`step${curr}`).classList.add('active');
-            upDots();
-        };
-
-        window.prev = () => {
-            document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
-            curr--;
-            document.getElementById(`step${curr}`).classList.add('active');
-            upDots();
-        };
-
-        function upDots() {
-            document.querySelectorAll('.dot').forEach((d,i) => {
-                d.classList.remove('active','completed');
-                if(i < curr-1) d.classList.add('completed');
-                if(i === curr-1) d.classList.add('active');
-            });
-            const titles = ["Dataset & Profile", "Guidelines", "Assessment", "Ranking", "Value"];
-            document.getElementById('stepText').innerText = `Step ${curr}: ${titles[curr-1]}`;
-            window.scrollTo(0,0);
-        }
-
-        function valid(s) {
-            if(s===1) {
-                if(!document.querySelector('input[name="dataset"]:checked')) { alert("Please select a dataset to evaluate."); return false; }
-                if(!document.getElementById('uName').value || !document.getElementById('uEmail').value) { alert("Name and Email are required."); return false; }
-            }
-            if(s===3) {
-                for(let m of ['a','b','c']) {
-                    if(!document.querySelector(`input[name="soundness_${m}"]:checked`)) { alert(`Please complete the evaluation for Model ${m.toUpperCase()}`); return false; }
-                    const chk = document.querySelectorAll(`#f_${m} .e-chk:checked`);
-                    if(chk.length>0 && document.getElementById(`txt_${m}`).value.length<3) { alert(`Please explain the safety error for Model ${m.toUpperCase()}`); return false; }
+        if (s===3) {
+            for (const m of ['a','b','c']) {
+                if (!document.querySelector(`input[name="dec_${m}"]:checked`)) {
+                    alert(`Please select a Recommendation for Model ${m.toUpperCase()}.`); return false;
+                }
+                const chk = document.querySelectorAll(`#f_${m} .e-chk:checked`);
+                if (chk.length>0 && document.getElementById(`txt_${m}`).value.length<3) {
+                    alert(`Please explain the safety issue flagged for Model ${m.toUpperCase()}.`); return false;
                 }
             }
-            if(s===4 && (document.querySelectorAll('.ranking-slot.filled').length < 3 || document.getElementById('rankReason').value.length < 5)) {
-                alert("Please complete the ranking and provide a rationale."); return false;
-            }
-            return true;
         }
-
-        // DRAG DROP
-        function initDD() {
-            const pool = document.getElementById('pool');
-            document.querySelectorAll('.draggable').forEach(d => {
-                d.addEventListener('dragstart',()=>d.classList.add('dragging'));
-                d.addEventListener('dragend',()=>d.classList.remove('dragging'));
-            });
-            document.querySelectorAll('.ranking-slot').forEach(s => {
-                s.addEventListener('dragover',e=>{e.preventDefault(); s.style.borderColor='#0d6efd'});
-                s.addEventListener('dragleave',()=>s.style.borderColor='#d1d5db');
-                s.addEventListener('drop',e=>{
-                    e.preventDefault(); s.style.borderColor='#d1d5db';
-                    const d = document.querySelector('.dragging');
-                    if(d) {
-                        if(s.children.length) pool.appendChild(s.children[0]);
-                        s.innerText=''; s.appendChild(d); s.classList.add('filled');
-                    }
-                });
-            });
+        if (s===4) {
+            if (document.querySelectorAll('.ranking-slot.filled').length<3) { alert('Please complete the ranking.'); return false; }
+            if (document.getElementById('rankReason').value.length<5) { alert('Please provide a rationale for your 1st place selection.'); return false; }
         }
+        return true;
+    }
 
-        // SUBMIT
-        window.showConfirm = () => {
-            document.getElementById('cEmail').innerText = document.getElementById('uEmail').value;
-            new bootstrap.Modal(document.getElementById('confirmModal')).show();
-        };
-
-        window.submitData = async () => {
-            document.getElementById('finalBtn').disabled = true;
-            const rank = r => document.querySelector(`.ranking-slot[data-r="${r}"] .draggable`)?.dataset.id;
-
-            const ratings = {};
-            ['a','b','c'].forEach(m => {
-                ratings[m] = {
-                    novelty: document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
-                    soundness: document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
-                    plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
-                    limitations: document.querySelector(`input[name="limitations_${m}"]:checked`)?.value,
-                    presentation: document.querySelector(`input[name="presentation_${m}"]:checked`)?.value,
-                    repro: document.querySelector(`input[name="repro_${m}"]:checked`)?.value,
-                    decision: document.querySelector(`input[name="dec_${m}"]:checked`)?.value,
-                    effort: document.getElementById(`eff_${m}`).value,
-                    safety_flags: Array.from(document.querySelectorAll(`#f_${m} .e-chk:checked`)).map(c=>c.value),
-                    safety_text: document.getElementById(`txt_${m}`).value
-                };
-            });
-
-            const selectedDataset = document.querySelector('input[name="dataset"]:checked')?.value;
-            const data = {
-                selected_dataset: selectedDataset,
-                profile: {
-                    name: document.getElementById('uName').value,
-                    email: document.getElementById('uEmail').value,
-                    affil: document.getElementById('uAffil').value,
-                    expert: document.getElementById('uExpert').value,
-                    exp_yrs: document.getElementById('uExp').value,
-                    ai_fam: document.getElementById('uAiFam').value,
-                    rev_freq: document.getElementById('uRevLvl').value,
-                    rev_venues: document.getElementById('uVenues').value
-                },
-                assessments: ratings,
-                ranking: { 1: rank(1), 2: rank(2), 3: rank(3), reason: document.getElementById('rankReason').value },
-                turing: document.querySelector('input[name="turing"]:checked')?.value,
-                time_est: {
-                    lit: { v: document.getElementById('t_lit').value, u: document.getElementById('u_lit').value },
-                    data: { v: document.getElementById('t_data').value, u: document.getElementById('u_data').value },
-                    feat: { v: document.getElementById('t_feat').value, u: document.getElementById('u_feat').value },
-                    ml: { v: document.getElementById('t_ml').value, u: document.getElementById('u_ml').value },
-                    int: { v: document.getElementById('t_int').value, u: document.getElementById('u_int').value },
-                    wrt: { v: document.getElementById('t_wrt').value, u: document.getElementById('u_wrt').value }
-                },
-                validation_req: document.getElementById('trust').value,
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                await push(ref(db, "codas_eval_nature_final"), data);
-                bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
-                new bootstrap.Modal(document.getElementById('successModal')).show();
-            } catch(err) {
-                console.error('Firebase push error:', err);
-                document.getElementById('finalBtn').disabled = false;
-                alert('Submission failed. Please check your internet connection and try again.\n\nIf this persists, contact the study team.\n\nError: ' + err.message);
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Generate dataset selection cards
-            document.getElementById('datasetCards').innerHTML = DATASETS.map(ds => `
-                <div class="col-6 col-md-3">
-                    <input type="radio" class="btn-check" name="dataset" id="ds_${ds.id}" value="${ds.id}">
-                    <label class="dataset-card-label" for="ds_${ds.id}">
-                        <i class="bi ${ds.icon} mb-2 fs-4 text-primary"></i>
-                        <div class="fw-bold small">${ds.name}</div>
-                        <div style="font-size:0.72rem;color:#6b7280;font-weight:400;margin-top:2px">${ds.desc}</div>
-                    </label>
-                </div>
-            `).join('');
-
-            document.getElementById('forms').innerHTML = genForm('a')+genForm('b')+genForm('c');
-            updateTimeViz();
-            initDD();
+    // ---- Drag & drop -----------------------------------------------
+    function initDD() {
+        const pool = document.getElementById('pool');
+        document.querySelectorAll('.draggable').forEach(d => {
+            d.addEventListener('dragstart', ()=>d.classList.add('dragging'));
+            d.addEventListener('dragend',   ()=>d.classList.remove('dragging'));
         });
-    </script>
+        document.querySelectorAll('.ranking-slot').forEach(s => {
+            s.addEventListener('dragover',  e=>{ e.preventDefault(); s.style.borderColor='#0d6efd'; });
+            s.addEventListener('dragleave', ()=>s.style.borderColor='#d1d5db');
+            s.addEventListener('drop', e=>{
+                e.preventDefault(); s.style.borderColor='#d1d5db';
+                const d = document.querySelector('.dragging');
+                if (d) { if(s.children.length) pool.appendChild(s.children[0]); s.innerText=''; s.appendChild(d); s.classList.add('filled'); }
+            });
+        });
+    }
+
+    // ---- Submit ----------------------------------------------------
+    window.showConfirm = () => {
+        if (!document.querySelectorAll('.trust-chk:checked').length) { alert('Please select at least one validation requirement.'); return; }
+        if (document.getElementById('tr_other').checked && !document.getElementById('trustOtherText').value.trim()) { alert('Please specify the other validation requirement.'); return; }
+        document.getElementById('cEmail').innerText = document.getElementById('uEmail').value;
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    };
+
+    // Sanitize: replace undefined with null so Firebase accepts the payload
+    function sanitize(obj) {
+        return JSON.parse(JSON.stringify(obj, (_, v) => v === undefined ? null : v));
+    }
+
+    window.submitData = async () => {
+        document.getElementById('finalBtn').disabled = true;
+        const rank = r => document.querySelector(`.ranking-slot[data-r="${r}"] .draggable`)?.dataset.id;
+
+        const assessments = {};
+        ['a','b','c'].forEach(m => {
+            assessments[m] = {
+                novelty:      document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
+                soundness:    document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
+                plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
+                limitations:  document.querySelector(`input[name="limitations_${m}"]:checked`)?.value,
+                presentation: document.querySelector(`input[name="presentation_${m}"]:checked`)?.value,
+                repro:        document.querySelector(`input[name="repro_${m}"]:checked`)?.value,
+                decision:     document.querySelector(`input[name="dec_${m}"]:checked`)?.value,
+                effort:       document.getElementById(`eff_${m}`).value,
+                safety_flags: Array.from(document.querySelectorAll(`#f_${m} .e-chk:checked`)).map(c=>c.value),
+                safety_text:  document.getElementById(`txt_${m}`).value
+            };
+        });
+
+        const data = {
+            selected_dataset: document.getElementById('datasetSelect').value,
+            // Records which actual model each display label mapped to for this session
+            model_assignment: { A: MODEL_MAP.a, B: MODEL_MAP.b, C: MODEL_MAP.c },
+            profile: {
+                name:              document.getElementById('uName').value,
+                email:             document.getElementById('uEmail').value,
+                affil:             document.getElementById('uAffil').value,
+                expert:            document.getElementById('uExpert').value,
+                exp_yrs:           document.getElementById('uExp').value,
+                ai_fam:            document.getElementById('uAiFam').value,
+                rev_freq:          document.getElementById('uRevLvl').value,
+                rev_venues:        Array.from(document.querySelectorAll('.venue-chk:checked')).map(c=>c.value),
+                rev_venues_other:  document.getElementById('venueOtherText').value.trim() || null
+            },
+            assessments,
+            ranking: {
+                1: rank(1), 2: rank(2), 3: rank(3),
+                reason: document.getElementById('rankReason').value
+            },
+            time_est: {
+                lit:  { v: document.getElementById('t_lit').value,  u: document.getElementById('u_lit').value  },
+                data: { v: document.getElementById('t_data').value, u: document.getElementById('u_data').value },
+                feat: { v: document.getElementById('t_feat').value, u: document.getElementById('u_feat').value },
+                ml:   { v: document.getElementById('t_ml').value,   u: document.getElementById('u_ml').value   },
+                int:  { v: document.getElementById('t_int').value,  u: document.getElementById('u_int').value  },
+                wrt:  { v: document.getElementById('t_wrt').value,  u: document.getElementById('u_wrt').value  }
+            },
+            validation_req:       Array.from(document.querySelectorAll('.trust-chk:checked')).map(c=>c.value),
+            validation_req_other: document.getElementById('trustOtherText').value.trim() || null,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            await push(ref(db, 'codas_eval_nature_final'), sanitize(data));
+            bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+        } catch(err) {
+            console.error('Firebase error:', err);
+            document.getElementById('finalBtn').disabled = false;
+            alert('Submission failed. Please check your connection and try again.\n\nError: ' + err.message);
+        }
+    };
+
+    // ---- Init ------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Dataset dropdown options
+        document.getElementById('datasetSelect').innerHTML =
+            '<option value="" disabled selected>Select your assigned dataset…</option>' +
+            DATASETS.map(d=>`<option value="${d.id}">${d.name} — ${d.desc}</option>`).join('');
+
+        // Venue pill checkboxes
+        document.getElementById('venueGrid').innerHTML = VENUES.map(v => {
+            const id = 'v_' + v.replace(/[\s/]+/g,'_').toLowerCase();
+            return `<div class="venue-item"><input type="checkbox" class="venue-chk" id="${id}" value="${v}"><label for="${id}">${v}</label></div>`;
+        }).join('');
+
+        // Show/hide venue Others text
+        document.getElementById('v_others').addEventListener('change', function() {
+            document.getElementById('venueOtherText').style.display = this.checked ? 'inline-block' : 'none';
+        });
+
+        // Show/hide trust Other text
+        document.getElementById('tr_other').addEventListener('change', function() {
+            document.getElementById('trustOtherText').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Generate assessment forms
+        document.getElementById('forms').innerHTML = genForm('a') + genForm('b') + genForm('c');
+
+        // Event delegation: tab dots + safety Other text toggling
+        document.getElementById('forms').addEventListener('change', e => {
+            if (e.target.matches('.safety-other-chk')) {
+                const m = e.target.id.replace('safetyOtherChk_','');
+                document.getElementById(`txt_${m}`).placeholder = e.target.checked
+                    ? 'Required: describe the other issue…'
+                    : 'Required if any box checked: explain the issue…';
+            }
+            updateTabDots();
+        });
+
+        updateTimeViz();
+        initDD();
+    });
+</script>
 </body>
 </html>
