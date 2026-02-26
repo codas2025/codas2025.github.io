@@ -35,10 +35,17 @@
 
         .section-header { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #6b7280; margin: 25px 0 15px; padding-bottom: 5px; border-bottom: 2px solid #f3f4f6; }
 
+        /* Likert */
         .likert-options { display: flex; gap: 4px; }
         .likert-btn { flex: 1; text-align: center; padding: 10px 0; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; background: white; }
         .likert-input:checked + .likert-btn { background-color: var(--primary); color: white; border-color: var(--primary); }
         .likert-input { display: none; }
+
+        /* BARS rubric box */
+        .rubric-box { background: #f8fafc; border-left: 3px solid #e2e8f0; border-radius: 0 4px 4px 0; padding: 7px 12px; margin-top: 5px; }
+        .rubric-row { display: flex; gap: 8px; align-items: baseline; padding: 2px 0; font-size: 0.68rem; color: #475569; line-height: 1.45; }
+        .rubric-row:not(:last-child) { border-bottom: 1px solid #f1f5f9; }
+        .score-num { font-weight: 700; color: #94a3b8; min-width: 13px; flex-shrink: 0; font-size: 0.7rem; }
 
         .safety-box { border: 2px solid #ef4444; background-color: #fef2f2; padding: 20px; border-radius: 8px; margin-top: 30px; }
 
@@ -75,6 +82,10 @@
         .venue-item input:checked + label { background: var(--primary); color: white; border-color: var(--primary); }
         .venue-item input { display: none; }
 
+        /* Step 6 feedback */
+        .feedback-prompt { font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 4px; }
+        .feedback-hint   { font-size: 0.72rem; color: #9ca3af; margin-bottom: 6px; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -84,7 +95,8 @@
     <div class="progress-indicator">
         <h5 class="fw-bold m-0">Evaluation of AI Biomarker Discovery Frameworks</h5>
         <div class="step-dots" id="dots">
-            <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
         </div>
         <small class="text-muted" id="stepText">Step 1: Dataset &amp; Profile</small>
     </div>
@@ -99,7 +111,6 @@
                 Select your assigned dataset, then complete your profile. All data is anonymized.
             </div>
 
-            <!-- Dataset dropdown -->
             <div class="section-header">Assigned Dataset <span class="text-danger">*</span></div>
             <div class="mb-5">
                 <select class="form-select" id="datasetSelect">
@@ -107,7 +118,6 @@
                 </select>
             </div>
 
-            <!-- Profile -->
             <div class="section-header">Participant Profile</div>
             <div class="row g-4">
                 <div class="col-md-6">
@@ -156,8 +166,6 @@
                         <option value="Heavy">Heavy (10+/yr or Editor)</option>
                     </select>
                 </div>
-
-                <!-- Key Venues: pill checkboxes -->
                 <div class="col-md-12">
                     <label class="form-label fw-bold small">Key Venues Reviewed / Published In <span class="text-danger">*</span></label>
                     <div class="venue-grid mb-2" id="venueGrid"></div>
@@ -171,7 +179,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="text-end mt-5">
                 <button class="btn btn-primary px-4" onclick="next(1)">Next Step <i class="bi bi-arrow-right"></i></button>
             </div>
@@ -230,7 +237,7 @@
             </div>
         </div>
 
-        <!-- STEP 4: Ranking (Turing test removed) -->
+        <!-- STEP 4: Ranking -->
         <div class="step-container step-split-view" id="step4">
             <div class="split-wrapper">
                 <div class="left-pane">
@@ -251,9 +258,7 @@
                         <h5 class="fw-bold mb-3">Comparative Ranking</h5>
                         <div class="p-3 bg-light rounded border mb-4">
                             <div class="d-flex text-center small fw-bold mb-2 text-muted">
-                                <div style="flex:1">1st (Best)</div>
-                                <div style="flex:1">2nd</div>
-                                <div style="flex:1">3rd</div>
+                                <div style="flex:1">1st (Best)</div><div style="flex:1">2nd</div><div style="flex:1">3rd</div>
                             </div>
                             <div class="d-flex gap-2 mb-3" id="slots">
                                 <div class="ranking-slot flex-grow-1" data-r="1">Drop Here</div>
@@ -287,7 +292,6 @@
                 <i class="bi bi-clock-history me-2"></i>
                 <strong>Context:</strong> Assume a <strong>Full-time Researcher (8 hours/day)</strong> performing this exact study manually.
             </div>
-
             <div class="viz-container">
                 <label class="small fw-bold mb-2">Total Estimated Manual Effort</label>
                 <div class="progress-stacked" id="timeBar">
@@ -296,7 +300,6 @@
                 <div class="viz-legend" id="timeLegend"></div>
                 <div class="text-end small fw-bold mt-2" id="totalTimeDisplay">Total: 0 Days</div>
             </div>
-
             <div class="process-list">
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-lit)">1. Literature Review &amp; Hypothesis</label>
@@ -323,14 +326,11 @@
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_wrt" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_wrt" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
             </div>
-
             <hr>
-
             <div class="mb-5 mt-4">
                 <div class="section-header text-dark">Verification Threshold <span class="text-danger">*</span></div>
                 <label class="small fw-bold mb-2">What additional validation is required before you would submit this to a journal?
-                    <small class="fw-normal text-muted">(select all that apply)</small>
-                </label>
+                    <small class="fw-normal text-muted">(select all that apply)</small></label>
                 <div id="trustChecks" class="mt-2">
                     <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr1" value="Code Review"><label class="form-check-label small" for="tr1">Code Review Only (I trust the results)</label></div>
                     <div class="form-check"><input class="form-check-input trust-chk" type="checkbox" id="tr2" value="Replication"><label class="form-check-label small" for="tr2">Replication on same data (check reproducibility)</label></div>
@@ -344,6 +344,37 @@
                     <input type="text" class="form-control form-control-sm mt-1" id="trustOtherText"
                            placeholder="Please specify…" style="display:none; max-width:420px">
                 </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-outline-secondary" onclick="prev()">Back</button>
+                <button class="btn btn-primary px-4" onclick="next(5)">Next Step <i class="bi bi-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 6: Open-ended Feedback -->
+        <div class="step-container container-narrow" id="step6">
+            <h4 class="fw-bold mb-2">Overall Impressions</h4>
+            <p class="text-muted small mb-4">Share any qualitative observations not captured by the rating scales. All fields are optional — write as much or as little as you like.</p>
+
+            <div class="mb-4">
+                <div class="feedback-prompt">What was the most impressive or surprising finding across the three reports?</div>
+                <div class="feedback-hint">e.g. an unexpected biomarker, a particularly rigorous analysis, a result that changed your prior</div>
+                <textarea class="form-control" id="fb_impressive" rows="3"
+                    placeholder="Optional — leave blank to skip"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <div class="feedback-prompt">What was the most critical concern or red flag you encountered?</div>
+                <div class="feedback-hint">e.g. a hallucinated citation, a biologically impossible claim, a methodological error that undermines trust</div>
+                <textarea class="form-control" id="fb_concern" rows="3"
+                    placeholder="Optional — leave blank to skip"></textarea>
+            </div>
+
+            <div class="mb-5">
+                <div class="feedback-prompt">Any other comments, suggestions, or observations for the research team?</div>
+                <div class="feedback-hint">e.g. evaluation process feedback, missing questions, general impressions of AI vs. human research quality</div>
+                <textarea class="form-control" id="fb_other" rows="4"
+                    placeholder="Optional — leave blank to skip"></textarea>
             </div>
 
             <div class="d-flex justify-content-between">
@@ -398,37 +429,33 @@
     });
     const db = getDatabase(app);
 
-    // =============================================================
+    // ============================================================
     // CONFIG
-    // =============================================================
+    // ============================================================
     const DATASETS = [
         { id: 'dwb_hourly', name: 'DWB (Hourly)',  desc: 'Hourly wearable biomarker data'      },
         { id: 'globem',     name: 'GLOBEM',         desc: 'Longitudinal everyday behavior data' },
         { id: 'wearme',     name: 'WearMe',         desc: 'Multimodal wearable sensor data'     },
-        // TODO: add 4th dataset when PDFs are ready
         // { id: 'dataset4', name: 'Dataset 4', desc: '…' },
     ];
 
     const VENUES = ['Nature','Nature Medicine','NEJM','NEJM AI','NeurIPS','ICML','ICLR','ACL','EMNLP','NAACL'];
 
-    // ---- Model randomisation (once per page load) ----------------
+    // ---- Model randomisation (once per page load) ---------------
     const MODEL_FILES = ['codas', 'biomni', 'colab_dsa'];
     function shuffle(arr) {
         const a = [...arr];
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
+        for (let i = a.length-1; i>0; i--) {
+            const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
         }
         return a;
     }
     const shuffled = shuffle(MODEL_FILES);
-    // MODEL_MAP maps display label → actual model file
-    // e.g. { a: 'biomni', b: 'codas', c: 'colab_dsa' }
     const MODEL_MAP = { a: shuffled[0], b: shuffled[1], c: shuffled[2] };
 
     let curr = 1;
 
-    // ---- PDF loading ---------------------------------------------
+    // ---- PDF loading -------------------------------------------
     function updatePDFs() {
         const ds = document.getElementById('datasetSelect').value;
         if (!ds) return;
@@ -437,32 +464,81 @@
             document.getElementById(`pdf_${m}`).src = path;
             document.getElementById(`ref_${m}`).src = path;
         });
-        const dsObj = DATASETS.find(d => d.id === ds);
+        const dsObj = DATASETS.find(d=>d.id===ds);
         if (dsObj) document.getElementById('selectedDatasetLabel').innerText = dsObj.name;
     }
 
-    // ---- Tab completion dots ------------------------------------
+    // ---- Tab completion dots -----------------------------------
     function updateTabDots() {
         ['a','b','c'].forEach(m => {
             const dot = document.getElementById(`tab_dot_${m}`);
             if (!dot) return;
             const done = !!document.querySelector(`input[name="dec_${m}"]:checked`);
-            dot.className = `tab-dot ${done ? 'done' : 'pending'}`;
+            dot.className = `tab-dot ${done?'done':'pending'}`;
             dot.textContent = done ? '✓' : '●';
         });
     }
 
-    // ---- Form generator -----------------------------------------
+    // ---- BARS rubric definitions --------------------------------
+    // Each array: 5 single-sentence behavioral anchors (score 1→5)
+    // Grounded in: NeurIPS 2024 checklist language, Nature Communications
+    // reviewer questions, and BARS best practices for AI biomarker reports.
+    const RUBRICS = {
+        novelty: [
+            'Biomarker already in clinical use for this indication; no methodological or population differentiation from prior work.',
+            'Biomarker reported in prior literature for same indication; no new mechanism, context, or quantitative improvement provided.',
+            'Known biomarker confirmed in a new dataset or subpopulation; appropriate statistics, but no new mechanistic insight.',
+            'Biomarker applied to a new disease context or population; novelty clearly characterized with effect sizes exceeding published benchmarks.',
+            'Previously unreported association; specific mechanistic hypothesis grounded in pathway data or biological database provided.'
+        ],
+        soundness: [
+            'Contains label leakage, train/test leakage, or unit-of-analysis error that directly invalidates the primary claim.',
+            'Training and test sets conflated in at least one evaluation step, or a misleading metric used on imbalanced data without acknowledgment.',
+            'Appropriate algorithm but evaluated only on training data, or method-data type mismatch applied without justification.',
+            'Correct method and held-out test split used; confidence intervals or multiple-comparison correction threshold not explicitly stated.',
+            'Held-out test set, stated multiple-comparison correction, and confidence intervals reported on all primary estimates.'
+        ],
+        plausibility: [
+            'Association contradicts a fundamental biological constraint (e.g., protein absent in the relevant tissue type).',
+            'Effect direction contradicts the majority of published mechanistic studies for this biomarker–disease pair, without explanation.',
+            'No mechanistic claim made; absence of mechanistic support explicitly acknowledged as a stated limitation.',
+            'Cites ≥2 published studies showing this biomarker is expressed or dysregulated in the relevant tissue or cell type.',
+            'Maps biomarker to a known disease pathway via an external database (e.g., KEGG, Reactome); effect directionality is consistent.'
+        ],
+        limitations: [
+            'No limitations section; findings presented as definitive and generalizable without any scope qualification.',
+            'Single generic sentence only (e.g., "further validation is needed") with no concrete limitation named or quantified.',
+            'Names sample size and data availability only; potential confounders, batch effects, and generalizability unaddressed.',
+            'Addresses at least three of: sample size adequacy, confounders, batch effects, or generalizability boundaries.',
+            'Explicitly covers sample power, confounders, population scope, and at least one concrete replication-failure scenario.'
+        ],
+        presentation: [
+            'A domain expert cannot identify the input data, method, or primary claim from the text and figures alone.',
+            'Figures missing axis labels or statistical context; AI-system-specific terms used without definition for domain readers.',
+            'Inputs and outputs described; intermediate analytical steps require external documentation to evaluate appropriateness.',
+            'Findings are clear; at least one key method step named without sufficient detail for a reader to judge whether it was applied correctly.',
+            'An expert unfamiliar with this AI tool can reconstruct the full pipeline and interpret every figure from the report alone.'
+        ],
+        repro: [
+            'Black-box output; algorithm, parameters, data version, and preprocessing are entirely absent.',
+            'Algorithm named only; no parameter settings, data split details, or preprocessing steps described.',
+            'Algorithm and primary metric stated; at least two of {parameters, split strategy, preprocessing, stochasticity control} are missing.',
+            'All five elements present (algorithm, parameters, split, preprocessing, data pointer) but at least one described only conceptually.',
+            'Algorithm version, parameters, random seed, split strategy, preprocessing steps, and data availability all explicitly stated.'
+        ]
+    };
+
+    // ---- Form generator ----------------------------------------
     function genForm(m) {
         return `
         <div id="f_${m}" class="m-form" style="display:${m==='a'?'block':'none'}">
             <div class="section-header text-primary">1. Scientific Quality</div>
-            ${likert(m,'novelty',      'Novelty / Significance',      'Does it add new knowledge?',             ['Derivative','Low','Moderate','High','Exceptional'])}
-            ${likert(m,'soundness',    'Methodological Soundness',    'Are stats/ML rigorous?',                 ['Flawed','Weak','Acceptable','Strong','Rigorous'])}
-            ${likert(m,'plausibility', 'Biological Plausibility',     'Consistent with known disease biology?', ['Contradicts','Uncertain','Plausible','Well-grounded','Compelling'])}
-            ${likert(m,'limitations',  'Limitations Transparency',    'Does it acknowledge constraints?',       ['None stated','Minimal','Adequate','Thorough','Exemplary'])}
-            ${likert(m,'presentation', 'Clarity &amp; Presentation',  'Is it well-written?',                   ['Poor','Fair','Good','Very Good','Excellent'])}
-            ${likert(m,'repro',        'Reproducibility',             'Are code/methods clear?',                ['None','Low','Medium','High','Perfect'])}
+            ${likert(m,'novelty',      'Novelty / Significance',      'Is the biomarker previously unreported?',      ['Derivative','Low','Incremental','Significant','Transformative'], RUBRICS.novelty)}
+            ${likert(m,'soundness',    'Methodological Soundness',    'Is the analysis chain free of critical errors?',['Critically flawed','Substantial flaws','Partially sound','Sound','Rigorous'], RUBRICS.soundness)}
+            ${likert(m,'plausibility', 'Biological Plausibility',     'Is the mechanism consistent with known biology?',['Contradicts','Inconsistent','Neutral','Supported','Well-grounded'], RUBRICS.plausibility)}
+            ${likert(m,'limitations',  'Limitations Transparency',    'Are constraints and confounds acknowledged?',   ['None stated','Generic only','Partial','Thorough','Exemplary'], RUBRICS.limitations)}
+            ${likert(m,'presentation', 'Clarity &amp; Presentation',  'Can an expert reconstruct the analysis?',       ['Not interpretable','Difficult','Partial','Mostly clear','Self-contained'], RUBRICS.presentation)}
+            ${likert(m,'repro',        'Reproducibility',             'Can an independent team replicate results?',    ['Not reproducible','Marginally','Partially','Largely','Fully reproducible'], RUBRICS.repro)}
 
             <div class="section-header text-dark">2. Decision &amp; Utility</div>
             <div class="mb-3">
@@ -504,24 +580,28 @@
         </div>`;
     }
 
-    function likert(m, id, label, sub, opts) {
+    function likert(m, id, label, sub, opts, rubric) {
+        const rubricHTML = rubric
+            ? `<div class="rubric-box">${rubric.map((r,i)=>`<div class="rubric-row"><span class="score-num">${i+1}</span><span>${r}</span></div>`).join('')}</div>`
+            : '';
         return `
-        <div class="mb-3">
+        <div class="mb-4">
             <div class="d-flex justify-content-between align-items-end mb-1">
                 <label class="small fw-bold">${label}</label>
                 <small class="text-muted" style="font-size:0.7rem">${sub}</small>
             </div>
             <div class="likert-options">
-                ${opts.map((o,i) => `
+                ${opts.map((o,i)=>`
                     <label style="flex:1">
                         <input type="radio" class="likert-input" name="${id}_${m}" value="${i+1}" ${i===2?'checked':''}>
-                        <div class="likert-btn">${i+1}<br><span style="font-size:0.65rem;color:#6b7280">${o}</span></div>
+                        <div class="likert-btn">${i+1}<br><span style="font-size:0.62rem;color:#6b7280">${o}</span></div>
                     </label>`).join('')}
             </div>
+            ${rubricHTML}
         </div>`;
     }
 
-    // ---- Time viz -----------------------------------------------
+    // ---- Time viz ----------------------------------------------
     window.updateTimeViz = () => {
         const fs = [
             {id:'t_lit',u:'u_lit',c:'var(--c-lit)',l:'Lit Review'},
@@ -545,7 +625,7 @@
         document.getElementById('timeLegend').innerHTML = fs.map(f=>`<div class="legend-item"><div class="dot-color" style="background:${f.c}"></div>${f.l}</div>`).join('');
     };
 
-    // ---- Nav -------------------------------------------------------
+    // ---- Nav --------------------------------------------------
     window.switchM = (m) => {
         document.querySelectorAll('#step3 .nav-link').forEach(e=>e.classList.remove('active'));
         event.target.closest('button').classList.add('active');
@@ -566,7 +646,7 @@
 
     window.next = (c) => {
         if (!valid(c)) return;
-        if (c === 2) { updatePDFs(); updateTabDots(); }
+        if (c===2) { updatePDFs(); updateTabDots(); }
         document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
         curr = c+1;
         document.getElementById(`step${curr}`).classList.add('active');
@@ -587,11 +667,11 @@
             if (i===curr-1) d.classList.add('active');
         });
         document.getElementById('stepText').innerText =
-            `Step ${curr}: ${['Dataset & Profile','Guidelines','Assessment','Ranking','Value'][curr-1]}`;
+            `Step ${curr}: ${['Dataset & Profile','Guidelines','Assessment','Ranking','Value','Feedback'][curr-1]}`;
         window.scrollTo(0,0);
     }
 
-    // ---- Validation ------------------------------------------------
+    // ---- Validation -------------------------------------------
     function valid(s) {
         if (s===1) {
             if (!document.getElementById('datasetSelect').value) { alert('Please select a dataset.'); return false; }
@@ -614,10 +694,14 @@
             if (document.querySelectorAll('.ranking-slot.filled').length<3) { alert('Please complete the ranking.'); return false; }
             if (document.getElementById('rankReason').value.length<5) { alert('Please provide a rationale for your 1st place selection.'); return false; }
         }
+        if (s===5) {
+            if (!document.querySelectorAll('.trust-chk:checked').length) { alert('Please select at least one validation requirement.'); return false; }
+            if (document.getElementById('tr_other').checked && !document.getElementById('trustOtherText').value.trim()) { alert('Please specify the other validation requirement.'); return false; }
+        }
         return true;
     }
 
-    // ---- Drag & drop -----------------------------------------------
+    // ---- Drag & drop ------------------------------------------
     function initDD() {
         const pool = document.getElementById('pool');
         document.querySelectorAll('.draggable').forEach(d => {
@@ -625,7 +709,7 @@
             d.addEventListener('dragend',   ()=>d.classList.remove('dragging'));
         });
         document.querySelectorAll('.ranking-slot').forEach(s => {
-            s.addEventListener('dragover',  e=>{ e.preventDefault(); s.style.borderColor='#0d6efd'; });
+            s.addEventListener('dragover',  e=>{e.preventDefault(); s.style.borderColor='#0d6efd';});
             s.addEventListener('dragleave', ()=>s.style.borderColor='#d1d5db');
             s.addEventListener('drop', e=>{
                 e.preventDefault(); s.style.borderColor='#d1d5db';
@@ -635,17 +719,14 @@
         });
     }
 
-    // ---- Submit ----------------------------------------------------
+    // ---- Submit -----------------------------------------------
     window.showConfirm = () => {
-        if (!document.querySelectorAll('.trust-chk:checked').length) { alert('Please select at least one validation requirement.'); return; }
-        if (document.getElementById('tr_other').checked && !document.getElementById('trustOtherText').value.trim()) { alert('Please specify the other validation requirement.'); return; }
         document.getElementById('cEmail').innerText = document.getElementById('uEmail').value;
         new bootstrap.Modal(document.getElementById('confirmModal')).show();
     };
 
-    // Sanitize: replace undefined with null so Firebase accepts the payload
     function sanitize(obj) {
-        return JSON.parse(JSON.stringify(obj, (_, v) => v === undefined ? null : v));
+        return JSON.parse(JSON.stringify(obj, (_,v) => v===undefined ? null : v));
     }
 
     window.submitData = async () => {
@@ -669,19 +750,18 @@
         });
 
         const data = {
-            selected_dataset: document.getElementById('datasetSelect').value,
-            // Records which actual model each display label mapped to for this session
-            model_assignment: { A: MODEL_MAP.a, B: MODEL_MAP.b, C: MODEL_MAP.c },
+            selected_dataset:  document.getElementById('datasetSelect').value,
+            model_assignment:  { A: MODEL_MAP.a, B: MODEL_MAP.b, C: MODEL_MAP.c },
             profile: {
-                name:              document.getElementById('uName').value,
-                email:             document.getElementById('uEmail').value,
-                affil:             document.getElementById('uAffil').value,
-                expert:            document.getElementById('uExpert').value,
-                exp_yrs:           document.getElementById('uExp').value,
-                ai_fam:            document.getElementById('uAiFam').value,
-                rev_freq:          document.getElementById('uRevLvl').value,
-                rev_venues:        Array.from(document.querySelectorAll('.venue-chk:checked')).map(c=>c.value),
-                rev_venues_other:  document.getElementById('venueOtherText').value.trim() || null
+                name:             document.getElementById('uName').value,
+                email:            document.getElementById('uEmail').value,
+                affil:            document.getElementById('uAffil').value,
+                expert:           document.getElementById('uExpert').value,
+                exp_yrs:          document.getElementById('uExp').value,
+                ai_fam:           document.getElementById('uAiFam').value,
+                rev_freq:         document.getElementById('uRevLvl').value,
+                rev_venues:       Array.from(document.querySelectorAll('.venue-chk:checked')).map(c=>c.value),
+                rev_venues_other: document.getElementById('venueOtherText').value.trim() || null
             },
             assessments,
             ranking: {
@@ -698,6 +778,11 @@
             },
             validation_req:       Array.from(document.querySelectorAll('.trust-chk:checked')).map(c=>c.value),
             validation_req_other: document.getElementById('trustOtherText').value.trim() || null,
+            open_feedback: {
+                impressive: document.getElementById('fb_impressive').value.trim() || null,
+                concern:    document.getElementById('fb_concern').value.trim() || null,
+                other:      document.getElementById('fb_other').value.trim() || null
+            },
             timestamp: new Date().toISOString()
         };
 
@@ -712,34 +797,28 @@
         }
     };
 
-    // ---- Init ------------------------------------------------------
+    // ---- Init -------------------------------------------------
     document.addEventListener('DOMContentLoaded', () => {
 
-        // Dataset dropdown options
         document.getElementById('datasetSelect').innerHTML =
             '<option value="" disabled selected>Select your assigned dataset…</option>' +
             DATASETS.map(d=>`<option value="${d.id}">${d.name} — ${d.desc}</option>`).join('');
 
-        // Venue pill checkboxes
         document.getElementById('venueGrid').innerHTML = VENUES.map(v => {
             const id = 'v_' + v.replace(/[\s/]+/g,'_').toLowerCase();
             return `<div class="venue-item"><input type="checkbox" class="venue-chk" id="${id}" value="${v}"><label for="${id}">${v}</label></div>`;
         }).join('');
 
-        // Show/hide venue Others text
         document.getElementById('v_others').addEventListener('change', function() {
             document.getElementById('venueOtherText').style.display = this.checked ? 'inline-block' : 'none';
         });
 
-        // Show/hide trust Other text
         document.getElementById('tr_other').addEventListener('change', function() {
             document.getElementById('trustOtherText').style.display = this.checked ? 'block' : 'none';
         });
 
-        // Generate assessment forms
         document.getElementById('forms').innerHTML = genForm('a') + genForm('b') + genForm('c');
 
-        // Event delegation: tab dots + safety Other text toggling
         document.getElementById('forms').addEventListener('change', e => {
             if (e.target.matches('.safety-other-chk')) {
                 const m = e.target.id.replace('safetyOtherChk_','');
