@@ -6,14 +6,14 @@
     <title>CoDaS: Agentic Biomarker Discovery Evaluation</title>
 
     <link rel="icon" type="image/png" href="./favicon.png">
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary: #0d6efd;
@@ -28,7 +28,7 @@
             color: #1f2937;
             padding-bottom: 60px;
         }
-        
+
         /* Layout Containers */
         .step-container {
             display: none;
@@ -40,7 +40,7 @@
         }
         .step-container.active { display: block; animation: fadeIn 0.3s ease-out; }
         .container-narrow { max-width: 900px; margin: 0 auto; }
-        
+
         /* Split View Layout */
         .step-split-view { max-width: 100%; margin: 0; padding: 0; background: transparent; box-shadow: none; }
         .split-wrapper { display: flex; height: var(--split-height); gap: 15px; padding: 0 15px; }
@@ -58,11 +58,11 @@
             font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #6b7280;
             margin: 25px 0 15px; padding-bottom: 5px; border-bottom: 2px solid #f3f4f6;
         }
-        
+
         /* Likert Scale */
         .likert-options { display: flex; gap: 4px; }
         .likert-btn {
-            flex: 1; text-align: center; padding: 10px 0; border: 1px solid #d1d5db; border-radius: 4px; 
+            flex: 1; text-align: center; padding: 10px 0; border: 1px solid #d1d5db; border-radius: 4px;
             cursor: pointer; font-size: 0.85rem; transition: all 0.2s; background: white;
         }
         .likert-input:checked + .likert-btn { background-color: var(--primary); color: white; border-color: var(--primary); }
@@ -78,10 +78,10 @@
         }
         .ranking-slot.filled { border-style: solid; border-color: var(--primary); background: white; color: black; }
         .draggable {
-            padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 20px; 
+            padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; font-weight: 600;
         }
-        
+
         /* Time Visualization Bar */
         .viz-container { margin-bottom: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
         .progress-stacked { height: 25px; border-radius: 12px; overflow: hidden; display: flex; background: #e9ecef; }
@@ -106,6 +106,19 @@
         .dot.active { background: var(--primary); transform: scale(1.2); }
         .dot.completed { background: #10b981; }
 
+        /* Dataset Cards */
+        .dataset-card-label {
+            cursor: pointer; border: 2px solid #e5e7eb; border-radius: 8px;
+            padding: 16px; transition: all 0.2s; background: white;
+            display: flex; flex-direction: column; align-items: flex-start;
+            min-height: 110px; width: 100%;
+        }
+        .dataset-card-label:hover { border-color: var(--primary); background: #eff6ff; }
+        .btn-check:checked + .dataset-card-label {
+            border-color: var(--primary); background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+        }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -117,19 +130,32 @@
             <div class="step-dots" id="dots">
                 <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
             </div>
-            <small class="text-muted" id="stepText">Step 1: Expert Profile</small>
+            <small class="text-muted" id="stepText">Step 1: Dataset &amp; Profile</small>
         </div>
 
         <form id="evalForm" onsubmit="return false;">
 
-            <!-- STEP 1: Participant Profile -->
+            <!-- STEP 1: Dataset Selection + Participant Profile -->
             <div class="step-container active container-narrow" id="step1">
-                <h4 class="fw-bold mb-4">Participant Profile</h4>
-                <div class="alert alert-info border-0 small">
+                <h4 class="fw-bold mb-4">Dataset &amp; Participant Profile</h4>
+
+                <!-- Dataset Selection -->
+                <div class="alert alert-primary border-0 small mb-4">
                     <i class="bi bi-info-circle-fill me-2"></i>
-                    To analyze results by expertise level, please provide detailed background information. All data is anonymized.
+                    You will review AI-generated biomarker discovery reports for your assigned dataset. Select it below.
                 </div>
-                
+                <div class="section-header">Assigned Dataset <span class="text-danger">*</span></div>
+                <div class="row g-3 mb-5" id="datasetCards">
+                    <!-- Generated by JS -->
+                </div>
+
+                <!-- Participant Profile -->
+                <div class="section-header">Participant Profile</div>
+                <div class="alert alert-info border-0 small">
+                    <i class="bi bi-shield-lock me-2"></i>
+                    To analyze results by expertise level, please provide detailed background. All data is anonymized.
+                </div>
+
                 <div class="row g-4">
                     <div class="col-md-6">
                         <label class="form-label fw-bold small">Full Name <span class="text-danger">*</span></label>
@@ -193,6 +219,13 @@
             <!-- STEP 2: Guidelines -->
             <div class="step-container container-narrow" id="step2">
                 <h4 class="fw-bold mb-4">Evaluation Protocol</h4>
+
+                <!-- Selected dataset badge -->
+                <div class="alert alert-success border-0 small mb-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-database-check fs-5"></i>
+                    <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>3 AI-generated reports</strong> (Model A, B, C) for this dataset.</div>
+                </div>
+
                 <div class="card mb-4 border-0 bg-light">
                     <div class="card-body">
                         <h6 class="fw-bold text-dark">Objective</h6>
@@ -221,12 +254,12 @@
                             <li class="nav-item"><button class="nav-link" onclick="switchM('c')">Model C</button></li>
                         </ul>
                         <div style="flex:1; position:relative;">
-                            <iframe src="./pdfs/codas.pdf" class="pdf-frame active" id="pdf_a"></iframe>
-                            <iframe src="./pdfs/biomni.pdf" class="pdf-frame" id="pdf_b"></iframe>
-                            <iframe src="./pdfs/colab_dsa.pdf" class="pdf-frame" id="pdf_c"></iframe>
+                            <iframe src="" class="pdf-frame active" id="pdf_a"></iframe>
+                            <iframe src="" class="pdf-frame" id="pdf_b"></iframe>
+                            <iframe src="" class="pdf-frame" id="pdf_c"></iframe>
                         </div>
                     </div>
-                    
+
                     <!-- RIGHT: Review Form -->
                     <div class="right-pane">
                         <div class="d-flex justify-content-between align-items-center mb-3 pt-3 px-1">
@@ -253,9 +286,9 @@
                             <li class="nav-item"><button class="nav-link" onclick="switchRef('c')">Model C</button></li>
                         </ul>
                         <div style="flex:1;">
-                            <iframe src="./pdfs/codas.pdf" class="pdf-frame active" id="ref_a"></iframe>
-                            <iframe src="./pdfs/biomni.pdf" class="pdf-frame" id="ref_b"></iframe>
-                            <iframe src="./pdfs/colab_dsa.pdf" class="pdf-frame" id="ref_c"></iframe>
+                            <iframe src="" class="pdf-frame active" id="ref_a"></iframe>
+                            <iframe src="" class="pdf-frame" id="ref_b"></iframe>
+                            <iframe src="" class="pdf-frame" id="ref_c"></iframe>
                         </div>
                     </div>
                     <div class="right-pane">
@@ -306,7 +339,7 @@
             <!-- STEP 5: Granular Efficiency (Sequenced) -->
             <div class="step-container container-narrow" id="step5">
                 <h4 class="fw-bold mb-4">Value Analysis (Efficiency)</h4>
-                
+
                 <div class="alert alert-warning border-0 small mb-4">
                     <i class="bi bi-clock-history me-2"></i>
                     <strong>Context:</strong> Assume a <strong>Full-time Researcher (8 hours/day)</strong> performing this exact study manually.
@@ -327,14 +360,14 @@
                 <!-- Sequential Inputs -->
                 <div class="process-list">
                     <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-lit)">1. Literature Review & Hypothesis</label>
+                        <label class="small fw-bold" style="color:var(--c-lit)">1. Literature Review &amp; Hypothesis</label>
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control time-input" id="t_lit" placeholder="0" oninput="updateTimeViz()">
                             <select class="form-select" style="max-width:100px" id="u_lit" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
                         </div>
                     </div>
                     <div class="process-item">
-                        <label class="small fw-bold" style="color:var(--c-data)">2. Data Cleaning & Preprocessing</label>
+                        <label class="small fw-bold" style="color:var(--c-data)">2. Data Cleaning &amp; Preprocessing</label>
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control time-input" id="t_data" placeholder="0" oninput="updateTimeViz()">
                             <select class="form-select" style="max-width:100px" id="u_data" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select>
@@ -437,7 +470,37 @@
         });
         const db = getDatabase(app);
 
+        // =============================================================
+        // DATASET CONFIGURATION
+        // TODO: Customize id, name, desc, and icon for each dataset.
+        // PDFs must be placed at: pdfs/{id}/codas.pdf
+        //                         pdfs/{id}/biomni.pdf
+        //                         pdfs/{id}/colab_dsa.pdf
+        // =============================================================
+        const DATASETS = [
+            { id: 'dwb_hourly', name: 'DWB (Hourly)',  desc: 'Hourly wearable biomarker data',      icon: 'bi-clock-history'  },
+            { id: 'globem',     name: 'GLOBEM',         desc: 'Longitudinal everyday behavior data', icon: 'bi-graph-up-arrow' },
+            { id: 'wearme',     name: 'WearMe',         desc: 'Multimodal wearable sensor data',     icon: 'bi-watch'          },
+            // TODO: uncomment and fill in when 4th dataset PDFs are ready
+            // { id: 'dataset4', name: 'Dataset 4', desc: '...', icon: 'bi-clipboard-pulse' },
+        ];
+
         let curr = 1;
+
+        // Update PDF iframes based on selected dataset
+        function updatePDFs() {
+            const ds = document.querySelector('input[name="dataset"]:checked')?.value;
+            if (!ds) return;
+            const modelFiles = { a: 'codas', b: 'biomni', c: 'colab_dsa' };
+            ['a', 'b', 'c'].forEach(m => {
+                const path = `./pdfs/${ds}/${modelFiles[m]}.pdf`;
+                document.getElementById(`pdf_${m}`).src = path;
+                document.getElementById(`ref_${m}`).src = path;
+            });
+            // Show selected dataset in guidelines step
+            const ds_obj = DATASETS.find(d => d.id === ds);
+            if (ds_obj) document.getElementById('selectedDatasetLabel').innerText = ds_obj.name;
+        }
 
         // FORM GENERATOR
         function genForm(m) {
@@ -448,6 +511,8 @@
                 <div class="section-header text-primary">1. Scientific Quality</div>
                 ${createLikert(m, 'novelty', 'Novelty / Significance', 'Does it add new knowledge?', ['Derivative','Low','Moderate','High','Exceptional'])}
                 ${createLikert(m, 'soundness', 'Methodological Soundness', 'Are stats/ML rigorous?', ['Flawed','Weak','Acceptable','Strong','Rigorous'])}
+                ${createLikert(m, 'plausibility', 'Biological Plausibility', 'Consistent with known disease biology?', ['Contradicts','Uncertain','Plausible','Well-grounded','Compelling'])}
+                ${createLikert(m, 'limitations', 'Limitations Transparency', 'Does it acknowledge constraints & confounds?', ['None stated','Minimal','Adequate','Thorough','Exemplary'])}
                 ${createLikert(m, 'presentation', 'Clarity & Presentation', 'Is it well-written?', ['Poor','Fair','Good','Very Good','Excellent'])}
                 ${createLikert(m, 'repro', 'Reproducibility', 'Are code/methods clear?', ['None','Low','Medium','High','Perfect'])}
 
@@ -511,7 +576,7 @@
                 {id:'t_int', u:'u_int', c:'var(--c-int)', l:'Interpretation'},
                 {id:'t_wrt', u:'u_wrt', c:'var(--c-wrt)', l:'Writing'}
             ];
-            
+
             let totalHours = 0;
             const values = fields.map(f => {
                 const val = parseFloat(document.getElementById(f.id).value) || 0;
@@ -523,7 +588,7 @@
 
             const bar = document.getElementById('timeBar');
             bar.innerHTML = totalHours === 0 ? '<div class="viz-segment" style="width:100%;background:#dee2e6;color:#6c757d">Enter values below...</div>' : '';
-            
+
             if(totalHours > 0) {
                 values.forEach(v => {
                     if(v.hours > 0) {
@@ -532,10 +597,9 @@
                     }
                 });
             }
-            
+
             document.getElementById('totalTimeDisplay').innerText = `Total: ${(totalHours/8).toFixed(1)} Days (${totalHours} Hrs)`;
-            
-            // Highlight Legend
+
             const legend = document.getElementById('timeLegend');
             legend.innerHTML = fields.map(f => `
                 <div class="legend-item">
@@ -564,6 +628,7 @@
 
         window.next = (c) => {
             if(!valid(c)) return;
+            if(c === 2) updatePDFs(); // Load PDFs for selected dataset before entering assessment
             document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
             curr = c+1;
             document.getElementById(`step${curr}`).classList.add('active');
@@ -583,22 +648,25 @@
                 if(i < curr-1) d.classList.add('completed');
                 if(i === curr-1) d.classList.add('active');
             });
-            const titles = ["Profile", "Guidelines", "Assessment", "Ranking", "Value"];
+            const titles = ["Dataset & Profile", "Guidelines", "Assessment", "Ranking", "Value"];
             document.getElementById('stepText').innerText = `Step ${curr}: ${titles[curr-1]}`;
             window.scrollTo(0,0);
         }
 
         function valid(s) {
-            if(s===1) if(!document.getElementById('uName').value || !document.getElementById('uEmail').value) { alert("Name/Email required"); return false; }
+            if(s===1) {
+                if(!document.querySelector('input[name="dataset"]:checked')) { alert("Please select a dataset to evaluate."); return false; }
+                if(!document.getElementById('uName').value || !document.getElementById('uEmail').value) { alert("Name and Email are required."); return false; }
+            }
             if(s===3) {
                 for(let m of ['a','b','c']) {
-                    if(!document.querySelector(`input[name="soundness_${m}"]:checked`)) { alert(`Evaluate Model ${m.toUpperCase()}`); return false; }
+                    if(!document.querySelector(`input[name="soundness_${m}"]:checked`)) { alert(`Please complete the evaluation for Model ${m.toUpperCase()}`); return false; }
                     const chk = document.querySelectorAll(`#f_${m} .e-chk:checked`);
-                    if(chk.length>0 && document.getElementById(`txt_${m}`).value.length<3) { alert(`Explain safety error for Model ${m.toUpperCase()}`); return false; }
+                    if(chk.length>0 && document.getElementById(`txt_${m}`).value.length<3) { alert(`Please explain the safety error for Model ${m.toUpperCase()}`); return false; }
                 }
             }
             if(s===4 && (document.querySelectorAll('.ranking-slot.filled').length < 3 || document.getElementById('rankReason').value.length < 5)) {
-                alert("Ranking and reason required."); return false;
+                alert("Please complete the ranking and provide a rationale."); return false;
             }
             return true;
         }
@@ -633,15 +701,16 @@
         window.submitData = async () => {
             document.getElementById('finalBtn').disabled = true;
             const rank = r => document.querySelector(`.ranking-slot[data-r="${r}"] .draggable`)?.dataset.id;
-            
+
             const ratings = {};
             ['a','b','c'].forEach(m => {
                 ratings[m] = {
                     novelty: document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
                     soundness: document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
+                    plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
+                    limitations: document.querySelector(`input[name="limitations_${m}"]:checked`)?.value,
                     presentation: document.querySelector(`input[name="presentation_${m}"]:checked`)?.value,
                     repro: document.querySelector(`input[name="repro_${m}"]:checked`)?.value,
-                    plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
                     decision: document.querySelector(`input[name="dec_${m}"]:checked`)?.value,
                     effort: document.getElementById(`eff_${m}`).value,
                     safety_flags: Array.from(document.querySelectorAll(`#f_${m} .e-chk:checked`)).map(c=>c.value),
@@ -649,7 +718,9 @@
                 };
             });
 
+            const selectedDataset = document.querySelector('input[name="dataset"]:checked')?.value;
             const data = {
+                selected_dataset: selectedDataset,
                 profile: {
                     name: document.getElementById('uName').value,
                     email: document.getElementById('uEmail').value,
@@ -675,12 +746,30 @@
                 timestamp: new Date().toISOString()
             };
 
-            await push(ref(db, "codas_eval_nature_final"), data);
-            bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
-            new bootstrap.Modal(document.getElementById('successModal')).show();
+            try {
+                await push(ref(db, "codas_eval_nature_final"), data);
+                bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+                new bootstrap.Modal(document.getElementById('successModal')).show();
+            } catch(err) {
+                console.error('Firebase push error:', err);
+                document.getElementById('finalBtn').disabled = false;
+                alert('Submission failed. Please check your internet connection and try again.\n\nIf this persists, contact the study team.\n\nError: ' + err.message);
+            }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Generate dataset selection cards
+            document.getElementById('datasetCards').innerHTML = DATASETS.map(ds => `
+                <div class="col-6 col-md-3">
+                    <input type="radio" class="btn-check" name="dataset" id="ds_${ds.id}" value="${ds.id}">
+                    <label class="dataset-card-label" for="ds_${ds.id}">
+                        <i class="bi ${ds.icon} mb-2 fs-4 text-primary"></i>
+                        <div class="fw-bold small">${ds.name}</div>
+                        <div style="font-size:0.72rem;color:#6b7280;font-weight:400;margin-top:2px">${ds.desc}</div>
+                    </label>
+                </div>
+            `).join('');
+
             document.getElementById('forms').innerHTML = genForm('a')+genForm('b')+genForm('c');
             updateTimeViz();
             initDD();
