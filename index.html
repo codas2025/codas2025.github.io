@@ -105,11 +105,11 @@
 
         <!-- STEP 1: Dataset + Profile -->
         <div class="step-container active container-narrow" id="step1">
-            <h4 class="fw-bold mb-4">Dataset &amp; Participant Profile</h4>
-            <div class="alert alert-primary border-0 small mb-4">
+            <h4 class="fw-bold mb-4">Dataset &amp; Profile</h4>
+            <!-- <div class="alert alert-primary border-0 small mb-4">
                 <i class="bi bi-info-circle-fill me-2"></i>
                 Select your assigned dataset, then complete your profile. All data is anonymized.
-            </div>
+            </div> -->
 
             <div class="section-header">Assigned Dataset <span class="text-danger">*</span></div>
             <div class="mb-5">
@@ -125,15 +125,15 @@
                     <input type="text" class="form-control" id="uName">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Email (for validation) <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Email <span class="text-danger">*</span></label>
                     <input type="email" class="form-control" id="uEmail">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Current Affiliation <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Affiliation <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="uAffil">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Primary Domain <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Domain <span class="text-danger">*</span></label>
                     <select class="form-select" id="uExpert">
                         <option value="" disabled selected>Select…</option>
                         <option>Clinical Medicine</option>
@@ -152,7 +152,7 @@
                     <select class="form-select" id="uAiFam">
                         <option value="None">Novice (Never used)</option>
                         <option value="User">User (ChatGPT for text)</option>
-                        <option value="Coder">Coder (Copilot/Cursor)</option>
+                        <option value="Coder">Coder (Copilot/Cursor/Claude Code)</option>
                         <option value="Researcher">AI Researcher (Builds models)</option>
                     </select>
                 </div>
@@ -189,7 +189,7 @@
             <h4 class="fw-bold mb-4">Evaluation Protocol</h4>
             <div class="alert alert-success border-0 small mb-4 d-flex align-items-center gap-2">
                 <i class="bi bi-database-check fs-5"></i>
-                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>3 AI-generated reports</strong> (Model A, B, C).</div>
+                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>3 blinded reports</strong> (Model A, B, C).</div>
             </div>
             <div class="card mb-4 border-0 bg-light">
                 <div class="card-body">
@@ -199,7 +199,7 @@
             </div>
             <ul class="list-group list-group-flush mb-4">
                 <li class="list-group-item"><i class="bi bi-eye-slash me-2 text-muted"></i><strong>Double Blind:</strong> Models A, B, and C are anonymized.</li>
-                <li class="list-group-item"><i class="bi bi-journal-medical me-2 text-primary"></i><strong>Standard:</strong> Evaluate as if reviewing for a high-impact journal (e.g., <em>Nature Medicine</em>).</li>
+                <li class="list-group-item"><i class="bi bi-journal-medical me-2 text-primary"></i><strong>Standard:</strong> Evaluate as if reviewing for a high-impact journal (e.g., <em>NeurIPS</em>).</li>
                 <li class="list-group-item"><i class="bi bi-shield-exclamation me-2 text-danger"></i><strong>Safety:</strong> Rigorously check for hallucinations and biological contradictions.</li>
             </ul>
             <div class="d-flex justify-content-between mt-5">
@@ -225,7 +225,7 @@
                 </div>
                 <div class="right-pane">
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-3 px-1">
-                        <h5 class="fw-bold m-0">Peer Review Form</h5>
+                        <h5 class="fw-bold m-0">Review Form</h5>
                         <span class="badge bg-primary" id="badge">Model A</span>
                     </div>
                     <div class="scrollable-content" id="forms"></div>
@@ -433,13 +433,13 @@
     // CONFIG
     // ============================================================
     const DATASETS = [
-        { id: 'dwb_hourly', name: 'DWB (Hourly)',  desc: 'Hourly wearable biomarker data'      },
-        { id: 'globem',     name: 'GLOBEM',         desc: 'Longitudinal everyday behavior data' },
-        { id: 'wearme',     name: 'WearMe',         desc: 'Multimodal wearable sensor data'     },
+        { id: 'dwb_hourly', name: 'DWB (Hourly)',  desc: 'Hourly depression wearable data'      },
+        { id: 'globem',     name: 'GLOBEM',         desc: 'Longitudinal everyday behavior depression data' },
+        { id: 'wearme',     name: 'WearMe',         desc: 'Subject-level insulin resistance wearable data'     },
         // { id: 'dataset4', name: 'Dataset 4', desc: '…' },
     ];
 
-    const VENUES = ['Nature','Nature Medicine','NEJM','NEJM AI','NeurIPS','ICML','ICLR','ACL','EMNLP','NAACL'];
+    const VENUES = ['Nature','Nature Medicine','The Lancet','JAMA','NEJM','NEJM AI','NeurIPS','ICML','ICLR','AAAI','IJCAI','ACL','EMNLP','NAACL'];
 
     // ---- Model randomisation (once per page load) ---------------
     const MODEL_FILES = ['codas', 'biomni', 'colab_dsa'];
@@ -787,7 +787,7 @@
         };
 
         try {
-            await push(ref(db, 'codas_eval_nature_final'), sanitize(data));
+            await push(ref(db, 'codas_evaluations'), sanitize(data));
             bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
             new bootstrap.Modal(document.getElementById('successModal')).show();
         } catch(err) {
