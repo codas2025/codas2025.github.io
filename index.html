@@ -82,9 +82,7 @@
         .venue-item input:checked + label { background: var(--primary); color: white; border-color: var(--primary); }
         .venue-item input { display: none; }
 
-        /* Step 6 feedback */
-        .feedback-prompt { font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 4px; }
-        .feedback-hint   { font-size: 0.72rem; color: #9ca3af; margin-bottom: 6px; }
+        .feedback-hint { font-size: 0.72rem; color: #9ca3af; margin-bottom: 6px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -303,26 +301,32 @@
             <div class="process-list">
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-lit)">1. Literature Review &amp; Hypothesis</label>
+                    <div class="feedback-hint mb-1">Searching and synthesizing relevant prior work; identifying known biomarkers for the target disease and wearable modality; formulating testable hypotheses grounded in existing mechanistic evidence.</div>
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_lit" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_lit" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-data)">2. Data Cleaning &amp; Preprocessing</label>
+                    <div class="feedback-hint mb-1">Signal quality assessment; artifact and noise removal; handling missing data and wear-time gaps; epoch/windowing decisions; normalization and alignment of multi-sensor streams.</div>
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_data" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_data" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-feat)">3. Feature Engineering</label>
+                    <div class="feedback-hint mb-1">Deriving time-domain, frequency-domain, and physiologically-grounded features from raw wearable signals; selecting feature sets relevant to the target biomarker hypothesis.</div>
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_feat" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_feat" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-ml)">4. Stat Analysis / ML Modeling</label>
+                    <div class="feedback-hint mb-1">Running statistical tests (with appropriate multiple testing correction); training and evaluating ML models with proper subject-level train/test splits; reporting effect sizes and confidence intervals.</div>
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_ml" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_ml" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-int)">5. Biological Interpretation</label>
+                    <div class="feedback-hint mb-1">Mapping findings to known disease pathways (e.g., KEGG, Reactome); assessing mechanistic plausibility; contextualizing results against published literature; identifying confounders and limitations.</div>
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_int" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_int" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
                 <div class="process-item">
                     <label class="small fw-bold" style="color:var(--c-wrt)">6. Manuscript Drafting</label>
+                    <div class="feedback-hint mb-1">Structuring figures and tables; writing methods, results, and discussion sections; formatting for a target journal; revising based on co-author or collaborator feedback.</div>
                     <div class="input-group input-group-sm"><input type="number" class="form-control time-input" id="t_wrt" placeholder="0" oninput="updateTimeViz()"><select class="form-select" style="max-width:100px" id="u_wrt" onchange="updateTimeViz()"><option>Days</option><option>Hours</option></select></div>
                 </div>
             </div>
@@ -356,25 +360,9 @@
             <h4 class="fw-bold mb-2">Overall Impressions</h4>
             <p class="text-muted small mb-4">Share any qualitative observations not captured by the rating scales. All fields are optional — write as much or as little as you like.</p>
 
-            <div class="mb-4">
-                <div class="feedback-prompt">What was the most impressive or surprising finding across the three reports?</div>
-                <div class="feedback-hint">e.g. an unexpected biomarker, a particularly rigorous analysis, a result that changed your prior</div>
-                <textarea class="form-control" id="fb_impressive" rows="3"
-                    placeholder="Optional — leave blank to skip"></textarea>
-            </div>
-
-            <div class="mb-4">
-                <div class="feedback-prompt">What was the most critical concern or red flag you encountered?</div>
-                <div class="feedback-hint">e.g. a hallucinated citation, a biologically impossible claim, a methodological error that undermines trust</div>
-                <textarea class="form-control" id="fb_concern" rows="3"
-                    placeholder="Optional — leave blank to skip"></textarea>
-            </div>
-
             <div class="mb-5">
-                <div class="feedback-prompt">Any other comments, suggestions, or observations for the research team?</div>
-                <div class="feedback-hint">e.g. evaluation process feedback, missing questions, general impressions of AI vs. human research quality</div>
-                <textarea class="form-control" id="fb_other" rows="4"
-                    placeholder="Optional — leave blank to skip"></textarea>
+                <textarea class="form-control" id="fb_open" rows="8"
+                    placeholder="Optional — share any observations, concerns, surprises, or suggestions not captured by the rating scales above. Leave blank to skip."></textarea>
             </div>
 
             <div class="d-flex justify-content-between">
@@ -798,11 +786,7 @@
             },
             validation_req:       Array.from(document.querySelectorAll('.trust-chk:checked')).map(c=>c.value),
             validation_req_other: document.getElementById('trustOtherText').value.trim() || null,
-            open_feedback: {
-                impressive: document.getElementById('fb_impressive').value.trim() || null,
-                concern:    document.getElementById('fb_concern').value.trim() || null,
-                other:      document.getElementById('fb_other').value.trim() || null
-            },
+            open_feedback: document.getElementById('fb_open').value.trim() || null,
             timestamp: new Date().toISOString()
         };
 
