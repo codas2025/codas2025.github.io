@@ -536,6 +536,13 @@
             'Algorithm and primary metric stated; at least two of {parameters, split strategy, preprocessing, stochasticity control} are missing.',
             'All five elements present (algorithm, parameters, split, preprocessing, data pointer) but at least one described only conceptually.',
             'Algorithm version, parameters, random seed, split strategy, preprocessing steps, and data availability all explicitly stated.'
+        ],
+        statvalid: [
+            'No correction for multiple comparisons; p-values reported without effect sizes or confidence intervals.',
+            'Multiple testing acknowledged but not corrected; effect sizes or CIs absent for at least one primary claim.',
+            'Correction applied to primary outcome only; effect sizes reported but CIs or power estimates are missing.',
+            'Multiple testing corrected throughout; effect sizes and CIs reported; sample-level (not observation-level) train/test split confirmed.',
+            'Full validation battery: multiple testing corrected, effect sizes with CIs, subject-level splits, and cross-dataset replication all present.'
         ]
     };
 
@@ -546,6 +553,7 @@
             <div class="section-header text-primary">1. Scientific Quality</div>
             ${likert(m,'novelty',      'Novelty / Significance',      'Is the biomarker previously unreported?',      ['Derivative','Low','Incremental','Significant','Transformative'], RUBRICS.novelty)}
             ${likert(m,'soundness',    'Methodological Soundness',    'Is the analysis chain free of critical errors?',['Critically flawed','Substantial flaws','Partially sound','Sound','Rigorous'], RUBRICS.soundness)}
+            ${likert(m,'statvalid',    'Statistical Rigor',           'Is the validation battery comprehensive at population scale?',['Uncorrected','Insufficient','Partial','Appropriate','Rigorous'], RUBRICS.statvalid)}
             ${likert(m,'plausibility', 'Biological Plausibility',     'Is the mechanism consistent with known biology?',['Contradicts','Inconsistent','Neutral','Supported','Well-grounded'], RUBRICS.plausibility)}
             ${likert(m,'limitations',  'Limitations Transparency',    'Are constraints and confounds acknowledged?',   ['None stated','Generic only','Partial','Thorough','Exemplary'], RUBRICS.limitations)}
             ${likert(m,'presentation', 'Clarity &amp; Presentation',  'Can an expert reconstruct the analysis?',       ['Not interpretable','Difficult','Partial','Mostly clear','Self-contained'], RUBRICS.presentation)}
@@ -749,6 +757,7 @@
             assessments[m] = {
                 novelty:      document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
                 soundness:    document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
+                statvalid:    document.querySelector(`input[name="statvalid_${m}"]:checked`)?.value,
                 plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
                 limitations:  document.querySelector(`input[name="limitations_${m}"]:checked`)?.value,
                 presentation: document.querySelector(`input[name="presentation_${m}"]:checked`)?.value,
