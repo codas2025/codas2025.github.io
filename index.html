@@ -456,14 +456,25 @@
     let curr = 1;
 
     // ---- PDF loading -------------------------------------------
-    function updatePDFs() {
+    // Track blob URLs so we can revoke them when switching datasets
+    const _blobUrls = {};
+
+    async function updatePDFs() {
         const ds = document.getElementById('datasetSelect').value;
         if (!ds) return;
-        ['a','b','c'].forEach(m => {
+        // Revoke previous blob URLs to avoid memory leaks
+        Object.values(_blobUrls).forEach(u => URL.revokeObjectURL(u));
+        Object.keys(_blobUrls).forEach(k => delete _blobUrls[k]);
+
+        await Promise.all(['a','b','c'].map(async m => {
             const path = `./pdfs/${ds}/${MODEL_MAP[m]}.pdf`;
-            document.getElementById(`pdf_${m}`).src = path;
-            document.getElementById(`ref_${m}`).src = path;
-        });
+            const resp = await fetch(path);
+            const blob = await resp.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            _blobUrls[m] = blobUrl;
+            document.getElementById(`pdf_${m}`).src = blobUrl;
+            document.getElementById(`ref_${m}`).src = blobUrl;
+        }));
         const dsObj = DATASETS.find(d=>d.id===ds);
         if (dsObj) document.getElementById('selectedDatasetLabel').innerText = dsObj.name;
     }
