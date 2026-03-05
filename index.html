@@ -189,7 +189,7 @@
             <h4 class="fw-bold mb-4">Evaluation Protocol</h4>
             <div class="alert alert-success border-0 small mb-4 d-flex align-items-center gap-2">
                 <i class="bi bi-database-check fs-5"></i>
-                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>3 blinded reports</strong> (Model A, B, C).</div>
+                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>4 blinded reports</strong> (Model A, B, C, D).</div>
             </div>
             <div class="card mb-4 border-0 bg-light">
                 <div class="card-body">
@@ -198,7 +198,7 @@
                 </div>
             </div>
             <ul class="list-group list-group-flush mb-4">
-                <li class="list-group-item"><i class="bi bi-eye-slash me-2 text-muted"></i><strong>Double Blind:</strong> Models A, B, and C are anonymized.</li>
+                <li class="list-group-item"><i class="bi bi-eye-slash me-2 text-muted"></i><strong>Quadruple Blind:</strong> Models A, B, C, and D are anonymized.</li>
                 <li class="list-group-item"><i class="bi bi-journal-medical me-2 text-primary"></i><strong>Standard:</strong> Evaluate as if reviewing for a high-impact journal (e.g., <em>NeurIPS</em>).</li>
                 <li class="list-group-item"><i class="bi bi-shield-exclamation me-2 text-danger"></i><strong>Safety:</strong> Rigorously check for hallucinations and biological contradictions.</li>
             </ul>
@@ -216,11 +216,13 @@
                         <li class="nav-item"><button class="nav-link active" onclick="switchM('a')">Model A <span class="tab-dot pending" id="tab_dot_a">●</span></button></li>
                         <li class="nav-item"><button class="nav-link" onclick="switchM('b')">Model B <span class="tab-dot pending" id="tab_dot_b">●</span></button></li>
                         <li class="nav-item"><button class="nav-link" onclick="switchM('c')">Model C <span class="tab-dot pending" id="tab_dot_c">●</span></button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchM('d')">Model D <span class="tab-dot pending" id="tab_dot_d">●</span></button></li>
                     </ul>
                     <div style="flex:1; position:relative;">
                         <iframe src="" class="pdf-frame active" id="pdf_a"></iframe>
                         <iframe src="" class="pdf-frame" id="pdf_b"></iframe>
                         <iframe src="" class="pdf-frame" id="pdf_c"></iframe>
+                        <iframe src="" class="pdf-frame" id="pdf_d"></iframe>
                     </div>
                 </div>
                 <div class="right-pane">
@@ -246,11 +248,13 @@
                         <li class="nav-item"><button class="nav-link active" onclick="switchRef('a')">Model A</button></li>
                         <li class="nav-item"><button class="nav-link" onclick="switchRef('b')">Model B</button></li>
                         <li class="nav-item"><button class="nav-link" onclick="switchRef('c')">Model C</button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchRef('d')">Model D</button></li>
                     </ul>
                     <div style="flex:1;">
                         <iframe src="" class="pdf-frame active" id="ref_a"></iframe>
                         <iframe src="" class="pdf-frame" id="ref_b"></iframe>
                         <iframe src="" class="pdf-frame" id="ref_c"></iframe>
+                        <iframe src="" class="pdf-frame" id="ref_d"></iframe>
                     </div>
                 </div>
                 <div class="right-pane">
@@ -258,17 +262,19 @@
                         <h5 class="fw-bold mb-3">Comparative Ranking</h5>
                         <div class="p-3 bg-light rounded border mb-4">
                             <div class="d-flex text-center small fw-bold mb-2 text-muted">
-                                <div style="flex:1">1st (Best)</div><div style="flex:1">2nd</div><div style="flex:1">3rd</div>
+                                <div style="flex:1">1st (Best)</div><div style="flex:1">2nd</div><div style="flex:1">3rd</div><div style="flex:1">4th</div>
                             </div>
                             <div class="d-flex gap-2 mb-3" id="slots">
                                 <div class="ranking-slot flex-grow-1" data-r="1">Drop Here</div>
                                 <div class="ranking-slot flex-grow-1" data-r="2">Drop Here</div>
                                 <div class="ranking-slot flex-grow-1" data-r="3">Drop Here</div>
+                                <div class="ranking-slot flex-grow-1" data-r="4">Drop Here</div>
                             </div>
                             <div class="d-flex justify-content-center gap-2" id="pool">
                                 <div class="draggable" draggable="true" data-id="Model A">Model A</div>
                                 <div class="draggable" draggable="true" data-id="Model B">Model B</div>
                                 <div class="draggable" draggable="true" data-id="Model C">Model C</div>
+                                <div class="draggable" draggable="true" data-id="Model D">Model D</div>
                             </div>
                         </div>
                         <div class="mb-4">
@@ -501,7 +507,7 @@
     const VENUES = ['Nature','Nature Medicine','The Lancet','JAMA','NEJM','NEJM AI','NeurIPS','ICML','ICLR','AAAI','IJCAI','ACL','EMNLP','NAACL'];
 
     // ---- Model randomisation (once per page load) ---------------
-    const MODEL_FILES = ['codas', 'biomni', 'colab_dsa'];
+    const MODEL_FILES = ['codas', 'biomni', 'colab_dsa', 'co-scientist'];
     function shuffle(arr) {
         const a = [...arr];
         for (let i = a.length-1; i>0; i--) {
@@ -510,7 +516,7 @@
         return a;
     }
     const shuffled = shuffle(MODEL_FILES);
-    const MODEL_MAP = { a: shuffled[0], b: shuffled[1], c: shuffled[2] };
+    const MODEL_MAP = { a: shuffled[0], b: shuffled[1], c: shuffled[2], d: shuffled[3] };
 
     let curr = 1;
 
@@ -525,7 +531,7 @@
         Object.values(_blobUrls).forEach(u => URL.revokeObjectURL(u));
         Object.keys(_blobUrls).forEach(k => delete _blobUrls[k]);
 
-        await Promise.all(['a','b','c'].map(async m => {
+        await Promise.all(['a','b','c','d'].map(async m => {
             const path = `./pdfs/${ds}/${MODEL_MAP[m]}.pdf`;
             const resp = await fetch(path);
             const blob = await resp.blob();
@@ -571,7 +577,7 @@
 
     // ---- Tab completion dots -----------------------------------
     function updateTabDots() {
-        ['a','b','c'].forEach(m => {
+        ['a','b','c','d'].forEach(m => {
             const dot = document.getElementById(`tab_dot_${m}`);
             if (!dot) return;
             const done = !!document.querySelector(`input[name="dec_${m}"]:checked`);
@@ -743,7 +749,7 @@
         document.querySelectorAll('.m-form').forEach(e=>e.style.display='none');
         document.getElementById(`f_${m}`).style.display='block';
         document.getElementById('badge').innerText = `Model ${m.toUpperCase()}`;
-        document.getElementById('badge').className = `badge ${m==='a'?'bg-primary':m==='b'?'bg-success':'bg-warning text-dark'}`;
+        document.getElementById('badge').className = `badge ${m==='a'?'bg-primary':m==='b'?'bg-success':m==='c'?'bg-warning text-dark':'bg-secondary'}`;
     };
 
     window.switchRef = (m) => {
@@ -789,7 +795,7 @@
             if (document.getElementById('v_others').checked && !document.getElementById('venueOtherText').value.trim()) { alert('Please specify the other venue(s).'); return false; }
         }
         if (s===3) {
-            for (const m of ['a','b','c']) {
+            for (const m of ['a','b','c','d']) {
                 if (!document.querySelector(`input[name="dec_${m}"]:checked`)) {
                     alert(`Please select a Recommendation for Model ${m.toUpperCase()}.`); return false;
                 }
@@ -800,7 +806,7 @@
             }
         }
         if (s===4) {
-            if (document.querySelectorAll('.ranking-slot.filled').length<3) { alert('Please complete the ranking.'); return false; }
+            if (document.querySelectorAll('.ranking-slot.filled').length<4) { alert('Please complete the ranking.'); return false; }
             if (document.getElementById('rankReason').value.length<5) { alert('Please provide a rationale for your 1st place selection.'); return false; }
         }
         if (s===5) {
@@ -843,7 +849,7 @@
         const rank = r => document.querySelector(`.ranking-slot[data-r="${r}"] .draggable`)?.dataset.id;
 
         const assessments = {};
-        ['a','b','c'].forEach(m => {
+        ['a','b','c','d'].forEach(m => {
             assessments[m] = {
                 novelty:      document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
                 soundness:    document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
@@ -861,7 +867,7 @@
 
         const data = {
             selected_dataset:  document.getElementById('datasetSelect').value,
-            model_assignment:  { A: MODEL_MAP.a, B: MODEL_MAP.b, C: MODEL_MAP.c },
+            model_assignment:  { A: MODEL_MAP.a, B: MODEL_MAP.b, C: MODEL_MAP.c, D: MODEL_MAP.d },
             profile: {
                 name:             document.getElementById('uName').value,
                 email:            document.getElementById('uEmail').value,
@@ -875,7 +881,7 @@
             },
             assessments,
             ranking: {
-                1: rank(1), 2: rank(2), 3: rank(3),
+                1: rank(1), 2: rank(2), 3: rank(3), 4: rank(4),
                 reason: document.getElementById('rankReason').value
             },
             time_est: {
@@ -923,7 +929,7 @@
             document.getElementById('trustOtherText').style.display = this.checked ? 'block' : 'none';
         });
 
-        document.getElementById('forms').innerHTML = genForm('a') + genForm('b') + genForm('c');
+        document.getElementById('forms').innerHTML = genForm('a') + genForm('b') + genForm('c') + genForm('d');
 
         document.getElementById('forms').addEventListener('change', e => {
             if (e.target.matches('.safety-other-chk')) {
