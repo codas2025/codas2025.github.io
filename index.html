@@ -129,11 +129,11 @@
                     <input type="email" class="form-control" id="uEmail">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Affiliation <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Affiliation <span class="text-muted fw-normal">(optional)</span></label>
                     <input type="text" class="form-control" id="uAffil">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Domain <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Domain <span class="text-muted fw-normal">(optional)</span></label>
                     <select class="form-select" id="uExpert">
                         <option value="" disabled selected>Select…</option>
                         <option>Clinical Medicine</option>
@@ -144,11 +144,11 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Research Experience (Years) <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Research Experience (Years) <span class="text-muted fw-normal">(optional)</span></label>
                     <input type="number" class="form-control" id="uExp" min="0">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Generative AI Familiarity <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Generative AI Familiarity <span class="text-muted fw-normal">(optional)</span></label>
                     <select class="form-select" id="uAiFam">
                         <option value="None">Novice (Never used)</option>
                         <option value="User">User (ChatGPT for text)</option>
@@ -157,7 +157,7 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small">Peer Review Frequency <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Peer Review Frequency <span class="text-muted fw-normal">(optional)</span></label>
                     <select class="form-select" id="uRevLvl">
                         <option value="" disabled selected>Select…</option>
                         <option value="None">None</option>
@@ -167,7 +167,7 @@
                     </select>
                 </div>
                 <div class="col-md-12">
-                    <label class="form-label fw-bold small">Key Venues Reviewed / Published In <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small">Key Venues Reviewed / Published In <span class="text-muted fw-normal">(optional)</span></label>
                     <div class="venue-grid mb-2" id="venueGrid"></div>
                     <div class="d-flex align-items-center gap-2 flex-wrap mt-1">
                         <div class="venue-item">
@@ -189,7 +189,7 @@
             <h4 class="fw-bold mb-4">Evaluation Protocol</h4>
             <div class="alert alert-success border-0 small mb-4 d-flex align-items-center gap-2">
                 <i class="bi bi-database-check fs-5"></i>
-                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>4 blinded reports</strong> (Model A, B, C, D).</div>
+                <div>Reviewing: <strong id="selectedDatasetLabel">—</strong> &nbsp;·&nbsp; You will evaluate <strong>4 blinded reports</strong> (Model A, B, C, D). <strong>One new report requires your annotation</strong> — the others are locked from a prior study round.</div>
             </div>
             <div class="card mb-4 border-0 bg-light">
                 <div class="card-body">
@@ -517,6 +517,8 @@
     }
     const shuffled = shuffle(MODEL_FILES);
     const MODEL_MAP = { a: shuffled[0], b: shuffled[1], c: shuffled[2], d: shuffled[3] };
+    // Slot that holds the new co-scientist report — only this form is editable
+    const CS_SLOT = Object.keys(MODEL_MAP).find(k => MODEL_MAP[k] === 'co-scientist');
 
     let curr = 1;
 
@@ -580,7 +582,8 @@
         ['a','b','c','d'].forEach(m => {
             const dot = document.getElementById(`tab_dot_${m}`);
             if (!dot) return;
-            const done = !!document.querySelector(`input[name="dec_${m}"]:checked`);
+            // Locked slots (not co-scientist) are always considered done
+            const done = m !== CS_SLOT || !!document.querySelector(`input[name="dec_${m}"]:checked`);
             dot.className = `tab-dot ${done?'done':'pending'}`;
             dot.textContent = done ? '✓' : '●';
         });
@@ -695,6 +698,17 @@
         </div>`;
     }
 
+    function genLockedForm(m) {
+        return `
+        <div id="f_${m}" class="m-form" style="display:${m==='a'?'block':'none'}">
+            <div class="text-center py-5 px-3">
+                <i class="bi bi-lock-fill fs-1 text-secondary mb-3 d-block"></i>
+                <div class="fw-bold text-secondary mb-1">Previously Evaluated</div>
+                <div class="small text-muted">This model was assessed in a prior study round.<br>No new annotation is required for this report.</div>
+            </div>
+        </div>`;
+    }
+
     function likert(m, id, label, sub, opts, rubric) {
         const rubricHTML = rubric
             ? `<div class="rubric-box">${rubric.map((r,i)=>`<div class="rubric-row"><span class="score-num">${i+1}</span><span>${r}</span></div>`).join('')}</div>`
@@ -791,18 +805,16 @@
         if (s===1) {
             if (!document.getElementById('datasetSelect').value) { alert('Please select a dataset.'); return false; }
             if (!document.getElementById('uName').value || !document.getElementById('uEmail').value) { alert('Name and Email are required.'); return false; }
-            if (!document.querySelectorAll('.venue-chk:checked').length) { alert('Please select at least one key venue.'); return false; }
-            if (document.getElementById('v_others').checked && !document.getElementById('venueOtherText').value.trim()) { alert('Please specify the other venue(s).'); return false; }
         }
         if (s===3) {
-            for (const m of ['a','b','c','d']) {
-                if (!document.querySelector(`input[name="dec_${m}"]:checked`)) {
-                    alert(`Please select a Recommendation for Model ${m.toUpperCase()}.`); return false;
-                }
-                const chk = document.querySelectorAll(`#f_${m} .e-chk:checked`);
-                if (chk.length>0 && document.getElementById(`txt_${m}`).value.length<3) {
-                    alert(`Please explain the safety issue flagged for Model ${m.toUpperCase()}.`); return false;
-                }
+            // Only the co-scientist slot (CS_SLOT) requires annotation
+            const m = CS_SLOT;
+            if (!document.querySelector(`input[name="dec_${m}"]:checked`)) {
+                alert(`Please select a Recommendation for Model ${m.toUpperCase()} (the new report).`); return false;
+            }
+            const chk = document.querySelectorAll(`#f_${m} .e-chk:checked`);
+            if (chk.length>0 && document.getElementById(`txt_${m}`).value.length<3) {
+                alert(`Please explain the safety issue flagged for Model ${m.toUpperCase()}.`); return false;
             }
         }
         if (s===4) {
@@ -848,22 +860,22 @@
         document.getElementById('finalBtn').disabled = true;
         const rank = r => document.querySelector(`.ranking-slot[data-r="${r}"] .draggable`)?.dataset.id;
 
+        // Only collect the co-scientist slot assessment
         const assessments = {};
-        ['a','b','c','d'].forEach(m => {
-            assessments[m] = {
-                novelty:      document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
-                soundness:    document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
-                statvalid:    document.querySelector(`input[name="statvalid_${m}"]:checked`)?.value,
-                plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
-                limitations:  document.querySelector(`input[name="limitations_${m}"]:checked`)?.value,
-                presentation: document.querySelector(`input[name="presentation_${m}"]:checked`)?.value,
-                repro:        document.querySelector(`input[name="repro_${m}"]:checked`)?.value,
-                decision:     document.querySelector(`input[name="dec_${m}"]:checked`)?.value,
-                effort:       document.getElementById(`eff_${m}`).value,
-                safety_flags: Array.from(document.querySelectorAll(`#f_${m} .e-chk:checked`)).map(c=>c.value),
-                safety_text:  document.getElementById(`txt_${m}`).value
-            };
-        });
+        const m = CS_SLOT;
+        assessments[m] = {
+            novelty:      document.querySelector(`input[name="novelty_${m}"]:checked`)?.value,
+            soundness:    document.querySelector(`input[name="soundness_${m}"]:checked`)?.value,
+            statvalid:    document.querySelector(`input[name="statvalid_${m}"]:checked`)?.value,
+            plausibility: document.querySelector(`input[name="plausibility_${m}"]:checked`)?.value,
+            limitations:  document.querySelector(`input[name="limitations_${m}"]:checked`)?.value,
+            presentation: document.querySelector(`input[name="presentation_${m}"]:checked`)?.value,
+            repro:        document.querySelector(`input[name="repro_${m}"]:checked`)?.value,
+            decision:     document.querySelector(`input[name="dec_${m}"]:checked`)?.value,
+            effort:       document.getElementById(`eff_${m}`).value,
+            safety_flags: Array.from(document.querySelectorAll(`#f_${m} .e-chk:checked`)).map(c=>c.value),
+            safety_text:  document.getElementById(`txt_${m}`).value
+        };
 
         const data = {
             selected_dataset:  document.getElementById('datasetSelect').value,
@@ -929,7 +941,9 @@
             document.getElementById('trustOtherText').style.display = this.checked ? 'block' : 'none';
         });
 
-        document.getElementById('forms').innerHTML = genForm('a') + genForm('b') + genForm('c') + genForm('d');
+        document.getElementById('forms').innerHTML = ['a','b','c','d'].map(m =>
+            m === CS_SLOT ? genForm(m) : genLockedForm(m)
+        ).join('');
 
         document.getElementById('forms').addEventListener('change', e => {
             if (e.target.matches('.safety-other-chk')) {
