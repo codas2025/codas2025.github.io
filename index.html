@@ -978,11 +978,13 @@
             const dataset = document.getElementById('datasetSelect').value;
             fetchPrevRecord(email, dataset).then(rec => {
                 prevRecord = rec;
-                populateLockedForms();
-                populateRanking();
-                populateValueAnalysis();
-                populateFeedback();
-            });
+                console.log('[prev] record found:', !!rec);
+                if (rec) console.log('[prev] keys:', Object.keys(rec));
+                try { populateLockedForms(); } catch(e) { console.error('[prev] populateLockedForms error:', e); }
+                try { populateRanking(); } catch(e) { console.error('[prev] populateRanking error:', e); }
+                try { populateValueAnalysis(); } catch(e) { console.error('[prev] populateValueAnalysis error:', e); }
+                try { populateFeedback(); } catch(e) { console.error('[prev] populateFeedback error:', e); }
+            }).catch(e => console.error('[prev] fetch chain error:', e));
         }
         document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
         curr = c+1;
