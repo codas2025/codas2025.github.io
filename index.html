@@ -907,6 +907,7 @@
             validation_req:       Array.from(document.querySelectorAll('.trust-chk:checked')).map(c=>c.value),
             validation_req_other: document.getElementById('trustOtherText').value.trim() || null,
             open_feedback: document.getElementById('fb_open').value.trim() || null,
+            study_round: 2,
             timestamp: new Date().toISOString()
         };
 
