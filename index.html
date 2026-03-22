@@ -458,7 +458,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const app = initializeApp({
         apiKey: "__FIREBASE_API__",
@@ -595,6 +595,97 @@
         });
     }
 
+    // ---- Previous record lookup --------------------------------
+    let prevRecord = null;
+
+    async function fetchPrevRecord(email, dataset) {
+        try {
+            const snap = await get(ref(db, 'codas_evaluations'));
+            if (!snap.exists()) return null;
+            const matches = Object.values(snap.val()).filter(r =>
+                r.profile?.email?.toLowerCase() === email.toLowerCase() &&
+                r.selected_dataset === dataset &&
+                r.study_round !== 2
+            );
+            if (!matches.length) return null;
+            return matches.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        } catch(e) {
+            console.warn('Could not fetch previous record:', e);
+            return null;
+        }
+    }
+
+    function populateLockedForms() {
+        const decBadge = { Reject:'bg-danger', Major:'bg-warning text-dark', Minor:'bg-secondary', Accept:'bg-success' };
+        const likertFields = [
+            ['novelty',      'Novelty'],
+            ['soundness',    'Soundness'],
+            ['statvalid',    'Statistical Rigor'],
+            ['plausibility', 'Biological Plausibility'],
+            ['limitations',  'Limitations'],
+            ['presentation', 'Clarity'],
+            ['repro',        'Reproducibility']
+        ];
+        const stars = v => { const n=parseInt(v)||0; return '★'.repeat(n)+'☆'.repeat(5-n); };
+
+        ['a','b','c','d','e'].filter(m => m !== CS_SLOT).forEach(m => {
+            const el = document.getElementById(`f_${m}`);
+            if (!el) return;
+            const modelName = MODEL_MAP[m];
+
+            // Find this model's assessment in the previous record by matching model name
+            let ass = null;
+            if (prevRecord?.model_assignment) {
+                const prevSlot = Object.keys(prevRecord.model_assignment)
+                    .find(k => prevRecord.model_assignment[k] === modelName);
+                if (prevSlot) ass = prevRecord.assessments?.[prevSlot.toLowerCase()];
+            }
+
+            if (!ass) {
+                el.innerHTML = `
+                <div class="text-center py-5 px-3">
+                    <i class="bi bi-lock-fill fs-1 text-secondary mb-3 d-block"></i>
+                    <div class="fw-bold text-secondary mb-1">Previously Evaluated</div>
+                    <div class="small text-muted">No prior record found for your email on this dataset.</div>
+                </div>`;
+                return;
+            }
+
+            const safetyHtml = ass.safety_flags?.length
+                ? `<div class="small text-danger mt-1"><i class="bi bi-shield-x me-1"></i>${ass.safety_flags.join(', ')}${ass.safety_text ? ': ' + ass.safety_text : ''}</div>`
+                : '';
+
+            el.innerHTML = `
+            <div class="px-3 pt-3 pb-3">
+                <div class="alert alert-secondary border-0 small py-2 mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Your previous assessment <span class="text-muted">(read-only)</span></span>
+                </div>
+                <div class="section-header text-primary">Scientific Quality</div>
+                <table class="table table-sm table-borderless mb-3" style="font-size:0.8rem">
+                    <tbody>
+                    ${likertFields.map(([k,label]) => `
+                        <tr>
+                            <td class="text-muted pe-3" style="width:50%">${label}</td>
+                            <td class="text-warning" style="letter-spacing:1px;font-size:0.75rem">${stars(ass[k])}</td>
+                            <td class="fw-bold text-end">${ass[k] ?? '—'}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+                <div class="section-header text-dark">Decision &amp; Utility</div>
+                <div class="mb-2 small">
+                    <span class="text-muted me-2">Recommendation:</span>
+                    <span class="badge ${decBadge[ass.decision] || 'bg-secondary'}">${ass.decision || '—'}</span>
+                </div>
+                <div class="mb-2 small">
+                    <span class="text-muted me-2">Effort Saved:</span>
+                    <strong>${ass.effort ?? '—'}%</strong>
+                </div>
+                ${safetyHtml}
+            </div>`;
+        });
+    }
+
     // ---- BARS rubric definitions --------------------------------
     // Each array: 5 single-sentence behavioral anchors (score 1→5)
     // Grounded in: NeurIPS 2024 checklist language, Nature Communications
@@ -707,10 +798,9 @@
     function genLockedForm(m) {
         return `
         <div id="f_${m}" class="m-form" style="display:${m==='a'?'block':'none'}">
-            <div class="text-center py-5 px-3">
-                <i class="bi bi-lock-fill fs-1 text-secondary mb-3 d-block"></i>
-                <div class="fw-bold text-secondary mb-1">Previously Evaluated</div>
-                <div class="small text-muted">This model was assessed in a prior study round.<br>No new annotation is required for this report.</div>
+            <div class="text-center py-4 text-muted small">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Loading previous assessment…
             </div>
         </div>`;
     }
@@ -781,7 +871,14 @@
 
     window.next = (c) => {
         if (!valid(c)) return;
-        if (c===2) { updatePDFs(); updateTabDots(); switchM(CS_SLOT); }
+        if (c===2) {
+            updatePDFs();
+            updateTabDots();
+            switchM(CS_SLOT);
+            const email = document.getElementById('uEmail').value;
+            const dataset = document.getElementById('datasetSelect').value;
+            fetchPrevRecord(email, dataset).then(rec => { prevRecord = rec; populateLockedForms(); });
+        }
         document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
         curr = c+1;
         document.getElementById(`step${curr}`).classList.add('active');
