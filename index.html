@@ -696,6 +696,95 @@
         });
     }
 
+    function populateRanking() {
+        // Reset: move all chips back to pool and clear slots
+        const pool = document.getElementById('pool');
+        document.querySelectorAll('.ranking-slot').forEach(slot => {
+            Array.from(slot.querySelectorAll('.draggable')).forEach(chip => pool.appendChild(chip));
+            slot.textContent = 'Drop Here';
+            slot.classList.remove('filled');
+        });
+
+        if (!prevRecord?.ranking) return;
+        const r = prevRecord.ranking;
+
+        // Place previous A–D models into slots 1–4
+        for (let i = 1; i <= 4; i++) {
+            const modelName = r[String(i)];
+            if (!modelName) continue;
+            const slot = document.querySelector(`.ranking-slot[data-r="${i}"]`);
+            const chip = pool.querySelector(`.draggable[data-id="${modelName}"]`);
+            if (slot && chip) {
+                slot.textContent = '';
+                slot.appendChild(chip);
+                slot.classList.add('filled');
+            }
+        }
+
+        // Pre-fill rationale but keep editable so they can update it for Model E
+        if (r.reason) {
+            const ta = document.getElementById('rankReason');
+            ta.value = r.reason;
+            ta.placeholder = 'Update your rationale to account for Model E…';
+        }
+
+        // Add a hint above the slots if not already present
+        if (!document.getElementById('rankingHint')) {
+            const hint = document.createElement('div');
+            hint.id = 'rankingHint';
+            hint.className = 'alert alert-secondary border-0 small py-2 mb-3 d-flex align-items-center gap-2';
+            hint.innerHTML = '<i class="bi bi-clock-history"></i><span>Previous ranking pre-loaded. Drag <strong>Model E</strong> into the position that best reflects its quality.</span>';
+            document.getElementById('slots').parentElement.insertAdjacentElement('beforebegin', hint);
+        }
+    }
+
+    function populateValueAnalysis() {
+        if (!prevRecord) return;
+
+        // Add locked banner if not already present
+        if (!document.getElementById('step5LockedBanner')) {
+            const banner = document.createElement('div');
+            banner.id = 'step5LockedBanner';
+            banner.className = 'alert alert-secondary border-0 small mb-3 d-flex align-items-center gap-2';
+            banner.innerHTML = '<i class="bi bi-clock-history"></i><span>Pre-filled from your previous submission <span class="text-muted">(read-only)</span></span>';
+            document.querySelector('#step5 .process-list').insertAdjacentElement('beforebegin', banner);
+        }
+
+        // Pre-fill and lock time estimates
+        const te = prevRecord.time_est || {};
+        [['t_lit','u_lit','lit'],['t_data','u_data','data'],['t_feat','u_feat','feat'],
+         ['t_ml','u_ml','ml'],['t_int','u_int','int'],['t_wrt','u_wrt','wrt']].forEach(([vid,uid,k]) => {
+            const vEl = document.getElementById(vid);
+            const uEl = document.getElementById(uid);
+            if (vEl && te[k]) { vEl.value = te[k].v; vEl.disabled = true; }
+            if (uEl && te[k]) {
+                uEl.value = te[k].u;
+                uEl.disabled = true;
+            }
+        });
+        updateTimeViz();
+
+        // Pre-check and lock validation requirements
+        const req = prevRecord.validation_req || [];
+        document.querySelectorAll('.trust-chk').forEach(chk => {
+            chk.checked = req.includes(chk.value);
+            chk.disabled = true;
+        });
+        if (prevRecord.validation_req_other) {
+            const ot = document.getElementById('trustOtherText');
+            ot.value = prevRecord.validation_req_other;
+            ot.style.display = 'block';
+            ot.disabled = true;
+        }
+    }
+
+    function populateFeedback() {
+        if (!prevRecord?.open_feedback) return;
+        const ta = document.getElementById('fb_open');
+        ta.value = prevRecord.open_feedback;
+        ta.placeholder = 'Feel free to add more observations about Model E or update your previous comments…';
+    }
+
     // ---- BARS rubric definitions --------------------------------
     // Each array: 5 single-sentence behavioral anchors (score 1→5)
     // Grounded in: NeurIPS 2024 checklist language, Nature Communications
@@ -887,7 +976,13 @@
             switchM(CS_SLOT);
             const email = document.getElementById('uEmail').value;
             const dataset = document.getElementById('datasetSelect').value;
-            fetchPrevRecord(email, dataset).then(rec => { prevRecord = rec; populateLockedForms(); });
+            fetchPrevRecord(email, dataset).then(rec => {
+                prevRecord = rec;
+                populateLockedForms();
+                populateRanking();
+                populateValueAnalysis();
+                populateFeedback();
+            });
         }
         document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
         curr = c+1;
