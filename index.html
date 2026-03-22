@@ -757,7 +757,7 @@
     // ---- Nav --------------------------------------------------
     window.switchM = (m) => {
         document.querySelectorAll('#step3 .nav-link').forEach(e=>e.classList.remove('active'));
-        event.target.closest('button').classList.add('active');
+        document.querySelector(`#step3 button[onclick="switchM('${m}')"]`)?.classList.add('active');
         document.querySelectorAll('#step3 .pdf-frame').forEach(e=>e.classList.remove('active'));
         document.getElementById(`pdf_${m}`).classList.add('active');
         document.querySelectorAll('.m-form').forEach(e=>e.style.display='none');
@@ -768,14 +768,14 @@
 
     window.switchRef = (m) => {
         document.querySelectorAll('#step4 .nav-link').forEach(e=>e.classList.remove('active'));
-        event.target.closest('button').classList.add('active');
+        document.querySelector(`#step4 button[onclick="switchRef('${m}')"]`)?.classList.add('active');
         document.querySelectorAll('#step4 .pdf-frame').forEach(e=>e.classList.remove('active'));
         document.getElementById(`ref_${m}`).classList.add('active');
     };
 
     window.next = (c) => {
         if (!valid(c)) return;
-        if (c===2) { updatePDFs(); updateTabDots(); }
+        if (c===2) { updatePDFs(); updateTabDots(); switchM(CS_SLOT); }
         document.querySelectorAll('.step-container').forEach(e=>e.classList.remove('active'));
         curr = c+1;
         document.getElementById(`step${curr}`).classList.add('active');
