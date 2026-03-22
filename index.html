@@ -599,18 +599,28 @@
     let prevRecord = null;
 
     async function fetchPrevRecord(email, dataset) {
+        const emailNorm = email.trim().toLowerCase();
         try {
-            const snap = await get(ref(db, 'codas_evaluations'));
-            if (!snap.exists()) return null;
-            const matches = Object.values(snap.val()).filter(r =>
-                r.profile?.email?.toLowerCase() === email.toLowerCase() &&
+            // Read from both collections — round 1 data may be in either
+            const [snap1, snap2] = await Promise.all([
+                get(ref(db, 'codas_evaluations')),
+                get(ref(db, 'codas_eval_nature_final'))
+            ]);
+            const allRecords = [
+                ...(snap1.exists() ? Object.values(snap1.val()) : []),
+                ...(snap2.exists() ? Object.values(snap2.val()) : [])
+            ];
+            console.log('[fetchPrevRecord] total records across both collections:', allRecords.length);
+            const matches = allRecords.filter(r =>
+                r.profile?.email?.trim().toLowerCase() === emailNorm &&
                 r.selected_dataset === dataset &&
                 r.study_round !== 2
             );
+            console.log('[fetchPrevRecord] matches for', emailNorm, dataset, ':', matches.length);
             if (!matches.length) return null;
             return matches.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
         } catch(e) {
-            console.warn('Could not fetch previous record:', e);
+            console.warn('[fetchPrevRecord] error:', e);
             return null;
         }
     }
